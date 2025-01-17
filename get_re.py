@@ -1,5 +1,5 @@
 import requests
-from token_gen import TokenGenerator
+from auth.token_gen import TokenGenerator
 
 class ResourceFetcher:
     def __init__(self, client_id: str, client_secret: str, token_url: str):
