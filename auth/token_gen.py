@@ -54,17 +54,14 @@ class TokenGenerator:
             raise Exception(f"Error generating auth token: {e}")
 
 
-# # Example usage
+# Example usage
 # if __name__ == "__main__":
 #     client_id = "7dcf1193-4237-48a7-a5f2-4b530b69b1cb"
 #     client_secret = "a863cafce5bd3d1bd302ab079242790d18cec974"
-#     token_url = "https://dx.gsx.org.in/auth/v1/token"
-#     item_id = "geoserver.dx.ugix.org.in"
-#     item_type = "resource_server"
 #     role = "consumer"
 
 #     try:
-#         token_generator = TokenGenerator(client_id, client_secret, token_url, item_id, item_type, role)
+#         token_generator = TokenGenerator(client_id, client_secret, role)
 #         auth_token = token_generator.generate_token()
 #         print("Generated Auth Token:", auth_token)
 #     except Exception as e:
