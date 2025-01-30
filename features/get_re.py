@@ -1,6 +1,6 @@
 import requests
 from auth.token_gen import TokenGenerator
-from minio_con import connect_store_minio
+from common.minio_ops import connect_store_minio
 import geopandas as gpd
 
 class ResourceFetcher:
@@ -52,22 +52,7 @@ class ResourceFetcher:
             return gdf  # Return the fetched data as a geopandas dataframe
         except requests.RequestException as e:
             raise Exception(f"Error fetching resource data: {e}")
+
    
 
 
-# if __name__ == "__main__":
-#     client_id = "7dcf1193-4237-48a7-a5f2-4b530b69b1cb"
-#     client_secret = "a863cafce5bd3d1bd302ab079242790d18cec974"
-#     token_url = "https://dx.gsx.org.in/auth/v1/token"
-#     item_id = "geoserver.dx.ugix.org.in"
-#     item_type = "resource_server"
-#     role = "consumer"
-#     resource_id = "95886a22-704d-4922-815c-39af80acd520"
-#     offset = 1
-
-#     fetcher = ResourceFetcher(client_id, client_secret, role=role)
-#     try:
-#         resource_data = fetcher.fetch_resource_data(resource_id=resource_id, save_object=True, config_path='config.json', file_path='data_3.gpkg')
-        
-#     except Exception as e:
-#         print(e)
