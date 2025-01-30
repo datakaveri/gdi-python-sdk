@@ -3,6 +3,15 @@
 ## Overview
 This document provides a list of commands for interacting with GDI, including fetching resources, generating authentication tokens, and working with MinIO objects.
 
+
+## Notes
+- Ensure that `gdi` is installed and configured properly before running these commands.
+- Replace `client-id`, `client-secret`, and `resource-id` with appropriate values if required.
+- The `config.json` file should be properly configured for commands that require it.
+- The `data_new1.gpkg` file is an example file name; change it accordingly based on your requirements.
+
+
+
 ## Commands
 
 ### 1. Fetch Resource Without Saving
@@ -35,11 +44,7 @@ Use this command to list objects in MinIO storage:
 gdi ls-objects --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb
 ```
 
-## Notes
-- Ensure that `gdi` is installed and configured properly before running these commands.
-- Replace `client-id`, `client-secret`, and `resource-id` with appropriate values if required.
-- The `config.json` file should be properly configured for commands that require it.
-- The `data_new1.gpkg` file is an example file name; change it accordingly based on your requirements.
+
 
 
 
