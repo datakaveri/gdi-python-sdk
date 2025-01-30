@@ -1,8 +1,8 @@
 import click
 from auth.token_gen import TokenGenerator
-from features.get_re import ResourceFetcher
-from features.count_features import count_features
-from common.minio_ops import get_ls
+from get_re import ResourceFetcher
+from count_features import count_features
+from minio_ops import get_ls
 
 def gen_token(client_id, client_secret, role):
     token_generator = TokenGenerator(client_id, client_secret, role)
