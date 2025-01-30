@@ -1,0 +1,23 @@
+[project]
+name = "gdi"
+version = "0.1.0"
+description = "gdi cli for gdi python sdk"
+authors = [
+    {name = "Your Name",email = "you@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "click @ git+https://github.com/pallets/click.git",
+    "requests @ git+https://github.com/psf/requests.git",
+    "geopandas @ git+https://github.com/geopandas/geopandas.git",
+    "minio @ git+https://github.com/minio/minio-py.git"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+gdi = 'gdi:cli'
