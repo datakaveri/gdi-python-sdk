@@ -17,7 +17,7 @@ class ResourceFetcher:
         self.role = role
         
 
-    def fetch_resource_data(self, resource_id: str, offset: int = 1, save_object : bool = False,  config_path:str = None ,file_path : str = None ) -> dict:
+    def fetch_resource_data(self, resource_id:str ,save_object : bool = False,  config_path:str = None ,file_path : str = None ) -> dict:
         """
         Fetch data for a specified resource using the generated token.
         resource_id : str : The ID of the resource to fetch data from.
@@ -33,7 +33,7 @@ class ResourceFetcher:
             auth_token = token_generator.generate_token()
 
             # Fetch resource data
-            resource_url = f"https://geoserver.dx.gsx.org.in/collections/{resource_id}/items?offset={offset}"
+            resource_url = f"https://geoserver.dx.gsx.org.in/collections/{resource_id}/items?offset=1"
             headers = {"Authorization": f"Bearer {auth_token}"}
 
             response = requests.get(resource_url, headers=headers)
@@ -52,7 +52,6 @@ class ResourceFetcher:
             return gdf  # Return the fetched data as a geopandas dataframe
         except requests.RequestException as e:
             raise Exception(f"Error fetching resource data: {e}")
-
    
 
 
