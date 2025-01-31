@@ -49,6 +49,5 @@ gdi download-artefact --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4
 - The `config.json` file should be properly configured for commands that require it.
 - The `data_new1.gpkg` file is an example file name; change it accordingly based on your requirements.
 
-## Contact
-For any issues or support, please reach out to the GDI support team or refer to the official documentation.
+
 
