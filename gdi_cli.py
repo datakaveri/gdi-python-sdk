@@ -2,6 +2,7 @@ import click
 from auth.token_gen import TokenGenerator
 from features.get_re import ResourceFetcher
 from features.count_features import count_features
+from features.download_features import download_features
 from common.minio_ops import get_ls
 
 def gen_token(client_id, client_secret, role):
@@ -41,7 +42,7 @@ def generate_token(client_id, client_secret, role):
 def fetch_resource(client_id, client_secret, role, resource_id, save_object, config_path, file_path):
     """Fetch resource data."""
     resource_data = get_resource(client_id, client_secret, role, resource_id, save_object, config_path, file_path)
-    click.echo(f"Fetched Resource Data: {resource_data}")
+    
 
 
 
@@ -61,4 +62,13 @@ def features_count(config, client_id, artefact_url):
 def ls_objects(config, client_id):
     """List objects in the bucket."""
     get_ls(config, client_id)
-    
+
+
+@click.command()
+@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--client-id', required=True, help="Client ID for authentication.")
+@click.option('--artefact-url', required=True, help="URL of the artefact to download.")
+@click.option('--save-as',required = True , help="Save the fetched object to Minio as the given file name.")
+def download_artefact(config, client_id, artefact_url, save_as):
+    """Download the artefact."""
+    download_features(config, client_id, artefact_url, save_as)
