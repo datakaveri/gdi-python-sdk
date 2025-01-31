@@ -35,10 +35,16 @@ Use this command to list objects in MinIO storage:
 gdi ls-objects --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb
 ```
 
-### 5. Download features
+### 6. Download features
 Use this command to download file to MinIO storage with user specified gpkg:
 ```sh
 gdi download-artefact --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --artefact-url data_new1.pkl --save-as inter/data_new1.gpkg
+```
+
+### 7. create buffer
+Use this command to create buffer for the featutre vectors
+```sh
+gdi create-buffer --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --artifact-url 1b2a07b7-f423-4dd3-bdee-9a6af6fe47f9.pkl --buffer-d 0.9  --store-artifact True --file-path buffer_item/data_1.pkl
 ```
 
 
