@@ -4,6 +4,7 @@ from features.get_re import ResourceFetcher
 from features.count_features import count_features
 from features.download_features import download_features
 from features.buffer import make_buffer
+from features.intersection import make_intersection
 from common.minio_ops import get_ls
 
 def gen_token(client_id, client_secret, role):
@@ -85,3 +86,15 @@ def download_artifact(config, client_id, artifact_url, save_as):
 def create_buffer(config, client_id, artifact_url, buffer_d, store_artifact, file_path):
     """Buffer the artifact."""
     make_buffer(config, client_id, artifact_url, buffer_d, store_artifact, file_path)
+
+
+@click.command()
+@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--client-id', required=True, help="Client ID for authentication.")
+@click.option('--artifact-url-1', required=True, help="URL of the first artifact.")
+@click.option('--artifact-url-2', required=True, help="URL of the second artifact.")
+@click.option('--store-artifact', help="Store the intersected artifact.")
+@click.option('--file-path', help="Path to save the intersected artifact.")
+def create_intersection(config, client_id, artifact_url_1, artifact_url_2, store_artifact, file_path):
+    """Intersect the artifacts."""
+    make_intersection(config, client_id, artifact_url_1, artifact_url_2, store_artifact, file_path)
