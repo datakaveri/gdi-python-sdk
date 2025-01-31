@@ -2,6 +2,7 @@ import requests
 from auth.token_gen import TokenGenerator
 from common.minio_ops import connect_store_minio
 import geopandas as gpd
+import uuid
 
 class ResourceFetcher:
     def __init__(self, client_id: str, client_secret: str, role: str):
@@ -42,6 +43,8 @@ class ResourceFetcher:
             gdf = gpd.GeoDataFrame(response.json()['features'])
 
             if save_object:
+                if not file_path:
+                    file_path = f"{uuid.uuid4()}.pkl"
                 try:
                     connect_store_minio(config_path, self.client_id, response.json(), file_path)
                 except Exception as e:
