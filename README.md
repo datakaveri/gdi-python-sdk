@@ -35,6 +35,14 @@ Use this command to list objects in MinIO storage:
 gdi ls-objects --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb
 ```
 
+### 5. Download features
+Use this command to download file to MinIO storage with user specified gpkg:
+```sh
+gdi download-artefact --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --artefact-url data_new1.pkl --save-as inter/data_new1.gpkg
+```
+
+
+
 ## Notes
 - Ensure that `gdi` is installed and configured properly before running these commands.
 - Replace `client-id`, `client-secret`, and `resource-id` with appropriate values if required.

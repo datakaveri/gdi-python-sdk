@@ -42,7 +42,7 @@ class TokenGenerator:
                     "role": self.role
                 }
             )
-            print("Response Status Code:", response.status_code)
+            
             
 
             response.raise_for_status()  # Raise an HTTPError for bad responses

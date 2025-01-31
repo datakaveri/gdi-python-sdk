@@ -19,10 +19,10 @@ def connect_minio(config:str, client_id:str)  -> Minio:
 
         client = Minio(minio_url, access_key=access_key, secret_key=secret_key,secure=False)
         if client.bucket_exists(client_id):
-            print("Current Bucket:", client_id)
+           pass
         else:
             client.make_bucket(client_id)
-            print("New Bucket Created:", client_id)
+           
         return client
     except Exception as e:
         raise e
@@ -55,20 +55,20 @@ def connect_store_minio(config:str, client_id:str, data:dict, file_name:str):
         raise e
 
     if client.bucket_exists(client_id):
-        print("Current Bucket:", client_id)
+        pass
     else:
         client.make_bucket(client_id)
-        print("New Bucket Created:", client_id)
+        
 
     gdf = gpd.GeoDataFrame(data['features'])
-    gdf.to_file(file_name, driver='GPKG')
+    gdf.to_pickle('temp.pkl')
 
     try:
         result = client.fput_object(
-            client_id, file_name, file_name
+            client_id, file_name, 'temp.pkl'
         )
-        os.remove(file_name)
-        print(f"Object saved successfully to Minio at : {client_id}/{file_name} ")
+        os.remove('temp.pkl')
+        print(f"{file_name}")
     except Exception as e:
         raise Exception(f"Error while saving file: {e}")
 
