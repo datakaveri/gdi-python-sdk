@@ -55,7 +55,7 @@ gdi create-buffer --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530
 ```
 
 
-### 7. create intersection
+### 8. create intersection
 Use this command to intersect between 2 vectors
 ```sh
 gdi create-intersection --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --artifact-url-1 'buffer_item/data_1.pkl' --artifact-url-2 'buffer_item/data_2.pkl' --store-artifact True --file-path intersected_items/intersected_2.pkl
