@@ -1,4 +1,5 @@
 import geopandas as gpd
+from common.crgeo import create_geometry
 from common.minio_ops import connect_minio
 import pickle as pkl
 import os 
@@ -12,8 +13,10 @@ def make_intersection(config : str, client_id : str, artefact_url_1 : str, artef
     try :
         with client.get_object(client_id, artefact_url_1) as response:
             data_1 = pkl.loads(response.read())
+            data_1['geometry'] = data_1['geometry'].apply(create_geometry)
         with client.get_object(client_id, artefact_url_2) as response:
-            data_2 = pkl.loads(response.read())        
+            data_2 = pkl.loads(response.read())
+            data_2['geometry'] = data_2['geometry'].apply(create_geometry)        
     except Exception as e:
         print(e)
 
