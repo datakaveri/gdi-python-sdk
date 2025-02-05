@@ -5,6 +5,7 @@ from features.count_features import count_features
 from features.download_features import download_features
 from features.buffer import make_buffer
 from features.intersection import make_intersection
+from features.gcode import list_features
 from common.minio_ops import get_ls
 
 def gen_token(client_id, client_secret, role):
@@ -98,3 +99,11 @@ def create_buffer(config, client_id, artifact_url, buffer_d, store_artifact, fil
 def create_intersection(config, client_id, artifact_url_1, artifact_url_2, store_artifact, file_path):
     """Intersect the artifacts."""
     make_intersection(config, client_id, artifact_url_1, artifact_url_2, store_artifact, file_path)
+
+
+@click.command()
+@click.option('--location', required=True, help="Name of the place. City, State, Country etc.")
+def list_data(location):
+    """List data for a location."""
+    data = list_features(location)
+    click.echo(data)
