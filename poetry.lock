@@ -286,6 +286,18 @@ files = [
 ]
 
 [[package]]
+name = "geographiclib"
+version = "2.0"
+description = "The geodesic routines from GeographicLib"
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "geographiclib-2.0-py3-none-any.whl", hash = "sha256:6b7225248e45ff7edcee32becc4e0a1504c606ac5ee163a5656d482e0cd38734"},
+    {file = "geographiclib-2.0.tar.gz", hash = "sha256:f7f41c85dc3e1c2d3d935ec86660dc3b2c848c83e17f9a9e51ba9d5146a15859"},
+]
+
+[[package]]
 name = "geopandas"
 version = "1.0.1+57.g8c3da433"
 description = "Geographic pandas extensions"
@@ -312,6 +324,34 @@ type = "git"
 url = "https://github.com/geopandas/geopandas.git"
 reference = "HEAD"
 resolved_reference = "8c3da4334afbf70b022e029357be2470098dbd17"
+
+[[package]]
+name = "geopy"
+version = "2.4.1"
+description = "Python Geocoding Toolbox"
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = []
+develop = false
+
+[package.dependencies]
+geographiclib = ">=1.52,<3"
+
+[package.extras]
+aiohttp = ["aiohttp"]
+dev = ["coverage", "flake8 (>=5.0,<5.1)", "isort (>=5.10.0,<5.11.0)", "pytest (>=3.10)", "pytest-asyncio (>=0.17)", "readme_renderer", "sphinx (<=4.3.2)", "sphinx-issues", "sphinx_rtd_theme (>=0.5.0)"]
+dev-docs = ["readme_renderer", "sphinx (<=4.3.2)", "sphinx-issues", "sphinx_rtd_theme (>=0.5.0)"]
+dev-lint = ["flake8 (>=5.0,<5.1)", "isort (>=5.10.0,<5.11.0)"]
+dev-test = ["coverage", "pytest (>=3.10)", "pytest-asyncio (>=0.17)", "sphinx (<=4.3.2)"]
+requests = ["requests (>=2.16.2)", "urllib3 (>=1.24.2)"]
+timezone = ["pytz"]
+
+[package.source]
+type = "git"
+url = "https://github.com/geopy/geopy.git"
+reference = "HEAD"
+resolved_reference = "f495974c32a7a7b1eb433e7b8c87166e96375c32"
 
 [[package]]
 name = "idna"
@@ -824,4 +864,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
-content-hash = "04d17b68a7ae4ec07b253245ee9cde3cd1463e0419e5c0a5cdd62069cab28def"
+content-hash = "0304fba34be2d7034380cfadab3b63d707456db5c0eba22db2059e46c1ec2604"
