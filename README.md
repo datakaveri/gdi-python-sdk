@@ -1,7 +1,14 @@
-# GDI COMMANDS
+# GDI CLI
 
 ## Overview
-This document provides a list of commands for interacting with GDI, including fetching resources, generating authentication tokens, and working with MinIO objects.
+This document provides a list of commands for interacting with GDI through cli.
+
+
+## Notes
+- Ensure that `gdi` is installed and configured properly before running these commands.
+- Replace `client-id`, `client-secret`, and `resource-id` with appropriate values if required.
+- The `config.json` file should be properly configured for commands that require it.
+- The `data_new1.gpkg` file is an example file name; change it accordingly based on your requirements.
 
 ## Commands
 
@@ -57,11 +64,6 @@ gdi create-intersection --config config.json --client-id 7dcf1193-4237-48a7-a5f2
 
 
 
-## Notes
-- Ensure that `gdi` is installed and configured properly before running these commands.
-- Replace `client-id`, `client-secret`, and `resource-id` with appropriate values if required.
-- The `config.json` file should be properly configured for commands that require it.
-- The `data_new1.gpkg` file is an example file name; change it accordingly based on your requirements.
 
 
 
