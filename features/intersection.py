@@ -35,7 +35,7 @@ def make_intersection(config : str, client_id : str, artefact_url_1 : str, artef
                 client_id, file_path, 'temp.pkl'
             )
             os.remove('temp.pkl')
-            print("Intersected data saved successfully at: ", file_path)
+            print(file_path)
             # return gdata
         except Exception as e:
             raise Exception(f"Error while saving file: {e}")
