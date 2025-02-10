@@ -6,32 +6,14 @@ import uuid
 
 class ResourceFetcher:
     def __init__(self, client_id: str, client_secret: str, role: str):
-        """
-        Initialize the ResourceFetcher with authentication details.
-        Parameters:
-
-        :param client_id: input_str : The client ID for authentication.
-        :param client_secret: input_str : The client secret for authentication.
-        :param role: input_enum_consumer_provider_admin : The role of the user.
         
-        """
         self.client_id = client_id
         self.client_secret = client_secret
         self.role = role
         
 
     def fetch_resource_data(self, resource_id:str ,save_object : bool = False,  config_path:str = None ,file_path : str = None ) -> dict:
-        """
-        Fetch data for a specified resource using the generated token.
-        
-        Parameters:
-        ---------------
-        resource_id : input_str : The ID of the resource to fetch data from.
-        config_path : input_str : The path to the minio configuration file.
-        file_path : input_str : The path to save the fetched data.
-        save_object : input_str : Whether to save the fetched data to minio or not. : default False
-
-        """
+       
         try:
             # Generate the token
             token_generator = TokenGenerator(self.client_id, self.client_secret,self.role)

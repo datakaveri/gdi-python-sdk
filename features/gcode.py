@@ -20,7 +20,7 @@ def list_features(name: str) -> dict:
     """ Function to query the geoserver api for data within a bounding box.
      Parameters:
     ------------:
-    name : str : name of the location to query
+    name : str (Node red will translate it as input)
     """
 
 

@@ -14,12 +14,12 @@ def make_buffer(config : str, client_id : str, artefact_url : str, buffer_d : fl
     --------------------------
      Parameters:
     ------------:
-    config : str : path to the config file
-    client_id : str : client id of the user
-    artefact_url : str : url of the artefact to be buffered
-    buffer_d : float : distance to buffer the geometries
-    store_artefacts : bool : whether to store the buffered data in minio
-    file_path : str : path to store the buffered data in minio
+    config : str (Node red will translate it as input)
+    client_id : str (Node red will translate it as input)
+    artefact_url : str (Node red will translate it as input)
+    buffer_d : float (Node red will translate it as input)
+    store_artefacts : enum [True, False] (Node red will translate it as input)
+    file_path : str : (Node red will ignore this parameter)
     """
     
     client = connect_minio(config, client_id)
