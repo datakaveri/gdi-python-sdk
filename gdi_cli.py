@@ -92,13 +92,13 @@ def create_buffer(config, client_id, artifact_url, buffer_d, store_artifact, fil
 @click.command()
 @click.option('--config', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="Client ID for authentication.")
-@click.option('--artifact-url-1', required=True, help="URL of the first artifact.")
-@click.option('--artifact-url-2', required=True, help="URL of the second artifact.")
+@click.option('--left_feature', required=True, help="URL of the first artifact.")
+@click.option('--right_feature', required=True, help="URL of the second artifact.")
 @click.option('--store-artifact', help="Store the intersected artifact.")
 @click.option('--file-path', help="Path to save the intersected artifact.")
-def create_intersection(config, client_id, artifact_url_1, artifact_url_2, store_artifact, file_path):
+def create_intersection(config, client_id, left_feature, right_feature, store_artifact, file_path):
     """Intersect the artifacts."""
-    make_intersection(config, client_id, artifact_url_1, artifact_url_2, store_artifact, file_path)
+    make_intersection(config, client_id, left_feature, right_feature, store_artifact, file_path)
 
 
 @click.command()
