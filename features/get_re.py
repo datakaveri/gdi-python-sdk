@@ -8,10 +8,12 @@ class ResourceFetcher:
     def __init__(self, client_id: str, client_secret: str, role: str):
         """
         Initialize the ResourceFetcher with authentication details.
+        Parameters:
 
-        :param client_id: The client ID for authentication.
-        :param client_secret: The client secret for authentication.
-        :param token_url: The URL to fetch the token from.
+        :param client_id: input_str : The client ID for authentication.
+        :param client_secret: input_str : The client secret for authentication.
+        :param role: input_enum_consumer_provider_admin : The role of the user.
+        
         """
         self.client_id = client_id
         self.client_secret = client_secret
@@ -21,11 +23,13 @@ class ResourceFetcher:
     def fetch_resource_data(self, resource_id:str ,save_object : bool = False,  config_path:str = None ,file_path : str = None ) -> dict:
         """
         Fetch data for a specified resource using the generated token.
-        resource_id : str : The ID of the resource to fetch data from.
-        config_path : str : The path to the minio configuration file.
-        file_path : str : The path to save the fetched data.
-        offset : int : The offset to fetch the data from.
-        save_object : bool : Whether to save the fetched data to minio or not.
+        
+        Parameters:
+        ---------------
+        resource_id : input_str : The ID of the resource to fetch data from.
+        config_path : input_str : The path to the minio configuration file.
+        file_path : input_str : The path to save the fetched data.
+        save_object : input_str : Whether to save the fetched data to minio or not. : default False
 
         """
         try:
@@ -56,6 +60,18 @@ class ResourceFetcher:
         except requests.RequestException as e:
             raise Exception(f"Error fetching resource data: {e}")
 
+
+
+# client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --client-secret a863cafce5bd3d1bd302ab079242790d18cec974 --role consumer --resource-id 024b0c51-e44d-424c-926e-254b6c966978
+# client_id =  '7dcf1193-4237-48a7-a5f2-4b530b69b1cb' 
+# client_secret = "a863cafce5bd3d1bd302ab079242790d18cec974"
+# role = "consumer"
+# resource_id = "024b0c51-e44d-424c-926e-254b6c966978"
+# save_object = False
+# config_path = None
+# file_path = None
+# fetcher = ResourceFetcher(client_id, client_secret, role)
+# resource_data = fetcher.fetch_resource_data(resource_id, save_object, config_path, file_path)
    
 
 

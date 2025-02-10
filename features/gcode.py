@@ -15,7 +15,15 @@ def get_bounding_box(location:str):
     
 
 # query the geoserver api for data
-def list_features(name: str):
+def list_features(name: str) -> dict:
+
+    """ Function to query the geoserver api for data within a bounding box.
+     Parameters:
+    ------------:
+    name : str : name of the location to query
+    """
+
+
     bbox = get_bounding_box(name)
     
     base_url = "https://dx.gsx.org.in/ugix/cat/v1/search"

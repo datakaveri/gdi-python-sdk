@@ -1,6 +1,6 @@
 import geopandas as gpd
 from common.minio_ops import connect_minio
-from shapely.geometry import Point, Polygon, LineString
+from common.crgeo import create_geometry
 import warnings
 warnings.filterwarnings("ignore")
 import pickle as pkl
@@ -8,23 +8,19 @@ import os
 import uuid
 
 
-def create_geometry(geo_obj):
-    if isinstance(geo_obj, Point):
-        return geo_obj
-    elif isinstance(geo_obj, dict):
-        geo_type = geo_obj['type'].lower()
-        coords = geo_obj['coordinates']
-        
-        if geo_type == 'point' and len(coords) >= 2:
-            return Point(coords[0], coords[1])
-        elif geo_type == 'polygon':
-            return Polygon(coords[0])
-        elif geo_type == 'linestring':
-            return LineString(coords)
-    return None
 
-
-def make_buffer(config : str, client_id : str, artefact_url : str, buffer_d : float, store_artefacts : bool = False, file_path : str = None):
+def make_buffer(config : str, client_id : str, artefact_url : str, buffer_d : float, store_artefacts : bool = False, file_path : str = None) -> None:
+    """Function to buffer the geometries in a geodataframe and save the buffered data to minio.
+    --------------------------
+     Parameters:
+    ------------:
+    config : str : path to the config file
+    client_id : str : client id of the user
+    artefact_url : str : url of the artefact to be buffered
+    buffer_d : float : distance to buffer the geometries
+    store_artefacts : bool : whether to store the buffered data in minio
+    file_path : str : path to store the buffered data in minio
+    """
     
     client = connect_minio(config, client_id)
 
@@ -51,7 +47,7 @@ def make_buffer(config : str, client_id : str, artefact_url : str, buffer_d : fl
                 client_id, file_path, 'temp.pkl'
             )
             os.remove('temp.pkl')
-            print(file_path)
+            print("Data buffered and saved successfully at: ", file_path)
             # return gdata
         except Exception as e:
             raise Exception(f"Error while saving file: {e}")
