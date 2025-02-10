@@ -10,12 +10,12 @@ def make_intersection(config : str, client_id : str, left_feature : str, right_f
     """Function to intersect two geodataframes and save the intersected data to minio.
     Parameters:
     ------------
-    config : input#str : path to the config file
-    client_id : input#str : client id of the user
-    left_feature : step#str : url of the first artefact to be intersected
-    right_feature : step#str : url of the second artefact to be intersected
-    store_artefacts : input#enum#True#False : whether to store the intersected data in minio
-    file_path : ignore#str : path to store the intersected data
+    config : str (Node red will translate it as input)
+    client_id : str (Node red will translate it as input)
+    left_feature : str (Node red will take it from the previous step)
+    right_feature : str (Node red will take it from the previous step)
+    store_artefacts : enum [True, False] (Node red will translate it as input)
+    file_path : (Node red will ignore this parameter)
     """
     
     client = connect_minio(config, client_id)

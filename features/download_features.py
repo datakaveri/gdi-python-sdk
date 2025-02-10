@@ -11,10 +11,10 @@ def download_features(config : str, client_id : str, artefact_url : str, save_as
 
     Parameters:
     ------------
-    config : input_str : path to the config file
-    client_id : input_str : the client id of the user / bucket
-    artefact_url : step_str : the url of the artefact to download
-    save_as : input_str : the name of the file to save the features
+    config : str (Node red will translate it as input)
+    client_id : str (Node red will translate it as input)
+    artefact_url : str (Node red will take it from the previous step)
+    save_as : str (Node red will ignore this)
 
     """ 
     

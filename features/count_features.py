@@ -8,10 +8,10 @@ def count_features(config : str, client_id : str, artefact_url : str, store_arte
     """Function to count the number of features in a geodataframe and save the count to minio.
      Parameters:
     ------------:
-    config : str : path to the config file
-    client_id : str : client id of the user
-    artefact_url : str : url of the artefact to be counted
-    store_artefacts : bool : whether to store the count in minio
+    config : str (Node red will translate it as input)
+    client_id : str (Node red will translate it as input)
+    artefact_url : str (Node red will translate it as input)
+    store_artefacts : enum [True, False] (Node red will translate it as input)
     """
     
     client = connect_minio(config, client_id)
