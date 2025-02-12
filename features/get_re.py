@@ -32,7 +32,7 @@ class ResourceFetcher:
                 if not file_path:
                     file_path = f"{uuid.uuid4()}.pkl"
                 try:
-                    connect_store_minio(config_path, self.client_id, response.json(), file_path)
+                    connect_store_minio(config_path, self.client_id, gdf, file_path)
                 except Exception as e:
                     raise Exception(f"Error while saving file: {e}")
             else:
