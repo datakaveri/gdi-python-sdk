@@ -6,6 +6,7 @@ from features.vector_features.download_features import download_features
 from features.vector_features.buffer import make_buffer
 from features.vector_features.intersection import make_intersection
 from features.vector_features.gcode import list_features
+from features.vector_features.compute_geo import compute_geometry_measures
 from common.minio_ops import get_ls
 
 def gen_token(client_id, client_secret, role):
@@ -15,6 +16,18 @@ def gen_token(client_id, client_secret, role):
 
 
 def get_resource(client_id, client_secret, role, resource_id, save_object, config_path, file_path):
+    """Fetch data for a specified resource using the generated token.
+    Parameters:
+    ---------------
+    client_id : str (Node red will translate it as input)
+    client_secret : str (Node red will translate it as input)
+    role : enum [consumer, provider, admin] (Node red will translate it as input)
+    resource_id : str (Node red will translate it as input)
+    save_object : enum [True, False] (Node red will translate it as input)
+    config_path : str (Node red will translate it as input)
+    file_path : str (Node red will ignore this parameter)
+
+    """
     fetcher = ResourceFetcher(client_id, client_secret, role)
     resource_data = fetcher.fetch_resource_data(resource_id, save_object, config_path, file_path)
     return resource_data
@@ -107,3 +120,15 @@ def list_data(location):
     """List data for a location."""
     data = list_features(location)
     click.echo(data)
+
+@click.command()
+@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--client-id', required=True, help="Client ID for authentication.")
+@click.option('--artifact-url', required=True, help="URL of the artifact to download.")
+@click.option('--store-artifact', help="Store the intersected artifact.")
+@click.option('--file-path', help="Path to save the intersected artifact.")
+def compute_geometry(config, client_id, artifact_url, store_artifact, file_path):
+    """
+    Reads geospatial data from MinIO, computes geometry measures, and optionally saves the processed data back to MinIO.
+    """
+    compute_geometry_measures(config, client_id, artifact_url, store_artifact, file_path)

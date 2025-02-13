@@ -67,7 +67,11 @@ Use this command to list all the datasets for a purticular location
 gdi list-data --location telangana
 ```
 
-
+### 10. Compute Geometry
+Use this command to geometry measures
+```sh
+gdi compute-geometry --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --artifact-url intersected_items/Road_School_intersected.pkl --store-artifact True --file-path compute_geo/road_school.pkl
+```
 
 
 
