@@ -23,10 +23,10 @@ def make_intersection(config : str, client_id : str, left_feature : str, right_f
     try :
         with client.get_object(client_id, left_feature) as response:
             data_1 = pkl.loads(response.read())
-            data_1['geometry'] = data_1['geometry'].apply(create_geometry)
+           
         with client.get_object(client_id, right_feature) as response:
             data_2 = pkl.loads(response.read())
-            data_2['geometry'] = data_2['geometry'].apply(create_geometry)        
+                    
     except Exception as e:
         print(e)
 

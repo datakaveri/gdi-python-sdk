@@ -26,7 +26,7 @@ class ResourceFetcher:
             response = requests.get(resource_url, headers=headers)
             response.raise_for_status()  # Raise an HTTPError for bad responses
             
-            gdf = gpd.GeoDataFrame(response.json()['features'])
+            gdf = gpd.GeoDataFrame.from_features(response.json()['features'])
 
             if save_object:
                 if not file_path:
