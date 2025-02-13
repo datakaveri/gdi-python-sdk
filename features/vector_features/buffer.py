@@ -30,11 +30,9 @@ def make_buffer(config : str, client_id : str, artefact_url : str, buffer_d : fl
     except Exception as e:
         print(e)
 
-    try:
-        data['geometry'] = data['geometry'].apply(create_geometry)
-        gdata = gpd.GeoDataFrame(data, geometry='geometry')
+    try:        
         buffer_d = float(buffer_d)
-        gdata.buffer(buffer_d)
+        data['geometry'] = data['geometry'].buffer(buffer_d)
     except Exception as e:
         raise e
     
@@ -42,7 +40,7 @@ def make_buffer(config : str, client_id : str, artefact_url : str, buffer_d : fl
         if not file_path:
             file_path = f"{uuid.uuid4()}.pkl"
         try:
-            gdata.to_pickle('temp.pkl')
+            data.to_pickle('temp.pkl')
             client.fput_object(
                 client_id, file_path, 'temp.pkl'
             )
