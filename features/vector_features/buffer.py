@@ -45,7 +45,7 @@ def make_buffer(config : str, client_id : str, artefact_url : str, buffer_d : fl
                 client_id, file_path, 'temp.pkl'
             )
             os.remove('temp.pkl')
-            print("Data buffered and saved successfully at: ", file_path)
+            print(file_path)
             # return gdata
         except Exception as e:
             raise Exception(f"Error while saving file: {e}")

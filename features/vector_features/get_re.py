@@ -48,10 +48,10 @@ class ResourceFetcher:
 # client_id =  '7dcf1193-4237-48a7-a5f2-4b530b69b1cb' 
 # client_secret = "a863cafce5bd3d1bd302ab079242790d18cec974"
 # role = "consumer"
-# resource_id = "024b0c51-e44d-424c-926e-254b6c966978"
-# save_object = False
-# config_path = None
-# file_path = None
+# resource_id = "a4395596-14e6-4e17-83c4-989bc23fb3d2"
+# save_object = True
+# config_path = '../../config.json'
+# file_path = 'intermediate/Road_Varanasi.pkl'
 # fetcher = ResourceFetcher(client_id, client_secret, role)
 # resource_data = fetcher.fetch_resource_data(resource_id, save_object, config_path, file_path)
    
