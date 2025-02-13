@@ -33,7 +33,7 @@ gdi generate-token --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --client-sec
 ### 4. Get the Number of Features in Vectors
 Use this command to get the number of features in a vector file:
 ```sh
-gdi features-count --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --artefact-url data_new1.gpkg
+gdi features-count --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --artifact-url data_new1.gpkg
 ```
 
 ### 5. List Objects in MinIO
@@ -45,7 +45,7 @@ gdi ls-objects --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69
 ### 6. Download features
 Use this command to download file to MinIO storage with user specified gpkg:
 ```sh
-gdi download-artefact --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --artefact-url data_new1.pkl --save-as inter/data_new1.gpkg
+gdi download-artifact --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --artifact-url data_new1.pkl --save-as inter/data_new1.gpkg
 ```
 
 ### 7. create buffer

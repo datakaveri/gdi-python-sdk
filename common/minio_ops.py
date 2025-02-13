@@ -34,7 +34,7 @@ def connect_minio(config:str, client_id:str)  -> Minio:
 
 # Load the minio credentials from the config file and connect to the minio server and save the file 
 
-def connect_store_minio(config:str, client_id:str, gdf:gpd.GeoDataframe, file_name:str):
+def connect_store_minio(config:str, client_id:str, gdf:gpd.GeoDataFrame, file_name:str):
     '''
     config : str : path to the config file
     client_id : str : client id for the minio bucket
@@ -63,6 +63,7 @@ def connect_store_minio(config:str, client_id:str, gdf:gpd.GeoDataframe, file_na
     gdf.to_pickle('temp.pkl')
 
     try:
+        
         result = client.fput_object(
             client_id, file_name, 'temp.pkl'
         )
