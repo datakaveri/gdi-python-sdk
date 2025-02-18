@@ -7,6 +7,7 @@ from features.vector_features.buffer import make_buffer
 from features.vector_features.intersection import make_intersection
 from features.vector_features.gcode import list_features
 from features.vector_features.compute_geo import compute_geometry_measures
+from features.vector_features.ReduceToImage import reduce_to_image
 from common.minio_ops import get_ls
 
 def gen_token(client_id, client_secret, role):
@@ -132,3 +133,21 @@ def compute_geometry(config, client_id, artifact_url, store_artifact, file_path)
     Reads geospatial data from MinIO, computes geometry measures, and optionally saves the processed data back to MinIO.
     """
     compute_geometry_measures(config, client_id, artifact_url, store_artifact, file_path)
+
+
+@click.command()
+@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--client-id', required=True, help="Client ID for authentication.")
+@click.option('--artifact-url', required=True, help="URL of the artifact.")
+@click.option('--attribute', required=True, help="Attribute to reduce.")
+@click.option('--grid-size', required=True, help="Size of the grid.")
+@click.option('--reducer', required=True, help="Reducer operation.")
+@click.option('--store-artefacts', help="Store the intersected artifact.")
+@click.option('--file-path', help="Path to save the intersected artifact.")
+
+def reduce_to_img(config, client_id, artifact_url, attribute, grid_size, reducer, store_artefacts, file_path):
+    """
+    Reads vector data from MinIO, applies reduction operation, and stores the output raster in MinIO.
+    """
+    reduce_to_image(config, client_id, artifact_url, attribute, grid_size, reducer, store_artefacts, file_path)
+
