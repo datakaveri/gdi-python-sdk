@@ -13,7 +13,8 @@ dependencies = [
     "geopandas @ git+https://github.com/geopandas/geopandas.git",
     "minio @ git+https://github.com/minio/minio-py.git",
     "geopy @ git+https://github.com/geopy/geopy.git",
-    "rasterio == 1.3.9"
+    "rasterio == 1.3.9",
+    "numpy == 1.26.4"
 ]
 
 
