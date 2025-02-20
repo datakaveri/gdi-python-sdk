@@ -1,5 +1,6 @@
 import click
 from auth.token_gen import TokenGenerator
+
 from features.vector_features.get_re import ResourceFetcher
 from features.vector_features.count_features import count_features
 from features.vector_features.download_features import download_features
@@ -8,6 +9,11 @@ from features.vector_features.intersection import make_intersection
 from features.vector_features.gcode import list_features
 from features.vector_features.compute_geo import compute_geometry_measures
 from features.vector_features.ReduceToImage import reduce_to_image
+
+
+from features.raster_features.search_cat import search_stac
+from features.raster_features.get_data import get_assets
+
 from common.minio_ops import get_ls
 
 def gen_token(client_id, client_secret, role):
@@ -134,13 +140,12 @@ def compute_geometry(config, client_id, artifact_url, store_artifact, file_path)
     """
     compute_geometry_measures(config, client_id, artifact_url, store_artifact, file_path)
 
-
 @click.command()
 @click.option('--config', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--artifact-url', required=True, help="URL of the artifact.")
 @click.option('--attribute', required=True, help="Attribute to reduce.")
-@click.option('--grid-size', required=True, help="Size of the grid.")
+@click.option('--grid-size', required=True, type=int, help="Size of the grid.")
 @click.option('--reducer', required=True, help="Reducer operation.")
 @click.option('--store-artefacts', help="Store the intersected artifact.")
 @click.option('--file-path', help="Path to save the intersected artifact.")
@@ -150,4 +155,31 @@ def reduce_to_img(config, client_id, artifact_url, attribute, grid_size, reducer
     Reads vector data from MinIO, applies reduction operation, and stores the output raster in MinIO.
     """
     reduce_to_image(config, client_id, artifact_url, attribute, grid_size, reducer, store_artefacts, file_path)
+
+
+
+
+
+# Raster feature utilities
+
+@click.command()
+@click.option('--collection-ids', required=True, help="Collection ID to search and access a specific collection")
+def search_cat(collection_ids):
+    '''Search for a given collection'''
+    search_stac(collection_ids)
+
+@click.command()
+@click.option('--client-id', required=True, help="Client ID for authentication.")
+@click.option('--client-secret', required=True, help="Client secret for authentication.")
+@click.option('--role', required=True, help="Role for the token.")
+@click.option('--collection-ids', required=True, help="Collection ID to search and access a specific collection")
+@click.option('--config', required=True, help="Path to the config file.")
+def get_stac_assets(client_id, client_secret, role, collection_ids, config):
+    '''Download Cartosat images from the STAC browser and stream to minio'''
+    get_assets(client_id, client_secret, role, collection_ids, config)
+
+
+
+
+
 
