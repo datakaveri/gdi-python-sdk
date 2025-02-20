@@ -49,7 +49,7 @@ class ResourceFetcher:
                 
            
             
-            gdf = gpd.read_file(io.BytesIO(response.content))
+            gdf = gpd.read_file(io.BytesIO(response.content))# Read the fetched data as a geopandas dataframe
 
             if save_object:
                 if not file_path:
