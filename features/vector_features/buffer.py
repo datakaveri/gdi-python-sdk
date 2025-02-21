@@ -1,6 +1,6 @@
 import geopandas as gpd
 from common.minio_ops import connect_minio
-from common.crgeo import create_geometry
+
 import warnings
 warnings.filterwarnings("ignore")
 import pickle as pkl

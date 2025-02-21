@@ -1,5 +1,5 @@
 import geopandas as gpd
-from common.crgeo import create_geometry
+
 from common.minio_ops import connect_minio
 import pickle as pkl
 import os 
