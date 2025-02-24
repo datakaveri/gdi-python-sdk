@@ -1,78 +1,80 @@
-# GDI CLI
+# Vector Commands
 
-## Overview
-This document provides a list of commands for interacting with GDI through cli.
+## Fetching Resources
 
-
-## Notes
-- Ensure that `gdi` is installed and configured properly before running these commands.
-- Replace `client-id`, `client-secret`, and `resource-id` with appropriate values if required.
-- The `config.json` file should be properly configured for commands that require it.
-- The `data_new1.gpkg` file is an example file name; change it accordingly based on your requirements.
-
-## Commands
-
-### 1. Fetch Resource Without Saving
-Use this command to fetch a resource without saving it to a file:
+### Fetch resource without saving it
 ```sh
-gdi fetch-resource --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --client-secret a863cafce5bd3d1bd302ab079242790d18cec974 --role consumer --resource-id 024b0c51-e44d-424c-926e-254b6c966978
+gdi fetch-resource --client-id <client-id> --client-secret <client-secret> --role consumer --resource-id <resource-id>
 ```
 
-### 2. Fetch Resource and Save It
-Use this command to fetch a resource and save it to a specified file:
+### Fetch resource and save it
 ```sh
-gdi fetch-resource --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --client-secret a863cafce5bd3d1bd302ab079242790d18cec974 --role consumer --resource-id 024b0c51-e44d-424c-926e-254b6c966978 --save-object True --config-path config.json --file-path data_new1.gpkg
+gdi fetch-resource --client-id <client-id> --client-secret <client-secret> --role consumer --resource-id <resource-id> --save-object True --config-path <config-path> --file-path <file-path>
 ```
 
-### 3. Generate Authentication Token
-Use this command to generate an authentication token:
+## Authentication
+
+### Get an authentication token
 ```sh
-gdi generate-token --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --client-secret a863cafce5bd3d1bd302ab079242790d18cec974 --role consumer
+gdi generate-token --client-id <client-id> --client-secret <client-secret> --role consumer
 ```
 
-### 4. Get the Number of Features in Vectors
-Use this command to get the number of features in a vector file:
+## Vector Operations
+
+### Get the number of features in the vectors
 ```sh
-gdi features-count --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --artifact-url data_new1.gpkg
+gdi features-count --config <config-path> --client-id <client-id> --artefact-url <artifact-url>
 ```
 
-### 5. List Objects in MinIO
-Use this command to list objects in MinIO storage:
+### List objects in MinIO storage
 ```sh
-gdi ls-objects --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb
+gdi ls-objects --config <config-path> --client-id <client-id>
 ```
 
-### 6. Download features
-Use this command to download file to MinIO storage with user specified gpkg:
+### Create buffer for vectors
 ```sh
-gdi download-artifact --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --artifact-url data_new1.pkl --save-as inter/data_new1.gpkg
+gdi create-buffer --config <config-path> --client-id <client-id> --artifact-url <artifact-url> --buffer-d <buffer-distance> --store-artifact True --file-path <file-path>
 ```
 
-### 7. create buffer
-Use this command to create buffer for the featutre vectors
+### Intersect two buffered datasets
 ```sh
-gdi create-buffer --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --artifact-url 1b2a07b7-f423-4dd3-bdee-9a6af6fe47f9.pkl --buffer-d 0.9  --store-artifact True --file-path buffer_item/data_1.pkl
+gdi create-intersection --config <config-path> --client-id <client-id> --left_feature <left-feature-path> --right_feature <right-feature-path> --store-artifact True --file-path <file-path>
 ```
 
-
-### 8. create intersection
-Use this command to intersect between 2 vectors
+### Download an artifact
 ```sh
-gdi create-intersection --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --left_feature 'buffer_item/data_1.pkl' --right_feature 'buffer_item/data_2.pkl' --store-artifact True --file-path intersected_items/intersected_2.pkl
+gdi download-artifact --config <config-path> --client-id <client-id> --artifact-url <artifact-url> --save-as <output-file-path>
 ```
 
-### 9. List data
-Use this command to list all the datasets for a purticular location
+### Search for data
 ```sh
-gdi list-data --location telangana
+gdi list-data --location <location>
 ```
 
-### 10. Compute Geometry
-Use this command to geometry measures
+### Compute geometry
 ```sh
-gdi compute-geometry --config config.json --client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --artifact-url intersected_items/Road_School_intersected.pkl --store-artifact True --file-path compute_geo/road_school.pkl
+gdi compute-geometry --config <config-path> --client-id <client-id> --artifact-url <artifact-url> --store-artifact True --file-path <file-path>
 ```
 
+### Reduce to image
+```sh
+gdi reduce-to-img --config <config-path> --client-id <client-id> --artifact-url <artifact-url> --attribute <attribute> --grid-size <grid-size> --reducer <reducer> --store-artifacts <True/False> --file-path <file-path>
+```
 
+### Create optimal route given points and vectors
+```sh
+gdi create-optimal-route --config <config-path> --client-id <client-id> --artifact-url <artifact-url> --points-filepath <points-filepath> --store-artifacts True --route-file-path <route-file-path>
+```
 
+## Raster Function Utilities
+
+### Search a collection
+```sh
+gdi search-cat --collection-ids <collection-id>
+```
+
+### Get STAC data
+```sh
+gdi get-stac-assets --client-id <client-id> --client-secret <client-secret> --role consumer --collection-ds <collection-ds> --config <config-path>
+```
 
