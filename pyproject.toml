@@ -17,7 +17,8 @@ dependencies = [
     "numpy == 1.26.4",
     "pystac-client @ git+https://github.com/stac-utils/pystac-client.git",
     "tqdm @ git+https://github.com/tqdm/tqdm.git",
-    "networkx @ git+https://github.com/networkx/networkx.git" 
+    "networkx @ git+https://github.com/networkx/networkx.git",
+    "scipy == 1.15.2"  
 ]
 
 
