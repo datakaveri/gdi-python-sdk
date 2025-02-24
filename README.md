@@ -79,7 +79,13 @@ gdi get-stac-assets --client-id <client-id> --client-secret <client-secret> --ro
 ```
 
 FOR REFERENCE : 
-
+```
 client-id  = 7dcf1193-4237-48a7-a5f2-4b530b69b1cb
-
+```
+```
 client secret = a863cafce5bd3d1bd302ab079242790d18cec974
+```
+To know more about the command:
+```
+gdi <command-name> -- help
+```
