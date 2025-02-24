@@ -9,6 +9,7 @@ from features.vector_features.intersection import make_intersection
 from features.vector_features.gcode import list_features
 from features.vector_features.compute_geo import compute_geometry_measures
 from features.vector_features.ReduceToImage import reduce_to_image
+from features.vector_features.optimalRoute import compute_optimal_route
 
 
 from features.raster_features.search_cat import search_stac
@@ -157,7 +158,22 @@ def reduce_to_img(config, client_id, artifact_url, attribute, grid_size, reducer
     reduce_to_image(config, client_id, artifact_url, attribute, grid_size, reducer, store_artefacts, file_path)
 
 
-
+@click.command(name="create-optimal-route")
+@click.option('--config', required=True, help="Path to MinIO config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name.")
+@click.option('--artifact-url', required=True, help="Pickled road network object name in MinIO.")
+@click.option('--points-filepath', required=True, help="Local path to the sample points (GeoJSON/Shapefile...).")
+@click.option('--store-artifacts', help="Set to upload final route & points to MinIO.")
+@click.option('--route-file-path', help="MinIO object name to store final route (GeoJSON).")
+def create_optimal_route(config, client_id, artifact_url, points_filepath, store_artifacts, route_file_path):
+    """
+    Compute a TSP-based optimal route by:
+      - downloading a pickled road network from MinIO,
+      - reading points from local disk,
+      - building & solving TSP,
+      - optionally storing route & points back to MinIO.
+    """
+    compute_optimal_route(config, client_id, artifact_url, points_filepath, store_artifacts, route_file_path)
 
 
 # Raster feature utilities

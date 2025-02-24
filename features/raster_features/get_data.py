@@ -1,7 +1,7 @@
 import requests
 from pystac_client import Client, ItemSearch
 import warnings
-from search_cat import search_get_stac
+from .search_cat import search_get_stac
 from auth.stac_token_gen import StacTokenGenerator
 warnings.filterwarnings("ignore")
 import os

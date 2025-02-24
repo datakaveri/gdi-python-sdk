@@ -16,8 +16,9 @@ def connect_minio(config:str, client_id:str)  -> Minio:
         access_key = creds['minio_access_key']
         secret_key = creds['minio_secret_key']
         minio_url = creds['minio_url']
+        secure_flag = creds['secure']
 
-        client = Minio(minio_url, access_key=access_key, secret_key=secret_key,secure=False)
+        client = Minio(minio_url, access_key=access_key, secret_key=secret_key,secure=secure_flag)
         if client.bucket_exists(client_id):
            pass
         else:
@@ -49,8 +50,9 @@ def connect_store_minio(config:str, client_id:str, gdf:gpd.GeoDataFrame, file_na
         access_key = creds['minio_access_key']
         secret_key = creds['minio_secret_key']
         minio_url = creds['minio_url']
+        secure_flag = creds['secure']
 
-        client = Minio(minio_url, access_key=access_key, secret_key=secret_key,secure=False)
+        client = Minio(minio_url, access_key=access_key, secret_key=secret_key,secure=secure_flag)
     except Exception as e:
         raise e
 
