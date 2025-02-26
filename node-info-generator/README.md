@@ -1,5 +1,3 @@
-# Update Function Names and Generate Node Info
-
 ## 1. Update `functions.json`
 Add new function names in this format:
 ```json
