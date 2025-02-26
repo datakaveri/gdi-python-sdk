@@ -1,0 +1,18 @@
+[
+    {
+        "name": "download_features",
+        "rename": "download-artifact"
+    },
+    {
+        "name": "make_intersection",
+        "rename": "intersection"
+    },
+    {
+        "name": "make_buffer",
+        "rename": "buffer"
+    },
+    {
+        "name": "get_resource",
+        "rename": "load-dataset"
+    }
+]

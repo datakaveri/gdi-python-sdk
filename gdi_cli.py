@@ -24,9 +24,11 @@ def gen_token(client_id, client_secret, role):
 
 
 def get_resource(client_id, client_secret, role, resource_id, save_object, config_path, file_path):
-    """Fetch data for a specified resource using the generated token.
-    Parameters:
-    ---------------
+    """
+    Fetch data for a specified resource using the generated token.
+
+    Parameters
+    ----------
     client_id : str (Node red will translate it as input)
     client_secret : str (Node red will translate it as input)
     role : enum [consumer, provider, admin] (Node red will translate it as input)
