@@ -7,12 +7,6 @@ import io
 
 class ResourceFetcher:
     def __init__(self, client_id: str, client_secret: str, role: str):
-        '''Initializes the ResourceFetcher class with the required parameters.
-        Parameters:
-        ------------
-        client_id : str (client_id, same as the bucket name)
-        client_secret : str (client_secret for authentication)
-        role : str (role for the token)'''
         
         self.client_id = client_id
         self.client_secret = client_secret
@@ -20,13 +14,6 @@ class ResourceFetcher:
         
 
     def fetch_resource_data(self, resource_id:str ,save_object : bool = False,  config_path:str = None ,file_path : str = None ) -> dict:
-        '''fetch data from resource server and save it to minio
-        Parameters:
-         resource_id : str (Node red will translate it as input)
-         save_object : enum [True, False] (Node red will translate it as input)
-         config_path : str (Node red will translate it as input)
-         file_path : str (Node red will translate it as input)'''
-       
         data = []
         try:
             # Generate the token
