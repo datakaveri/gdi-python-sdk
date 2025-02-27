@@ -37,8 +37,7 @@ def search_get_stac(collection_ids: list) -> dict:
     
     Parameters:
     -----------------
-    collection_ids : list
-        List of collection IDs to search for.
+    collection_ids : list (nodered will read this as input)
 
     Returns:
     -----------------

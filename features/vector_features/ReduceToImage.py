@@ -96,6 +96,15 @@ def convert_to_raster(grid, output_raster, grid_size) -> rasterio.io.DatasetWrit
 def reduce_to_image(config: str, client_id: str, artefact_url: str, attribute: str, grid_size: int, reducer: str, store_artefacts: bool = False, file_path: str = None) -> rasterio.io.DatasetWriter:
     """
     Reads vector data from MinIO, applies reduction operation, and stores the output raster in MinIO.
+    Parameters:
+    config : str (Node red will translate it as input)
+    client_id : str (Node red will translate it as input)
+    artefact_url : str (Node red will translate it as input)
+    attribute : str (Node red will translate it as input)
+    grid_size : int (Node red will translate it as input)
+    reducer : str (Node red will translate it as input)
+    store_artefacts : enum [True, False] (Node red will translate it as input)
+    file_path : str (Node red will ignore this parameter)
     """
     client = connect_minio(config, client_id)
     

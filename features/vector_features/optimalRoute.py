@@ -22,34 +22,15 @@ def compute_optimal_route(
     file_path: str = None       # Base name for your route .pkl in MinIO
 ) -> dict:
     """
-    Reads:
-      1) A road network artifact from MinIO (pickled GeoDataFrame).
-      2) A local file with point features (GeoJSON, Shapefile, GPKG, etc.).
-    Steps:
-      - Loads the road network, explodes multiline geometries, checks CRS.
-      - Builds a graph.
-      - Reads user points, reprojects to match the road network if necessary.
-      - Checks each point is within the road bounding box.
-      - Snaps points to the nearest node in the road network.
-      - Computes a TSP route for these points.
-      - Writes the final route and an ordered points layer to local ".pkl" files:
-          "temp_route.pkl" and "temp_points.pkl"
-      - If store_artifact=True:
-          * If no file_path was given, generate one as "optimal_route_<uuid>.pkl"
-          * Upload "temp_route.pkl" to MinIO as file_path
-          * Upload "temp_points.pkl" to MinIO as file_path.replace(".pkl", "_points.pkl")
-          * Remove local .pkl files
-      - If store_artifact=False:
-          * Leaves the .pkl files on disk.
-          * Prints a message telling the user the files are not uploaded.
-
-    Returns
-    -------
-    dict
-        {
-          "route": <either MinIO key or local path>,
-          "points": <either MinIO key or local path>,
-        }
+    Function to compute the optimal route through a road network for a set of input points.
+    Parameters:
+    ----------
+    config : str (Node red will translate it as input)
+    client_id : str (Node red will translate it as input)
+    artifact_url : str (Node red will translate it as input)
+    points_file : str (Node red will translate it as input)
+    store_artifact : enum [True, False] (Node red will translate it as input)
+    file_path : str (Node red will ignore this parameter)
     """
 
     # 1. Connect to MinIO
