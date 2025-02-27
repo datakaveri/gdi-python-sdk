@@ -32,7 +32,7 @@ def make_intersection(config : str, client_id : str, left_feature : str, right_f
         print(e)
 
     try:
-        intersected_data = data_1.intersection(data_2, align=True)
+        intersected_data = data_1.overlay(data_2, how='intersection')
         intersected_data.to_pickle('temp.pkl')
     except Exception as e:
         raise e
