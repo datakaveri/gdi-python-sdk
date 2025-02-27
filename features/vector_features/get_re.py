@@ -14,6 +14,21 @@ class ResourceFetcher:
         
 
     def fetch_resource_data(self, resource_id:str ,save_object : bool = False,  config_path:str = None ,file_path : str = None ) -> dict:
+        """
+        Function to fetch the resource data from the collections API using the resource_id.
+        Parameters
+        ----------
+        client_id : str (Node red will translate it as input)
+        client_secret : str (Node red will translate it as input)
+        role : str (Node red will translate it as input)
+        resource_id : str (Node red will translate it as input)
+        save_object : enum [True, False] (Node red will translate it as input)
+        config_path : str (Node red will translate it as input)
+        file_path : str (Node red will translate it as input)
+        """
+
+
+
         data = []
         try:
             # Generate the token
