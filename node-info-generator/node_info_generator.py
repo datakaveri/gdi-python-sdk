@@ -1,4 +1,3 @@
-python
 import ast
 import os
 import json
