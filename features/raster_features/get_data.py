@@ -11,7 +11,8 @@ from common.minio_ops import connect_minio,stream_to_minio
 
 
 def get_assets(client_id: str, client_secret: str, role: str, collection_ids: str, config: str) -> None:
-    '''Download Cartosat images from the STAC browser and stream to MinIO with band-based naming.
+    '''
+    Download Cartosat images from the STAC browser and stream to MinIO with band-based naming.
     
     Parameters
     ---------------
