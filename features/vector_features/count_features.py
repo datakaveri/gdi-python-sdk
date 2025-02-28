@@ -7,7 +7,7 @@ import pickle as pkl
 def count_features(config : str, client_id : str, artefact_url : str, store_artefacts : bool = False):
     """Function to count the number of features in a geodataframe and save the count to minio.
      Parameters:
-    ------------:
+    ------------
     config : str (Node red will translate it as input)
     client_id : str (Node red will translate it as input)
     artefact_url : str (Node red will translate it as input)
