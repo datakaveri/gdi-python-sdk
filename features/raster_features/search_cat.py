@@ -16,7 +16,7 @@ def search_stac(collection_ids : list):
     """
     Item level search for a given collection
     
-    Parameters:
+    Parameters
     -----------------
     collection_ids : list (nodered will read this as input)
     """
