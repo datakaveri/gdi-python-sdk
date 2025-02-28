@@ -35,14 +35,11 @@ def search_stac(collection_ids : list):
 def search_get_stac(collection_ids: list) -> dict:
     """Item-level search for a given collection.
     
-    Parameters:
+    Parameters
     -----------------
     collection_ids : list (nodered will read this as input)
 
-    Returns:
-    -----------------
-    dict
-        A dictionary where each item ID maps to another dictionary containing asset titles as keys and their URLs as values.
+   
     """
     try:
         client = Client.open("https://geoserver.dx.gsx.org.in/stac/")

@@ -8,7 +8,7 @@ def compute_geometry_measures(config: str, client_id: str, artifact_url: str, st
     """
     Reads geospatial data from MinIO, computes geometry measures, and optionally saves the processed data back to MinIO.
 
-    Parameters:
+    Parameters
     ----------------------
     config : str (Node red will translate it as input)
     client_id : str (Node red will translate it as input)

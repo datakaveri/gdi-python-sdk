@@ -23,7 +23,7 @@ def compute_optimal_route(
 ) -> dict:
     """
     Function to compute the optimal route through a road network for a set of input points.
-    Parameters:
+    Parameters
     ----------
     config : str (Node red will translate it as input)
     client_id : str (Node red will translate it as input)

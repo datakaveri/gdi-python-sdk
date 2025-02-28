@@ -18,8 +18,8 @@ def get_bounding_box(location:str):
 def list_features(name: str) -> dict:
 
     """ Function to query the geoserver api for data within a bounding box.
-     Parameters:
-    ------------:
+     Parameters
+    ------------
     name : str (Node red will translate it as input)
     """
 
