@@ -13,7 +13,8 @@ def pretty(d, indent=0):
 
 
 def search_stac(collection_ids : list):
-    """Item level search for a given collection
+    """
+    Item level search for a given collection
     
     Parameters:
     -----------------
@@ -33,14 +34,7 @@ def search_stac(collection_ids : list):
 
 
 def search_get_stac(collection_ids: list) -> dict:
-    """Item-level search for a given collection.
     
-    Parameters
-    -----------------
-    collection_ids : list (nodered will read this as input)
-
-   
-    """
     try:
         client = Client.open("https://geoserver.dx.gsx.org.in/stac/")
         search = client.search(collections=collection_ids)
