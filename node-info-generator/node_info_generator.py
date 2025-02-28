@@ -1,10 +1,16 @@
 import ast
 import os
 import json
+import re 
 from docstring_parser import parse
 OUTPUT_JSON_PATH = '/home/pradeep/gdi-python-sdk2/node-info-generator/generated-info.json'
 DIRECTORY_TO_SCAN = '/home/pradeep/gdi-python-sdk2'
 result = []
+def extract_name(text):
+    match = re.search(r"In editor it will be rename as (\S+)", text)
+    if match:
+        return match.group(1).rstrip(".,")
+    return None
 for root, dirs, files in os.walk(DIRECTORY_TO_SCAN):
     for filename in files:
         if not filename.endswith(".py"):
@@ -21,10 +27,13 @@ for root, dirs, files in os.walk(DIRECTORY_TO_SCAN):
                     parameters = []
                     if docstring:
                       docs = parse(docstring)
+                      if len(docs.params)==0:
+                            continue
+                      name = extract_name(docs.description) or node.name
                       parameters={param.arg_name: param.type_name for param in docs.params}
                       result.append({
-                        "nodeName": node.name,
-                        "inputs": parameters
+                          "nodeName": name,
+                          "inputs": parameters
                       })
         except (SyntaxError, UnicodeDecodeError):
             continue
