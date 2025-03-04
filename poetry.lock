@@ -358,6 +358,42 @@ files = [
 ]
 
 [[package]]
+name = "gdal"
+version = "3.10.2"
+description = "GDAL: Geospatial Data Abstraction Library"
+optional = false
+python-versions = ">=3.8.0"
+groups = ["main"]
+files = [
+    {file = "GDAL-3.10.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c803f9328e3810192ddb2811f90e8ba79c1e5c1aba784e81e39b8c1b81c0f140"},
+    {file = "GDAL-3.10.2-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:2db998f7a26add97244632bda4e2fbd80d7501938b3ea6b88da9881f497f37e9"},
+    {file = "GDAL-3.10.2-cp310-cp310-win_amd64.whl", hash = "sha256:66a059a34e19f8b7819574037faf3178f54a671506a87f849f69488ad110bdee"},
+    {file = "GDAL-3.10.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:be6c523d8766c1c172a56b3217a67705e21a7296e33116a61f521e87d75fd168"},
+    {file = "GDAL-3.10.2-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:68229393ab3dcd1b682c3340aa960ce893ae569d93602c51807d5b85c3ba9f00"},
+    {file = "GDAL-3.10.2-cp311-cp311-win_amd64.whl", hash = "sha256:5f7e06f1d00c4549b9ba03c8c4bc9d81fb8837b2a9634ef3dc66e5309b1ba358"},
+    {file = "GDAL-3.10.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e2636f613fdcac0b3567c836932b8235fa054ac7def79c772643202d30746878"},
+    {file = "GDAL-3.10.2-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:912cf21a46b5b5bad38f20cafaf718eb43d57764aa9a944f8ad5f6b718cb77e8"},
+    {file = "GDAL-3.10.2-cp312-cp312-win_amd64.whl", hash = "sha256:4d4545fdfb3decd13378b108a9f995f2dd9f4d6ac2f0e53cf394512ebc599bc6"},
+    {file = "GDAL-3.10.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:dec8ca5b108ffe6b925bbb0a912d53c7a89bf44b3555d0d16df21d128a7951aa"},
+    {file = "GDAL-3.10.2-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:9174e432f7e7164dcbb50c48da4b2893de575fc0a33ef94e1c78e5623db0b060"},
+    {file = "GDAL-3.10.2-cp313-cp313-win_amd64.whl", hash = "sha256:e8829967767c977e681acccd7cc81e9f464ca0e1208784edc9454fd1c91d5c01"},
+    {file = "GDAL-3.10.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f042b72b66a4c045c17d45bed9502fe3f5673b91000a9bb22240372b3b510aa1"},
+    {file = "GDAL-3.10.2-cp38-cp38-win_amd64.whl", hash = "sha256:1a07dfc8cadfa0bdfa185ead001fe7d4fc689fc9112bcd66347b500d36a957e4"},
+    {file = "GDAL-3.10.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f9e310a97e43f0f4e93c25a1416d610cf57973bc97c8de3d9706579e927167df"},
+    {file = "GDAL-3.10.2-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:a0da94dc7517a8e47c16c1bfd01479ee2f181b4c635816bad5f60975eec99c95"},
+    {file = "GDAL-3.10.2-cp39-cp39-win_amd64.whl", hash = "sha256:ef834cccbbb978ab3346d006d9285b5b854ec5ed7d9bf07f70ed05a1b2122339"},
+    {file = "gdal-3.10.2.tar.gz", hash = "sha256:c0cffa8ce9f9c0fa287fcc20b8271c519ca054958420e5880be8bedb432753f4"},
+]
+
+[package.extras]
+numpy = ["numpy (>1.0.0)"]
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.com/api/v4/projects/61637378/packages/pypi/simple"
+reference = "gdal"
+
+[[package]]
 name = "geographiclib"
 version = "2.0"
 description = "The geodesic routines from GeographicLib"
@@ -1347,4 +1383,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "ada1cf0bb07704708267df57c66c944be0488846d284cdc62436e0de9e2f482a"
+content-hash = "7ad4354e74795441505775b4adf44abd8cc12566cbd610131bc86074911fad96"
