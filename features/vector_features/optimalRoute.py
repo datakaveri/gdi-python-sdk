@@ -1,5 +1,3 @@
-# features/vector_features/optimalRoute.py
-
 import os
 import uuid
 import pickle
@@ -23,7 +21,7 @@ def compute_optimal_route(
 ) -> dict:
     """
     Function to compute the optimal route through a road network for a set of input points.
-    Parameters
+    Parameters:
     ----------
     config : str (Node red will translate it as input)
     client_id : str (Node red will translate it as input)
@@ -120,21 +118,29 @@ def compute_optimal_route(
 
     print(f"[INFO] Snapped {len(snapped_nodes)} input points to the road network.")
 
-    # 6. Compute TSP route
+    # 6. Compute paths using A* instead of Dijkstra
     node_count = len(snapped_nodes)
     shortest_paths = {}
-    for i in tqdm(range(node_count), desc="Row in matrix"):
+    
+    # Define a heuristic function for A* using Euclidean distance
+    heuristic = lambda u, v: Point(u).distance(Point(v))
+    
+    for i in tqdm(range(node_count), desc="Computing A* shortest paths"):
         for j in range(i + 1, node_count):
             src = snapped_nodes[i]
             dst = snapped_nodes[j]
-            path = nx.shortest_path(G, source=src, target=dst, weight="weight")
-            distance = nx.shortest_path_length(G, source=src, target=dst, weight="weight")
-            shortest_paths[(i, j)] = {"path": path, "distance": distance}
+            try:
+                path = nx.astar_path(G, source=src, target=dst, heuristic=heuristic, weight="weight")
+                distance = nx.astar_path_length(G, source=src, target=dst, heuristic=heuristic, weight="weight")
+                shortest_paths[(i, j)] = {"path": path, "distance": distance}
+            except nx.NetworkXNoPath:
+                shortest_paths[(i, j)] = {"path": None, "distance": float("inf")}
 
     # Build TSP graph
     TSP_G = nx.Graph()
     for (i, j), info in shortest_paths.items():
-        TSP_G.add_edge(i, j, weight=info["distance"])
+        if info["path"] is not None:  # Only add edges if there's a valid path
+            TSP_G.add_edge(i, j, weight=info["distance"])
 
     # Solve TSP
     tsp_order = traveling_salesman_problem(TSP_G, cycle=True)
@@ -143,10 +149,29 @@ def compute_optimal_route(
     # 7. Reconstruct final route
     tsp_full_path = []
     for i in tqdm(range(len(tsp_order) - 1), desc="Building final route"):
-        start_node = snapped_nodes[tsp_order[i]]
-        end_node   = snapped_nodes[tsp_order[i + 1]]
-        segment_path = nx.shortest_path(G, source=start_node, target=end_node, weight="weight")
-        tsp_full_path.extend(segment_path)
+        start_idx = tsp_order[i]
+        end_idx = tsp_order[i + 1]
+        
+        # Handle path retrieval based on the index order (maintain consistent key format)
+        if start_idx < end_idx:
+            pair_key = (start_idx, end_idx)
+        else:
+            pair_key = (end_idx, start_idx)
+            
+        if pair_key in shortest_paths and shortest_paths[pair_key]["path"] is not None:
+            segment_path = shortest_paths[pair_key]["path"]
+            # If we need to reverse the path
+            if start_idx > end_idx:
+                segment_path = segment_path[::-1]
+            
+            # Avoid duplicating nodes between segments
+            if tsp_full_path and tsp_full_path[-1] == segment_path[0]:
+                tsp_full_path.extend(segment_path[1:])
+            else:
+                tsp_full_path.extend(segment_path)
+
+    if not tsp_full_path:
+        raise ValueError("[ERROR] Could not construct a valid route through all points.")
 
     route_line = LineString(tsp_full_path)
     route_gdf = gpd.GeoDataFrame(geometry=[route_line], crs=road_gdf.crs)
