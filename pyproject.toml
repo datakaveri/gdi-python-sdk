@@ -15,7 +15,6 @@ geopy = { git = "https://github.com/geopy/geopy.git" }
 rasterio = "1.4.3"
 numpy = "2.2.3"
 pystac-client = "0.8.6"
-tqdm = { git = "https://github.com/tqdm/tqdm.git" }
 networkx = { git = "https://github.com/networkx/networkx.git" }
 scipy = "1.15.2"
 gdal = { version = "^3.8.5", source = "gdal" }
