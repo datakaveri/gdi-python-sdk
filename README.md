@@ -41,7 +41,7 @@ gdi create-buffer --config <config-path> --client-id <client-id> --artifact-url 
 gdi create-intersection --config <config-path> --client-id <client-id> --left_feature <left-feature-path> --right_feature <right-feature-path> --store-artifact True --file-path <file-path>
 ```
 
-### Download an artifact
+### Download an artifact (Downloads only as geoJSON)
 ```sh
 gdi download-artifact --config <config-path> --client-id <client-id> --artifact-url <artifact-url> --save-as <output-file-path>
 ```
