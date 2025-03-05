@@ -21,5 +21,7 @@ COPY . .
 # Disable Poetry's virtualenvs and install dependencies
 RUN poetry config virtualenvs.create false && poetry install
 
+RUN pip install tqdm
+
 # Run the gdi command
 CMD ["gdi"]
