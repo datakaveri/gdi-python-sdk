@@ -38,17 +38,21 @@ def make_buffer(config : str, client_id : str, artefact_url : str, buffer_d : fl
     
     if store_artefacts:
         if not file_path:
+            # file_path = f"{uuid.uuid4()}.pkl"
             file_path = f"{uuid.uuid4()}.pkl"
+        
+        data.to_pickle('hello.pkl')
+          
         try:
-            data.to_pickle('temp.pkl')
-            client.fput_object(
-                client_id, file_path, 'temp.pkl'
-            )
-            os.remove('temp.pkl')
-            print(file_path)
-            # return gdata
+            print("Saving file to minio as ", file_path)
+            client.fput_object(client_id, file_path, 'hello.pkl')
         except Exception as e:
             raise Exception(f"Error while saving file: {e}")
+        
+        os.remove('hello.pkl')
+        print(file_path)
+            # return gdata
+        
     else:
         print("Data not saved. Set store_artefacts to True to save the data to minio.")
         print("Data buffered successfully")
