@@ -94,7 +94,7 @@ def ls_objects(config, client_id):
 @click.option('--config', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--artifact-url', required=True, help="URL of the artifact to download.")
-@click.option('--save-as',required = True , help="Save the fetched object to Minio as the given file name.")
+@click.option('--save-as', help="Save the fetched object to Minio as the given file name.")
 def download_artifact(config, client_id, artifact_url, save_as):
     """Download the artifact."""
     download_features(config, client_id, artifact_url, save_as)

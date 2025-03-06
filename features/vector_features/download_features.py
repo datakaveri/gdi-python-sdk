@@ -5,6 +5,7 @@ warnings.filterwarnings("ignore")
 import pickle as pkl
 import os 
 from datetime import timedelta
+import uuid
 def download_features(config : str, client_id : str, artefact_url : str, save_as : str) -> str:
     """
     Download features from the minio bucket and save it as a geopackage file.
@@ -28,6 +29,9 @@ def download_features(config : str, client_id : str, artefact_url : str, save_as
         print(e)
    
     try:
+        if save_as is None:
+            save_as = f'downloadable/{str(uuid.uuid4())}.geojson'
+
         client.fput_object( client_id,save_as,'temp.geojson')
         pre_signed_url = client.get_presigned_url("GET",client_id, save_as, expires=timedelta(days=1))
         os.remove('temp.geojson')
