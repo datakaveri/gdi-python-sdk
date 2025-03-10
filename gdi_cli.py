@@ -10,6 +10,7 @@ from features.vector_features.gcode import list_features
 from features.vector_features.compute_geo import compute_geometry_measures
 from features.vector_features.ReduceToImage import reduce_to_image
 from features.vector_features.optimalRoute import compute_optimal_route
+from features.vector_features.voronoi_diagram import create_voronoi_diagram
 
 
 from features.raster_features.search_cat import search_stac
@@ -176,6 +177,20 @@ def create_optimal_route(config, client_id, artifact_url, points_filepath, store
       - optionally storing route & points back to MinIO.
     """
     compute_optimal_route(config, client_id, artifact_url, points_filepath, store_artifacts, route_file_path)
+
+@click.command()
+@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--client-id', required=True, help="Client ID for authentication.")
+@click.option('--input-artifact-url', required=True, help="URL of the point artifact to generate voronoi polygon.")
+@click.option('--extend-artifact-url', default=None, help="URL of the artifact to define extend of output.")
+@click.option('--tolerance', type=float, default=0.0, help="Snap input vertices together if their distance is less than this value.")
+@click.option('--edges', type=bool, default=False, help="If set to True, the diagram will return LineStrings instead of Polygons.")
+@click.option('--store-artifact', type=bool, default=False, help="Set to True to store the artifact in MinIO.")
+@click.option('--file-path', default=None, help="Path to save the buffered artifact.")
+def create_voronoi(config, client_id, input_artifact_url, extend_artifact_url, tolerance, edges, store_artifact, file_path):
+    """Create Voronoi diagram based on input artefact"""
+    create_voronoi_diagram(config, client_id, input_artifact_url, extend_artifact_url, store_artifact, file_path, tolerance, edges)
+
 
 
 # Raster feature utilities
