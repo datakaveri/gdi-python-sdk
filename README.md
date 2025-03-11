@@ -66,6 +66,12 @@ gdi reduce-to-img --config <config-path> --client-id <client-id> --artifact-url 
 gdi create-optimal-route --config <config-path> --client-id <client-id> --artifact-url <artifact-url> --points-filepath <points-filepath> --store-artifacts True --route-file-path <route-file-path>
 ```
 
+### Create voronoi polygons
+```sh
+gdi create-voronoi --config <config-path> --client-id <client-id> --input-artifact-url <artifact-url> --store-artifact True --file-path <file-path>
+```
+
+
 ## Raster Function Utilities
 
 ### Search a collection
