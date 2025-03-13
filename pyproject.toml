@@ -17,15 +17,10 @@ numpy = "2.2.3"
 pystac-client = "0.8.6"
 networkx = { git = "https://github.com/networkx/networkx.git" }
 scipy = "1.15.2"
-gdal = { version = "^3.8.5", source = "gdal" }
+gdal = {file="asset_files/GDAL-3.8.4-cp312-cp312-win_amd64.whl"}
 
 [tool.poetry.scripts]
 gdi = "gdi:cli"
-
-[[tool.poetry.source]]
-name = "gdal"
-url = "https://gitlab.com/api/v4/projects/61637378/packages/pypi/simple"
-priority = "explicit"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
