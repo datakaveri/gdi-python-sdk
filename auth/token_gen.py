@@ -16,7 +16,7 @@ class TokenGenerator:
     def __init__(self, client_id: str, client_secret: str, role: str):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.token_url =  "https://dx.gsx.org.in/auth/v1/token"
+        self.token_url =  "https://dx.geospatial.org.in/auth/v1/token"
         self.item_id = "geoserver.dx.ugix.org.in"
         self.item_type = "resource_server"
         self.role = role
