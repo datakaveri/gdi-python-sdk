@@ -36,7 +36,7 @@ class ResourceFetcher:
             auth_token = token_generator.generate_token()
 
             # Request the collections API to get asset links 
-            resource_url = f"https://geoserver.dx.gsx.org.in/collections/{resource_id}"
+            resource_url = f"https://geoserver.dx.geospatial.org.in/collections/{resource_id}"
             headers = {"Authorization": f"Bearer {auth_token}"}            
             response = requests.get(resource_url, headers=headers)
             response.raise_for_status()  # Raise an HTTPError for bad responses
