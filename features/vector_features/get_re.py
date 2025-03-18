@@ -1,9 +1,11 @@
 import requests
 from auth.token_gen import TokenGenerator
 from common.minio_ops import connect_store_minio
+from common.paginator import fetch_paginated_data
 import geopandas as gpd
 import uuid
 import io
+
 
 class ResourceFetcher:
     def __init__(self, client_id: str, client_secret: str, role: str):
@@ -29,7 +31,7 @@ class ResourceFetcher:
 
 
 
-        data = []
+       
         try:
             # Generate the token
             token_generator = TokenGenerator(self.client_id, self.client_secret,self.role)
@@ -50,20 +52,16 @@ class ResourceFetcher:
             # iterative pagination incase if there is no rel:enclosure link
             if resource_url is None:
                 for link in links:
-                    if link.get("rel") == "self" or link.get("rel") == "alternate" or link.get("rel") == "items":
-                        
-                        response = requests.get(link["href"], headers=headers)
-                        response.raise_for_status()
-                        data.extend(response.content)                       
-            else:
-                
+                    if link.get("rel") == "items":                        
+                        data = fetch_paginated_data(link["href"], headers)                     
+            else:                
                 response = requests.get(resource_url, headers=headers)
                 response.raise_for_status()
-                data.extend(response.content)
+                data = response.content
                 
            
             
-            gdf = gpd.read_file(io.BytesIO(response.content))# Read the fetched data as a geopandas dataframe
+            gdf = gpd.read_file(io.BytesIO(data))# Read the fetched data as a geopandas dataframe
 
             if save_object:
                 if not file_path:
