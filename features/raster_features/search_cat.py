@@ -21,7 +21,7 @@ def search_stac(collection_ids : list):
     collection_ids : list (nodered will read this as input)
     """
 
-    client = Client.open("https://geoserver.dx.gsx.org.in/stac/")
+    client = Client.open("https://geoserver.dx.geospatial.org.in/stac/")
     search = client.search(collections=collection_ids )
 
     for item in search.items_as_dicts():
@@ -36,7 +36,7 @@ def search_stac(collection_ids : list):
 def search_get_stac(collection_ids: list) -> dict:
     
     try:
-        client = Client.open("https://geoserver.dx.gsx.org.in/stac/")
+        client = Client.open("https://geoserver.dx.geospatial.org.in/stac/")
         search = client.search(collections=collection_ids)
     except Exception as e:
         raise e

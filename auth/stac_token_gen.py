@@ -16,7 +16,7 @@ class StacTokenGenerator:
     def __init__(self, client_id: str, client_secret: str, role: str, collection_id:list):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.token_url =  "https://dx.gsx.org.in/auth/v1/token"
+        self.token_url =  "https://dx.geospatial.org.in/auth/v1/token"
         self.item_id = collection_id
         self.item_type = "resource"
         self.role = role
