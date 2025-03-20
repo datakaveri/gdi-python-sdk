@@ -15,9 +15,9 @@ def make_clip(
     """
     Clip a target GeoDataFrame with another GeoDataFrame (clip layer),
     both downloaded from MinIO. Optionally upload the clipped result back to MinIO.
-    --------------------------
-     Parameters:
-    ------------:
+    
+    Parameters
+    ------------
     config : str (Node red will translate it as input)
     client_id : str (Node red will translate it as input)
     target_artifact_url : str (Node red will translate it as input)
@@ -25,6 +25,7 @@ def make_clip(
     store_artifacts : enum [True, False] (Node red will translate it as input)
     file_path : str (Node red will ignore this parameter)
     """
+    
     client = connect_minio(config, client_id)
     temp_target_path = "temp_target.pkl"
     temp_clip_path = "temp_clip.pkl"

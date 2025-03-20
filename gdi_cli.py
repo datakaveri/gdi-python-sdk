@@ -12,7 +12,7 @@ from features.vector_features.ReduceToImage import reduce_to_image
 from features.vector_features.optimalRoute import compute_optimal_route
 from features.vector_features.voronoi_diagram import create_voronoi_diagram
 from features.vector_features.clip_data import make_clip
-
+from features.vector_features.delaunay_triangles import make_delaunay_triangles
 
 from features.raster_features.search_cat import search_stac
 from features.raster_features.get_data import get_assets
@@ -205,6 +205,22 @@ def clip_vector(config, client_id, target_artifact_url, clip_artifact_url,store_
     optionally uploading the clipped result back to MinIO.
     """
     make_clip(config, client_id, target_artifact_url, clip_artifact_url,store_artifacts, file_path)
+
+@click.command(name="create-delaunay-triangles")
+@click.option('--config', required=True, help="Path to MinIO config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
+@click.option('--artifact-url', required=True, help="MinIO object name of the input .pkl (GeoDataFrame/GeoSeries).")
+@click.option('--store-artifacts', type=bool, default=False, help="Set to True to store the artifact in MinIO.")
+@click.option('--file-path', default="", help="MinIO key name for triangulation. If not provided, a UUID name is used.")
+@click.option('--qhull-options', default="", help="Additional Qhull options for scipy.spatial.Delaunay.")
+def create_delaunay_triangles(config, client_id, artifact_url, store_artifacts, file_path, qhull_options):
+    """
+    Create Delaunay triangles from a pickled GeoDataFrame/GeoSeries stored in MinIO,
+    optionally uploading the result back to MinIO.
+    """
+    extra_kwargs = {"qhull_options": qhull_options} if qhull_options else {}
+    make_delaunay_triangles(config, client_id, artifact_url, store_artifacts, file_path,**extra_kwargs)
+
 
 # Raster feature utilities
 
