@@ -8,6 +8,7 @@ import os
 import io
 from tqdm import tqdm
 from common.minio_ops import connect_minio,stream_to_minio
+from features.raster_features.convert_to_cog import tiff_to_cogtiff
 
 
 def get_assets(client_id: str, client_secret: str, role: str, collection_ids: str, config: str) -> None:
@@ -38,10 +39,25 @@ def get_assets(client_id: str, client_secret: str, role: str, collection_ids: st
                 band_name = title.split(" - ")[-1]  # Adjust this split logic if needed
 
                 # Construct filename inside MinIO bucket as key/{band_name}.tif
-                filename = f"downloaded_from_stac/{folder_name}/{band_name}.tif"
+                filename = f"downloaded_from_stac/{folder_name}/{band_name}_cog.tif"
                 
-                file_data = io.BytesIO(response.content)
-                stream_to_minio(client, client_id, filename, file_data, len(response.content))
+                # file_data = io.BytesIO(response.content)
+                
+                # Write temp files of tiff and geotiff locally
+                temp_tif = "temp_geotiff.tif"
+                temp_cogtif = "temp_cogtiff.tif"
+                with open(temp_tif, "wb") as f:
+                    f.write(response.content)
+
+                # Convert the tiff files    
+                cog_tif = tiff_to_cogtiff(temp_tif, temp_cogtif)
+    
+                #upload to minio 
+                stream_to_minio(client, client_id, filename, cog_tif)
+
+                #remove temp files
+                os.remove(temp_tif)
+                os.remove(temp_cogtif)
 
     except Exception as e:
         print(f"Failed to download assets:\n {e}")

@@ -88,9 +88,9 @@ def get_ls(config:str, client_id:str):
     except Exception as e:
         raise e
     
-def stream_to_minio(minio_client, bucket_name,file_name,data,sizeof):
+def stream_to_minio(minio_client, bucket_name, file_name,file_path):
     try:
-        minio_client.put_object(bucket_name,file_name,data,sizeof)
+        minio_client.fput_object(bucket_name, file_name, file_path)  # use fput and instead of params data,sizeof, give the temp file created path
         print(f"Uploaded to MinIO: {file_name}")
     except Exception as e:
         print(f"Failed to upload {file_name} to MinIO: {e}")
