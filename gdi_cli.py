@@ -11,6 +11,7 @@ from features.vector_features.compute_geo import compute_geometry_measures
 from features.vector_features.ReduceToImage import reduce_to_image
 from features.vector_features.optimalRoute import compute_optimal_route
 from features.vector_features.voronoi_diagram import create_voronoi_diagram
+from features.vector_features.clip_data import make_clip
 
 
 from features.raster_features.search_cat import search_stac
@@ -191,7 +192,19 @@ def create_voronoi(config, client_id, input_artifact_url, extend_artifact_url, t
     """Create Voronoi diagram based on input artefact"""
     create_voronoi_diagram(config, client_id, input_artifact_url, extend_artifact_url, store_artifact, file_path, tolerance, edges)
 
-
+@click.command(name="clip-vector")
+@click.option('--config', required=True, help="Path to the MinIO config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name.")
+@click.option('--target-artifact-url', required=True, help="MinIO object name for the target .pkl.")
+@click.option('--clip-artifact-url', required=True, help="MinIO object name for the clip .pkl.")
+@click.option('--store-artifacts', type=bool, default=False, help="Set to True to store the artifact in MinIO.")
+@click.option('--file-path', default="", help="MinIO key for the clipped .pkl. If omitted, uses a random UUID.")
+def clip_vector(config, client_id, target_artifact_url, clip_artifact_url,store_artifacts, file_path):
+    """
+    Clip a target GeoDataFrame by a clip layer, both loaded from MinIO pickles,
+    optionally uploading the clipped result back to MinIO.
+    """
+    make_clip(config, client_id, target_artifact_url, clip_artifact_url,store_artifacts, file_path)
 
 # Raster feature utilities
 
