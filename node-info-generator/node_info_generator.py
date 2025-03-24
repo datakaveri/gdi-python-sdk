@@ -3,14 +3,17 @@ import os
 import json
 import re 
 from docstring_parser import parse
-OUTPUT_JSON_PATH = '/home/pradeep/gdi-python-sdk2/node-info-generator/generated-info.json'
-DIRECTORY_TO_SCAN = '/home/pradeep/gdi-python-sdk2'
+OUTPUT_JSON_PATH = '/home/pradeep/gdi-python-sdk/node-info-generator/generated-info.json'
+DIRECTORY_TO_SCAN = '/home/pradeep/gdi-python-sdk'
 result = []
+allAttribute=["(Node red will translate it as input)","(Node red will ignore this parameter)","(Node red will take it from the previous step)"]
 def extract_name(text):
     match = re.search(r"In editor it will be rename as (\S+)", text)
     if match:
         return match.group(1).rstrip(".,")
     return None
+def contains_any_string(target_string, string_array):
+    return any(s in target_string for s in string_array)
 for root, dirs, files in os.walk(DIRECTORY_TO_SCAN):
     for filename in files:
         if not filename.endswith(".py"):
@@ -30,6 +33,10 @@ for root, dirs, files in os.walk(DIRECTORY_TO_SCAN):
                       if len(docs.params)==0:
                             continue
                       name = extract_name(docs.description) or node.name
+                      for param in docs.params:
+                        if not contains_any_string(param.type_name, allAttribute):
+                          message = f"error with function {name} and with `{param.type_name}`"
+                          raise Exception(message)
                       parameters={param.arg_name: param.type_name for param in docs.params}
                       result.append({
                           "nodeName": name,

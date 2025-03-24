@@ -1,6 +1,6 @@
 [
   {
-    "nodeName": "load-dataset",
+    "nodeName": "get_resource",
     "inputs": {
       "client_id": "str (Node red will translate it as input)",
       "client_secret": "str (Node red will translate it as input)",
@@ -12,7 +12,7 @@
     }
   },
   {
-    "nodeName": "buffer",
+    "nodeName": "make_buffer",
     "inputs": {
       "config": "str (Node red will translate it as input)",
       "client_id": "str (Node red will translate it as input)",
@@ -23,16 +23,32 @@
     }
   },
   {
-    "nodeName": "download-artifact",
+    "nodeName": "fetch_resource_data",
     "inputs": {
-      "config": "str (Node red will translate it as input)",
       "client_id": "str (Node red will translate it as input)",
-      "artefact_url": "str (Node red will take it from the previous step)",
-      "save_as": "str (Node red will translate it as input)"
+      "client_secret": "str (Node red will translate it as input)",
+      "role": "str (Node red will translate it as input)",
+      "resource_id": "str (Node red will translate it as input)",
+      "save_object": "enum [True, False] (Node red will translate it as input)",
+      "config_path": "str (Node red will translate it as input)",
+      "file_path": "str (Node red will translate it as input)"
     }
   },
   {
-    "nodeName": "intersection",
+    "nodeName": "create_voronoi_diagram",
+    "inputs": {
+      "config": "str (Node red will translate it as input)",
+      "client_id": "str (Node red will translate it as input)",
+      "input_artefact_url": "str (Node red will translate it as input)",
+      "extend_artefact_url": "str (Node red will translate it as input)",
+      "store_artefacts": "enum [True, False] (Node red will translate it as input)",
+      "file_path": "str (Node red will ignore this parameter)",
+      "tolerance": "float (Node red will translate it as input)",
+      "only_edges": "enum [True, False] (Node red will translate it as input)"
+    }
+  },
+  {
+    "nodeName": "make_intersection",
     "inputs": {
       "config": "str (Node red will translate it as input)",
       "client_id": "str (Node red will translate it as input)",
@@ -42,5 +58,4 @@
       "file_path": "str (Node red will ignore this parameter)"
     }
   }
-  
 ]
