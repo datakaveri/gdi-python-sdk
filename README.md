@@ -12,7 +12,7 @@ poetry self add poetry-plugin-shell
 
 ## Make an env 
 ```sh
-poetry poetry shell
+poetry shell
 ```
 ## Install the dependencies
 ```sh
