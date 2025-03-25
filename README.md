@@ -1,6 +1,25 @@
-# Vector Commands
+# GDI
+Requirements:
+Python<12
 
-## Fetching Resources
+## Install poetry and poetry shell
+```sh
+pip install poetry==2.0.1
+```
+```sh
+poetry self add poetry-plugin-shell
+```
+
+## Make an env 
+```sh
+poetry poetry shell
+```
+## Install the dependencies
+```sh
+poetry install
+```
+
+## Fetching Resources (Vector Resources)
 
 ### Fetch resource without saving it
 ```sh
