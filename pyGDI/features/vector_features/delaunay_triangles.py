@@ -6,7 +6,7 @@ import pickle
 import geopandas as gpd
 from shapely.geometry import Point, Polygon
 from scipy.spatial import Delaunay
-from common.minio_ops import connect_minio
+from pyGDI.common.minio_ops import connect_minio
 
 if "numpy._core.numeric" not in sys.modules:
     try:

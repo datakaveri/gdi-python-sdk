@@ -2,7 +2,7 @@ import os
 import uuid
 import pickle
 import geopandas as gpd
-from common.minio_ops import connect_minio
+from pyGDI.common.minio_ops import connect_minio
 
 def make_clip(
     config: str,

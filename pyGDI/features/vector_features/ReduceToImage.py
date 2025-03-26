@@ -4,7 +4,7 @@ import numpy as np
 from rasterio.transform import from_origin
 from rasterio.enums import Resampling
 from shapely.geometry import box
-from common.minio_ops import connect_minio
+from pyGDI.common.minio_ops import connect_minio
 import pickle as pkl
 import os
 import uuid

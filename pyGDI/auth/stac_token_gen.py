@@ -1,6 +1,6 @@
 import requests
 
-class TokenGenerator:
+class StacTokenGenerator:
     """
     A class to generate authentication tokens using client credentials.
 
@@ -13,15 +13,32 @@ class TokenGenerator:
         role (str): The role for the request payload.
     """
 
-    def __init__(self, client_id: str, client_secret: str, role: str):
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.token_url =  "https://dx.geospatial.org.in/auth/v1/token"
-        self.item_id = "geoserver.dx.geospatial.org.in"
-        self.item_type = "resource_server"
-        self.role = role
+    def __init__(self, client_id: str, client_secret: str, role: str, collection_id:str):
+        self._client_id = client_id
+        self._client_secret = client_secret
+        self._token_url =  "https://dx.geospatial.org.in/auth/v1/token"
+        self._item_id = collection_id
+        self._item_type = "resource"
+        self._role = role
 
-    def generate_token(self) -> str:
+    @property
+    def client_id(self) -> str:
+        return self._client_id
+
+    @property
+    def client_secret(self) -> str:
+        return self._client_secret
+    
+    @property
+    def role(self):
+        return self._role
+    
+    @property
+    def collection_id(self):
+        return self._item_id
+
+    @property
+    def get_stac_token(self) -> str:
         """
         Generate an authentication token.
 
@@ -30,28 +47,37 @@ class TokenGenerator:
         """
         try:
             response = requests.post(
-                self.token_url,
+                   self._token_url,
                 headers={
-                    "clientId": self.client_id,
-                    "clientSecret": self.client_secret,
-                    "Content-Type": "application/json"
+                    "clientId": self._client_id,
+                    "clientSecret": self._client_secret,
+                    "Content-Type": "application/json"                    
                 },
                 json={
-                    "itemId": self.item_id,
-                    "itemType": self.item_type,
-                    "role": self.role
+                    "itemId": self._item_id,
+                    "itemType": self._item_type,
+                    "role": self._role
                 }
             )
             
             
 
             response.raise_for_status()  # Raise an HTTPError for bad responses
+            # print(response.json())
             token = response.json().get('results', {}).get('accessToken')
             if not token:
                 raise Exception("Failed to retrieve access token from response.")
             return token
         except requests.RequestException as e:
+            # print(response.json())
             raise Exception(f"Error generating auth token: {e}")
+        
+
+def createSTACAuth(client_id: str, client_secret: str, role: str, collection_id:str) -> StacTokenGenerator:
+
+    tokengenerator= StacTokenGenerator(client_id=client_id, client_secret=client_secret, role=role, collection_id=collection_id)
+    return tokengenerator
+
 
 
 # Example usage
@@ -61,7 +87,7 @@ class TokenGenerator:
 #     role = "consumer"
 
 #     try:
-#         token_generator = TokenGenerator(client_id, client_secret, role)
+#         token_generator = StacTokenGenerator(client_id, client_secret, role, '28e16f74-0ff8-4f11-a509-60fe078d8d47')
 #         auth_token = token_generator.generate_token()
 #         print("Generated Auth Token:", auth_token)
 #     except Exception as e:

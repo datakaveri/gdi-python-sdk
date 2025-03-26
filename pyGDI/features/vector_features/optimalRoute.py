@@ -8,7 +8,7 @@ from scipy.spatial import KDTree
 from networkx.algorithms.approximation import traveling_salesman_problem
 from tqdm import tqdm
 
-from common.minio_ops import connect_minio
+from pyGDI.common.minio_ops import connect_minio
 
 
 def compute_optimal_route(

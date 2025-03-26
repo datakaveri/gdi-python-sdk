@@ -1,6 +1,6 @@
 import geopandas as gpd
 
-from common.minio_ops import connect_minio
+from pyGDI.common.minio_ops import connect_minio
 import pickle as pkl
 import os 
 import uuid
