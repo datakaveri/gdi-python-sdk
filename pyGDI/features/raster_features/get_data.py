@@ -10,24 +10,22 @@ from tqdm import tqdm
 from pyGDI.common.minio_ops import connect_minio,stream_to_minio
 from pyGDI.features.raster_features.convert_to_cog import tiff_to_cogtiff
 
-
-def get_assets(client_id: str, client_secret: str, role: str, collection_ids: str, config: str) -> None:
+def get_assets(auth:StacTokenGenerator, config: str) -> None:
     '''
     Download Cartosat images from the STAC browser and stream to MinIO with band-based naming.
-    
-    Parameters
-    ---------------
-    client_id: str (client_id, same as the bucket name)
-    client_secret: str (client_secret for authentication)
-    role: str (role for the token)
-    collection_ids: str (collection_ids for the STAC browser)
-    config: str (path to the MinIO config file)
+
+    Args:
+        auth (StacTokenGenerator): auth object for STAC
+        config (str): path to the MinIO config file
+
+    Returns:
+        None
     '''
-    links_dict = search_get_stac([collection_ids])
-    token_generator = StacTokenGenerator(client_id, client_secret, role, collection_ids)
-    auth_token = token_generator.generate_token()
+
+    links_dict = search_get_stac([auth.collection_id])
+    auth_token = auth.get_stac_token
     headers = {"Authorization": f"Bearer {auth_token}"}
-    client = connect_minio(config, client_id)
+    client = connect_minio(config, auth.client_id)
 
     try:
         for folder_name, assets in links_dict.items():
@@ -51,9 +49,9 @@ def get_assets(client_id: str, client_secret: str, role: str, collection_ids: st
 
                 # Convert the tiff files    
                 cog_tif = tiff_to_cogtiff(temp_tif, temp_cogtif)
-    
+
                 #upload to minio 
-                stream_to_minio(client, client_id, filename, cog_tif)
+                stream_to_minio(client, auth.client_id, filename, cog_tif)
 
                 #remove temp files
                 os.remove(temp_tif)

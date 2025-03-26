@@ -1,7 +1,6 @@
 import click
-from pyGDI import TokenGenerator
-
-from pyGDI import ResourceFetcher
+from pyGDI import createAuth, createSTACAuth
+from pyGDI import fetch_resource_data
 from pyGDI import count_features
 from pyGDI import download_features
 from pyGDI import make_buffer
@@ -19,11 +18,6 @@ from pyGDI import get_assets
 
 from pyGDI import get_ls
 
-def gen_token(client_id, client_secret, role):
-    token_generator = TokenGenerator(client_id, client_secret, role)
-    auth_token = token_generator.generate_token()
-    return auth_token
-
 
 def get_resource(client_id, client_secret, role, resource_id, save_object, config_path, file_path):
     """
@@ -40,8 +34,8 @@ def get_resource(client_id, client_secret, role, resource_id, save_object, confi
     file_path : str (Node red will ignore this parameter)
 
     """
-    fetcher = ResourceFetcher(client_id, client_secret, role)
-    resource_data = fetcher.fetch_resource_data(resource_id, save_object, config_path, file_path)
+    auth = createAuth(client_id=client_id, client_secret=client_secret, role=role)
+    resource_data = fetch_resource_data(auth,resource_id, save_object, config_path, file_path)
     return resource_data
 
 
@@ -53,7 +47,7 @@ def get_resource(client_id, client_secret, role, resource_id, save_object, confi
 @click.option('--role', required=True, help="Role for the token.", default = "consumer")
 def generate_token(client_id, client_secret, role):
     """Generate an authentication token."""
-    token = gen_token(client_id, client_secret, role)
+    token = createAuth(client_id, client_secret, role)
     click.echo(f"Generated Token: {token}")
 
 
@@ -238,7 +232,8 @@ def search_cat(collection_ids):
 @click.option('--config', required=True, help="Path to the config file.")
 def get_stac_assets(client_id, client_secret, role, collection_ids, config):
     '''Download Cartosat images from the STAC browser and stream to minio'''
-    get_assets(client_id, client_secret, role, collection_ids, config)
+    stac_auth=createSTACAuth(client_id, client_secret, role, collection_ids)
+    get_assets(stac_auth,config)
 
 
 

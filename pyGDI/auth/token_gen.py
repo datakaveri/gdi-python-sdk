@@ -14,14 +14,28 @@ class TokenGenerator:
     """
 
     def __init__(self, client_id: str, client_secret: str, role: str):
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.token_url =  "https://dx.geospatial.org.in/auth/v1/token"
-        self.item_id = "geoserver.dx.geospatial.org.in"
-        self.item_type = "resource_server"
-        self.role = role
+        self._client_id = client_id
+        self._client_secret = client_secret
+        self._token_url =  "https://dx.geospatial.org.in/auth/v1/token"
+        self._item_id = "geoserver.dx.geospatial.org.in"
+        self._item_type = "resource_server"
+        self._role = role
 
-    def generate_token(self) -> str:
+    @property
+    def client_id(self) -> str:
+        return self._client_id
+
+    @property
+    def client_secret(self) -> str:
+        return self._client_secret
+    
+    @property
+    def role(self):
+        return self._role
+    
+
+    @property
+    def get_token(self) -> str:
         """
         Generate an authentication token.
 
@@ -30,16 +44,16 @@ class TokenGenerator:
         """
         try:
             response = requests.post(
-                self.token_url,
+                self._token_url,
                 headers={
-                    "clientId": self.client_id,
-                    "clientSecret": self.client_secret,
+                    "clientId": self._client_id,
+                    "clientSecret": self._client_secret,
                     "Content-Type": "application/json"
                 },
                 json={
-                    "itemId": self.item_id,
-                    "itemType": self.item_type,
-                    "role": self.role
+                    "itemId": self._item_id,
+                    "itemType": self._item_type,
+                    "role": self._role
                 }
             )
             
@@ -52,6 +66,12 @@ class TokenGenerator:
             return token
         except requests.RequestException as e:
             raise Exception(f"Error generating auth token: {e}")
+
+
+def createAuth(client_id: str, client_secret: str, role: str) -> TokenGenerator:
+
+    tokengenerator= TokenGenerator(client_id=client_id, client_secret=client_secret, role=role)
+    return tokengenerator
 
 
 # Example usage

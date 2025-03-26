@@ -6,78 +6,70 @@ import geopandas as gpd
 import uuid
 import io
 
-
-class ResourceFetcher:
-    def __init__(self, client_id: str, client_secret: str, role: str):
         
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.role = role
         
 
-    def fetch_resource_data(self, resource_id:str ,save_object : bool = False,  config_path:str = None ,file_path : str = None ) -> dict:
-        """
-        Function to fetch the resource data from the collections API using the resource_id.
-        Parameters
-        ----------
-        client_id : str (Node red will translate it as input)
-        client_secret : str (Node red will translate it as input)
-        role : str (Node red will translate it as input)
-        resource_id : str (Node red will translate it as input)
-        save_object : enum [True, False] (Node red will translate it as input)
-        config_path : str (Node red will translate it as input)
-        file_path : str (Node red will translate it as input)
-        """
+def fetch_resource_data(auth:TokenGenerator,resource_id:str ,save_object : bool = False,  config_path:str = None ,file_path : str = None ) -> gpd.GeoDataFrame:
+    """
+    Function to fetch the resource data from the collections API using the resource_id.
+    Parameters
+    Args:
+        auth (TokenGenerator): auth object
+        resource_id (str): str Node red will translate it as input
+        save_object (bool) : enum [True, False] (Node red will translate it as input
+        config_path (str) : Node red will translate it as input
+        file_path (str): Node red will translate it as input
 
+    Returns:
+        gpd.GeoDataFrame: Downloaded vector file in geodataframe 
+    """
 
+    
+    try:
+        # Generate the token
+        auth_token = auth.get_token
 
-       
-        try:
-            # Generate the token
-            token_generator = TokenGenerator(self.client_id, self.client_secret,self.role)
-            auth_token = token_generator.generate_token()
-
-            # Request the collections API to get asset links 
-            resource_url = f"https://geoserver.dx.geospatial.org.in/collections/{resource_id}"
-            headers = {"Authorization": f"Bearer {auth_token}"}            
-            response = requests.get(resource_url, headers=headers)
-            response.raise_for_status()  # Raise an HTTPError for bad responses
-                  
-            links = response.json().get("links")
-
-            # getting the rel:enclosure link to get all the data in single shot            
-            enclosure_link_arr = [link["href"] for link in links if link.get("rel") == "enclosure"]            
-            resource_url = enclosure_link_arr[0] if enclosure_link_arr else None
-
-            # iterative pagination incase if there is no rel:enclosure link
-            if resource_url is None:
-                for link in links:
-                    if link.get("rel") == "items":                        
-                        data = fetch_paginated_data(link["href"], headers)                     
-            else:                
-                response = requests.get(resource_url, headers=headers)
-                response.raise_for_status()
-                data = response.content
+        # Request the collections API to get asset links 
+        resource_url = f"https://geoserver.dx.geospatial.org.in/collections/{resource_id}"
+        headers = {"Authorization": f"Bearer {auth_token}"}            
+        response = requests.get(resource_url, headers=headers)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
                 
-           
+        links = response.json().get("links")
+
+        # getting the rel:enclosure link to get all the data in single shot            
+        enclosure_link_arr = [link["href"] for link in links if link.get("rel") == "enclosure"]            
+        resource_url = enclosure_link_arr[0] if enclosure_link_arr else None
+
+        # iterative pagination incase if there is no rel:enclosure link
+        if resource_url is None:
+            for link in links:
+                if link.get("rel") == "items":                        
+                    data = fetch_paginated_data(link["href"], headers)                     
+        else:                
+            response = requests.get(resource_url, headers=headers)
+            response.raise_for_status()
+            data = response.content
             
-            gdf = gpd.read_file(io.BytesIO(data))# Read the fetched data as a geopandas dataframe
+        
+        
+        gdf = gpd.read_file(io.BytesIO(data))# Read the fetched data as a geopandas dataframe
 
-            if save_object:
-                if not file_path:
-                    file_path = f"{uuid.uuid4()}.pkl"
-                try:
-                    gdf.to_file(file_path, driver='GeoJSON')
-                    # connect_store_minio(config_path, self.client_id, gdf, file_path)
-                except Exception as e:
-                    raise Exception(f"Error while saving file: {e}")
-            else:
-                print("Data not saved. Set save_object to True , provide the minio config path and file_path to save the data to minio.")
-                print(gdf.info())
+        if save_object:
+            if not file_path:
+                file_path = f"{uuid.uuid4()}.pkl"
+            try:
+                gdf.to_file(file_path, driver='GeoJSON')
+                # connect_store_minio(config_path, self.client_id, gdf, file_path)
+            except Exception as e:
+                raise Exception(f"Error while saving file: {e}")
+        else:
+            print("Data not saved. Set save_object to True , provide the minio config path and file_path to save the data to minio.")
+            print(gdf.info())
 
-            return gdf  # Return the fetched data as a geopandas dataframe
-        except requests.RequestException as e:
-            raise Exception(f"Error fetching resource data: {e}")
+        return gdf  # Return the fetched data as a geopandas dataframe
+    except requests.RequestException as e:
+        raise Exception(f"Error fetching resource data: {e}")
 
 
 

@@ -26,15 +26,36 @@ poetry install
 
 #Python API to access resources
 
+from pyGDI import createAuth
 from pyGDI import ResourceFetchcer
 
 client_id="your client id"
 client_secret="your client secret"
 role="consumer"
-resource_id="413872b1-84f3-4ca8-ad07-05c6cbb3ecf5" #sample is given
 
-res_fetcher= ResourceFetcher(client_id=client_id, client_secret=client_secret, role=role)
-res_fetcher.fetch_resource_data(resource_id=resource_id, save_object=True, config_path=None, file_path="download.geojson")
+#authenticate first
+auth= createAuth(client_id=client_id, client_secret=client_secret, role=role)
+
+resource_id="413872b1-84f3-4ca8-ad07-05c6cbb3ecf5" #sample is given
+fetch_resource_data(auth= auth, resource_id=resource_id, save_object=True, config_path=None, file_path="download.geojson")
+
+```
+
+```python
+
+#Python API to access STAC items
+
+from pyGDI import createSTACAuth
+from pyGDI import get_assets
+
+client_id="your client id"
+client_secret="your client secret"
+role="consumer"
+collection_ids="f6443e79-0594-4d65-bb0d-d025893c99fe"
+
+#authenticate first
+stac_auth= createSTACAuth(client_id=client_id, client_secret=client_secret, role=role, collection_id=collection_ids)
+get_assets(auth=stac_auth, config="config.json")
 
 ```
 
