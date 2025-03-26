@@ -18,6 +18,25 @@ poetry shell
 ```sh
 poetry install
 ```
+## Usage
+
+### Python APIs
+
+```python
+
+#Python API to access resources
+
+from pyGDI import ResourceFetchcer
+
+client_id="your client id"
+client_secret="your client secret"
+role="consumer"
+resource_id="413872b1-84f3-4ca8-ad07-05c6cbb3ecf5" #sample is given
+
+res_fetcher= ResourceFetcher(client_id=client_id, client_secret=client_secret, role=role)
+res_fetcher.fetch_resource_data(resource_id=resource_id, save_object=True, config_path=None, file_path="download.geojson")
+
+```
 
 ## Fetching Resources (Vector Resources)
 
