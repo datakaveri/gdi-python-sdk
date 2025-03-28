@@ -16,6 +16,7 @@ from features.vector_features.delaunay_triangles import make_delaunay_triangles
 
 from features.raster_features.search_cat import search_stac
 from features.raster_features.get_data import get_assets
+from features.raster_features.flood_fill import flood_fill
 
 from common.minio_ops import get_ls
 
@@ -240,7 +241,17 @@ def get_stac_assets(client_id, client_secret, role, collection_ids, config):
     '''Download Cartosat images from the STAC browser and stream to minio'''
     get_assets(client_id, client_secret, role, collection_ids, config)
 
+@click.command()
+@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
+@click.option('--artifact-url', required=True, help="MinIO object name of the input DEM.")
+@click.option('--threshold', required=True, type=float, help="threshold elevation upto which it is inundated.")
+@click.option('--store-artifact', type=bool, default=False, help="Set to True to store the artifact in MinIO.")
+@click.option('--file-path', default="", help="MinIO key name for flood fill layer. If not provided, a UUID name is used.")
 
+def flood_fill_model(config, client_id, artifact_url, threshold, store_artifact, file_path):
+    '''Create flood inundated raster based on input DEM and threshold value'''
+    flood_fill(config, client_id, artifact_url, threshold, store_artifact, file_path)
 
 
 
