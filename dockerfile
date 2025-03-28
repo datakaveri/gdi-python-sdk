@@ -9,6 +9,11 @@ RUN apt-get update && apt-get install -y \
     libproj-dev \
     && pip install --upgrade pip
 
+    RUN apt-get update && apt-get install -y libgdal-dev gdal-bin nodejs npm && apt-get clean
+    ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
+    ENV C_INCLUDE_PATH=/usr/include/gdal
+    RUN pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option="-I/usr/include/gdal"
+    
 # Install Poetry
 RUN pip install poetry
 

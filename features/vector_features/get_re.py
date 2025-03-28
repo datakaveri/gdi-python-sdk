@@ -67,8 +67,8 @@ class ResourceFetcher:
                 if not file_path:
                     file_path = f"{uuid.uuid4()}.pkl"
                 try:
-                    gdf.to_file(file_path, driver='GeoJSON')
-                    # connect_store_minio(config_path, self.client_id, gdf, file_path)
+                    # gdf.to_file(file_path, driver='GeoJSON')
+                    connect_store_minio(config_path, self.client_id, gdf, file_path)
                 except Exception as e:
                     raise Exception(f"Error while saving file: {e}")
             else:
