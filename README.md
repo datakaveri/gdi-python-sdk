@@ -102,6 +102,10 @@ gdi search-cat --collection-ids <collection-id>
 ```sh
 gdi get-stac-assets --client-id <client-id> --client-secret <client-secret> --role consumer --collection-ds <collection-ds> --config <config-path>
 ```
+### Generate flood inundated layer based on threshold elevation
+```sh
+gdi flood-fill-model --config <config-path> --client-id <client-id> --artifact-url <artifact-url> --threshold <threshold> --store-artifact True --file-path <file-path>
+```
 
 ## For Reference : 
 ```

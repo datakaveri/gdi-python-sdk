@@ -17,6 +17,7 @@ from features.vector_features.delaunay_triangles import make_delaunay_triangles
 from features.raster_features.search_cat import search_stac
 from features.raster_features.get_data import get_assets
 from features.raster_features.flood_fill import flood_fill
+from features.raster_features.isometric_lines import isometric_lines
 
 from common.minio_ops import get_ls
 
@@ -248,11 +249,20 @@ def get_stac_assets(client_id, client_secret, role, collection_ids, config):
 @click.option('--threshold', required=True, type=float, help="threshold elevation upto which it is inundated.")
 @click.option('--store-artifact', type=bool, default=False, help="Set to True to store the artifact in MinIO.")
 @click.option('--file-path', default="", help="MinIO key name for flood fill layer. If not provided, a UUID name is used.")
-
 def flood_fill_model(config, client_id, artifact_url, threshold, store_artifact, file_path):
     '''Create flood inundated raster based on input DEM and threshold value'''
     flood_fill(config, client_id, artifact_url, threshold, store_artifact, file_path)
 
+@click.command()
+@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
+@click.option('--artifact-url', required=True, help="MinIO object name of the input raster.")
+@click.option('--interval', required=True, type=float, help="Specify intervals based on which defines the number of levels for isometric lines generated.")
+@click.option('--store-artifact', type=bool, default=False, help="Set to True to store the artifact in MinIO.")
+@click.option('--file-path', default="", help="MinIO key name for saving isometric lines generated. If not provided, a UUID name is used.")
 
+def generate_isometric_lines(config, client_id, artifact_url, interval, store_artifact, file_path):
+    '''Create flood inundated raster based on input DEM and threshold value'''
+    isometric_lines(config, client_id, artifact_url, interval, store_artifact, file_path)
 
 
