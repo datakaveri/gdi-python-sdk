@@ -102,35 +102,6 @@ def isometric_lines(
         raise RuntimeError(f"[ERROR] Contour generation failed: {e}")
 
 
-#---------------------------------------------------
-## Use below block to make local save as option
-#---------------------------------------------------
-#         if store_artifact:
-#             if not file_path:
-#                 file_path = f"{uuid.uuid4()}.geojson"
-#
-#             if save_object.lower() == "minio":
-#                 try:
-#                     geo_df.to_file("temp.geojson", driver="GeoJSON")
-#                     stream_to_minio(minio_client, client_id, file_path, "temp.geojson")
-#                     print(f"GeoJSON saved to MinIO as {file_path}")
-#                 except Exception as e:
-#                     raise Exception(f"Error saving to MinIO: {e}")
-#             elif save_object.lower() == "local":
-#                 try:
-#                     os.makedirs(os.path.dirname(file_path), exist_ok=True)
-#                     geo_df.to_file(file_path, driver="GeoJSON")
-#                     print(f"GeoJSON saved locally at {file_path}")
-#                 except Exception as e:
-#                     raise Exception(f"Error saving locally: {e}")
-#             else:
-#                 print("Invalid value for save_object. Use 'local' or 'minio'.")
-#         else:
-#             print("Output not saved. Set store_artifact=True to enable saving.")
-#
-#         return geo_df
-#---------------------------------------------------
-
 # isometric_lines(
 #     config="config.json",
 #     client_id="c669d152-592d-4a1f-bc98-b5b73111368e",
