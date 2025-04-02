@@ -358,24 +358,6 @@ files = [
 ]
 
 [[package]]
-name = "GDAL"
-version = "3.8.4"
-description = "GDAL: Geospatial Data Abstraction Library"
-optional = false
-python-versions = ">=3.6.0"
-groups = ["main"]
-files = [
-    {file = "GDAL-3.8.4-cp312-cp312-win_amd64.whl", hash = "sha256:841c9569814fb5167e5b5652cf244f20a91051d1d6dd1ee97e72a0a9c0631d8c"},
-]
-
-[package.extras]
-numpy = ["numpy (>1.0.0)"]
-
-[package.source]
-type = "file"
-url = "asset_files/GDAL-3.8.4-cp312-cp312-win_amd64.whl"
-
-[[package]]
 name = "geographiclib"
 version = "2.0"
 description = "The geodesic routines from GeographicLib"
@@ -954,14 +936,14 @@ test = ["pytest", "pytest-cov"]
 
 [[package]]
 name = "pyparsing"
-version = "3.2.1"
+version = "3.2.3"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "pyparsing-3.2.1-py3-none-any.whl", hash = "sha256:506ff4f4386c4cec0590ec19e6302d3aedb992fdc02c761e90416f158dacf8e1"},
-    {file = "pyparsing-3.2.1.tar.gz", hash = "sha256:61980854fd66de3a90028d679a954d5f2623e83144b5afe5ee86f43d762e5f0a"},
+    {file = "pyparsing-3.2.3-py3-none-any.whl", hash = "sha256:a749938e02d6fd0b59b356ca504a24982314bb090c383e3cf201c95ef7e2bfcf"},
+    {file = "pyparsing-3.2.3.tar.gz", hash = "sha256:b9c13f1ab8b3b542f72e28f634bad4de758ab3ce4546e4301970ad6fa77c38be"},
 ]
 
 [package.extras]
@@ -1516,32 +1498,6 @@ xml = ["defusedxml", "lxml"]
 zarr = ["fsspec", "zarr (<3)"]
 
 [[package]]
-name = "tqdm"
-version = "4.67.1"
-description = "Fast, Extensible Progress Meter"
-optional = false
-python-versions = ">=3.7"
-groups = ["main"]
-files = []
-develop = false
-
-[package.dependencies]
-colorama = {version = "*", markers = "platform_system == \"Windows\""}
-
-[package.extras]
-dev = ["nbval", "pytest (>=6)", "pytest-asyncio (>=0.24)", "pytest-cov", "pytest-timeout"]
-discord = ["requests"]
-notebook = ["ipywidgets (>=6)"]
-slack = ["slack-sdk"]
-telegram = ["requests"]
-
-[package.source]
-type = "git"
-url = "https://github.com/tqdm/tqdm.git"
-reference = "HEAD"
-resolved_reference = "0ed5d7f18fa3153834cbac0aa57e8092b217cc16"
-
-[[package]]
 name = "typing-extensions"
 version = "4.12.2"
 description = "Backported and Experimental Type Hints for Python 3.8+"
@@ -1585,14 +1541,14 @@ zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "xarray"
-version = "2025.3.0"
+version = "2025.3.1"
 description = "N-D labeled arrays and datasets in Python"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "xarray-2025.3.0-py3-none-any.whl", hash = "sha256:022b7eac5ebc26d70d34211de732ec1a15127a40455f9492acdde7fbe5bbf091"},
-    {file = "xarray-2025.3.0.tar.gz", hash = "sha256:531cf6d64e6ab54c19239930a840654f1a79d2140e9f0d11d1e8d69dcc581d0f"},
+    {file = "xarray-2025.3.1-py3-none-any.whl", hash = "sha256:3404e313930c226db70a945377441ea3c957225d8ba2d429e764c099bb91a546"},
+    {file = "xarray-2025.3.1.tar.gz", hash = "sha256:0252c96a73528b29d1ed7f0ab28d928d2ec00ad809e47369803b184dece1e447"},
 ]
 
 [package.dependencies]
@@ -1612,4 +1568,4 @@ viz = ["cartopy", "matplotlib", "nc-time-axis", "seaborn"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "64a60a2542f992492837ebc3fd69280f689e010068f6389e41adf1e5f5f4d9d4"
+content-hash = "b8cb5480265848d623721f50ed6f309e3eb6847356883abb4a743f613668e27a"
