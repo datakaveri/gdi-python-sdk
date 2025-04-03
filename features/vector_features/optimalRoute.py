@@ -1,6 +1,6 @@
 import os
+import io
 import uuid
-import pickle
 import geopandas as gpd
 import networkx as nx
 from shapely.geometry import Point, LineString
@@ -9,6 +9,7 @@ from networkx.algorithms.approximation import traveling_salesman_problem
 from tqdm import tqdm
 
 from common.minio_ops import connect_minio
+from common.save_feature_artifact import save_feature
 
 
 def compute_optimal_route(
@@ -16,7 +17,7 @@ def compute_optimal_route(
     client_id: str,
     artifact_url: str,          # MinIO object name of the pickled road network
     points_file: str,           # Local file path to user's point data
-    store_artifact: bool = False,  # Whether to upload the output to MinIO
+    store_artifact: str,  # Whether to upload the output to MinIO
     file_path: str = None       # Base name for your route .pkl in MinIO
 ) -> dict:
     """
@@ -25,9 +26,9 @@ def compute_optimal_route(
     ----------
     config : str (Reactflow will translate it as input)
     client_id : str (Reactflow will translate it as input)
-    artifact_url : str (Reactflow will translate it as input)
+    artifact_url : str (Reactflow will take it from the previous step)
     points_file : str (Reactflow will translate it as input)
-    store_artifact : enum [True, False] (Reactflow will translate it as input)
+    store_artifact : str (Reactflow will translate it as input)
     file_path : str (Reactflow will ignore this parameter)
     """
 
@@ -39,7 +40,7 @@ def compute_optimal_route(
     import io
     try:
         with minio_client.get_object(bucket_name=client_id, object_name=artifact_url) as response:
-            road_gdf = pickle.loads(response.read())
+            road_gdf = gpd.read_file(io.BytesIO(response.read()))
         print(f"[INFO] Road network artifact '{artifact_url}' loaded from MinIO.")
     except Exception as e:
         raise RuntimeError(f"[ERROR] Unable to download/load road artifact from MinIO: {e}")
@@ -186,53 +187,16 @@ def compute_optimal_route(
     points_ordered_gdf = gpd.GeoDataFrame(visited_points, crs=road_gdf.crs)
 
     # --------------------------------------------------------
-    # 9. Save route & points to temporary local .pkl files
-    # --------------------------------------------------------
-    route_tempfile = "temp_route.pkl"
-    points_tempfile = "temp_points.pkl"
-
-    # Write to local .pkl
-    route_gdf.to_pickle(route_tempfile)
-    points_ordered_gdf.to_pickle(points_tempfile)
-
-    # Prepare final result dict (we'll fill in once we decide local or MinIO)
-    result = {
-        "route": route_tempfile,
-        "points": points_tempfile
-    }
-
-    # --------------------------------------------------------
-    # 10. If store_artifact=True, upload to MinIO & remove locals
+    # 9. If store_artifact=local/minio, upload to MinIO or save locally as per user input
     # --------------------------------------------------------
     if store_artifact:
-        if not file_path:
-            # If user didn't specify a file_path, let's generate one
-            file_path = f"optimal_route_{uuid.uuid4().hex}.pkl"
+        save_feature(client_id=client_id, store_artifact=store_artifact, gdf=route_gdf, file_path=file_path, config_path=config)
+        points_file_path = file_path.replace(".geojson", "_points.geojson")
+        save_feature(client_id=client_id, store_artifact=store_artifact, gdf=points_ordered_gdf, file_path=points_file_path, config_path=config)
 
-        points_file_path = file_path.replace(".pkl", "_points.pkl")
-
-        try:
-            # Upload route
-            minio_client.fput_object(client_id, file_path, route_tempfile)
-            print(f"[INFO] Uploaded route to MinIO as '{file_path}'")
-
-            # Upload points
-            minio_client.fput_object(client_id, points_file_path, points_tempfile)
-            print(f"[INFO] Uploaded points to MinIO as '{points_file_path}'")
-
-            # Remove local .pkl files
-            os.remove(route_tempfile)
-            os.remove(points_tempfile)
-
-            # Update result to show MinIO object keys
-            result["route"] = file_path
-            result["points"] = points_file_path
-
-        except Exception as e:
-            raise Exception(f"[ERROR] Failed uploading files to MinIO: {e}")
     else:
-        print("[INFO] Data not uploaded to MinIO. Set 'store_artifact' to True to save to MinIO.")
-        print("[INFO] The .pkl files remain in your local directory.")
+        print("Data not saved. Set store_artifact to minio/local to save the data to minio or locally.")
+        print("Computed optimal route successfully")
 
     print("[INFO] TSP route computation complete!")
-    return result
+    return 

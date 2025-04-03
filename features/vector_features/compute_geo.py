@@ -1,26 +1,25 @@
 import geopandas as gpd
 from common.minio_ops import connect_minio
-import pickle as pkl
-import os
-import uuid
+from common.save_feature_artifact import save_feature
+import io
 
-def compute_geometry_measures(config: str, client_id: str, artifact_url: str, store_artifacts: bool = False, file_path: str = None)->None:
+
+def compute_geometry_measures(config: str, client_id: str, artifact_url: str, store_artifact: str, file_path: str = None)->None:
     """
-    Reads geospatial data from MinIO, computes geometry measures, and optionally saves the processed data back to MinIO.In editor it will be renamed as compute-geometry.
+    Reads geospatial data from MinIO, computes geometry measures, and optionally saves the processed data back to MinIO or save locally.In editor it will be renamed as compute-geometry.
     Parameters
     ----------
     config : str (Reactflow will translate it as input)
     client_id : str (Reactflow will translate it as input)
-    artifact_url : str (Reactflow will translate it as input)
-    store_artifacts : enum [True, False] (Reactflow will translate it as input)
+    artifact_url : str (Reactflow will take it from the previous step)
+    store_artifact : str (Reactflow will translate it as input)
     file_path : (Reactflow will ignore this parameter)
-
     """
     client = connect_minio(config, client_id)
 
     try:
         with client.get_object(client_id, artifact_url) as response:
-            gdf = pkl.loads(response.read())
+            gdf = gpd.read_file(io.BytesIO(response.read()))
         
         if gdf.crs is None:
             print("Warning: No CRS found! Assuming EPSG:4326 (WGS 84).")
@@ -43,22 +42,17 @@ def compute_geometry_measures(config: str, client_id: str, artifact_url: str, st
             print("Geometry is Polygon. Computed area and perimeter in meters.")
         else:
             print("Unsupported geometry type.")
-
-        gdf.to_pickle("temp.pkl")
     except Exception as e:
         raise e
     
-    if store_artifacts:
-        if not file_path:
-            file_path = f"{uuid.uuid4()}.pkl"
-        try:
-            client.fput_object(client_id, file_path, "temp.pkl")
-            os.remove("temp.pkl")
-            print(file_path)
-        except Exception as e:
-            raise Exception(f"Error while saving file: {e}")
-    else:
-        print("Data not saved. Set store_artifacts to True to save the data to MinIO.")
-        print("Data buffered successfully.")
+    if store_artifact:
+        save_feature(client_id=client_id, store_artifact=store_artifact, gdf=gdf, file_path=file_path, config_path=config)
 
-# compute_geometry_measures('config.json', 'c669d152-592d-4a1f-bc98-b5b73111368e', 'SurfaceWater_Varanasi_bfab0cfd-93ca-426e-8a2c-addd67e74b30.pkl', True, 'processed_geometry/Processed_SurfaceWater.pkl')
+    else:
+        print("Data not saved. Set store_artifact to minio/local to save the data to minio or locally.")
+        print("Computed geometry successfully")
+        # print(gdata)
+
+    return 
+
+# compute_geometry_measures('config.json', 'c669d152-592d-4a1f-bc98-b5b73111368e', 'SurfaceWater_Varanasi_bfab0cfd-93ca-426e-8a2c-addd67e74b30.geojson', minio, 'processed_geometry/Processed_SurfaceWater.geojson')

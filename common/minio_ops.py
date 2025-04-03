@@ -35,7 +35,7 @@ def connect_minio(config:str, client_id:str)  -> Minio:
 
 # Load the minio credentials from the config file and connect to the minio server and save the file 
 
-def connect_store_minio(config:str, client_id:str, gdf:gpd.GeoDataFrame, file_name:str):
+def connect_store_minio(config:str, client_id:str, local_file_path: str, object_name: str):
     '''
     config : str : path to the config file
     client_id : str : client id for the minio bucket
@@ -46,34 +46,22 @@ def connect_store_minio(config:str, client_id:str, gdf:gpd.GeoDataFrame, file_na
     try:
         with open(config, 'r') as file:
             creds = json.load(file)
-        
+
         access_key = creds['minio_access_key']
         secret_key = creds['minio_secret_key']
         minio_url = creds['minio_url']
         secure_flag = creds['secure']
 
-        client = Minio(minio_url, access_key=access_key, secret_key=secret_key,secure=secure_flag)
+        client = Minio(minio_url, access_key=access_key, secret_key=secret_key, secure=secure_flag)
+
+        if not client.bucket_exists(client_id):
+            client.make_bucket(client_id)
+
+        client.fput_object(client_id, object_name, local_file_path)
+        print(f"Uploaded to MinIO: {object_name}")
+
     except Exception as e:
-        raise e
-
-    if client.bucket_exists(client_id):
-        pass
-    else:
-        client.make_bucket(client_id)
-        
-
-    gdf.to_pickle('temp.pkl')
-
-    try:
-        
-        result = client.fput_object(
-            client_id, file_name, 'temp.pkl'
-        )
-        os.remove('temp.pkl')
-        print(f"{file_name}")
-    except Exception as e:
-        raise Exception(f"Error while saving file: {e}")
-
+        raise Exception(f"Error uploading to MinIO: {e}")
 
 
 # get list of all the objects / data present in the minio bucket
@@ -88,7 +76,7 @@ def get_ls(config:str, client_id:str):
     except Exception as e:
         raise e
     
-def stream_to_minio(minio_client, bucket_name, file_name,file_path):
+def stream_to_minio(minio_client, bucket_name, file_name, file_path):
     try:
         minio_client.fput_object(bucket_name, file_name, file_path)  # use fput and instead of params data,sizeof, give the temp file created path
         print(f"Uploaded to MinIO: {file_name}")
