@@ -1,21 +1,12 @@
-import sys
 import numpy as np
-import os
-import uuid
-import pickle
+import io
 import geopandas as gpd
 from shapely.geometry import Point, Polygon
 from scipy.spatial import Delaunay
 from common.minio_ops import connect_minio
+from common.save_feature_artifact import save_feature
 
-if "numpy._core.numeric" not in sys.modules:
-    try:
-        import numpy.core.numeric
-        sys.modules["numpy._core.numeric"] = numpy.core.numeric
-    except ImportError:
-        pass
-
-
+# Patch GeoSeries to include a delaunay_triangles method if it doesn't exist
 def _delaunay_patch():
     def delaunay_triangles(geoseries, **kwargs):
         kwargs.pop('tol', None)
@@ -29,15 +20,22 @@ def _delaunay_patch():
         gpd.GeoSeries.delaunay_triangles = delaunay_triangles
 
 
-def make_delaunay_triangles(config: str, client_id: str, artifact_url: str, store_artifacts: bool = False, file_path: str = None, **kwargs) -> dict:
+def make_delaunay_triangles(
+    config: str,
+    client_id: str,
+    artifact_url: str,
+    store_artifact: str,
+    file_path: str = None,
+    **kwargs
+) -> dict:
     """
-    Function to download a pickled GeoDataFrame/GeoSeries from MinIO, perform Delaunay triangulation, and optionally upload the triangulation back to MinIO.In editor it will be renamed as create-delaunay-triangles.    
+    Function to perform Delaunay triangulation, and optionally upload the triangulation back to MinIO or save locally.In editor it will be renamed as create-delaunay-triangles.    
     Parameters
     ----------
     config : str (Reactflow will translate it as input)
     client_id : str (Reactflow will translate it as input)
-    artifact_url : str (Reactflow will translate it as input)
-    store_artifacts : enum [True, False] (Reactflow will translate it as input)
+    artifact_url : str (Reactflow will take it from the previous step)
+    store_artifact : str (Reactflow will translate it as input)
     file_path : str (Reactflow will ignore this parameter)
     **kwargs : dict (Reactflow will ignore this parameter)
     """
@@ -45,44 +43,43 @@ def make_delaunay_triangles(config: str, client_id: str, artifact_url: str, stor
     client = connect_minio(config, client_id)
     _delaunay_patch()
 
-    temp_input_pkl = "temp_input.pkl"
-    
-    with client.get_object(client_id, artifact_url) as response:
-        with open(temp_input_pkl, "wb") as f:
-            f.write(response.read())
-    
-    with open(temp_input_pkl, "rb") as f:
-        points_data = pickle.load(f)
-    
-    if isinstance(points_data, gpd.GeoDataFrame):
-        points_geoseries = points_data.geometry
-    elif isinstance(points_data, gpd.GeoSeries):
-        points_geoseries = points_data
-    else:
-        raise TypeError("Input data must be a GeoDataFrame or GeoSeries.")
-
-    if points_geoseries.empty or len(points_geoseries) < 3:
-        raise ValueError("Delaunay requires at least 3 points.")
-
-    triangulation = points_geoseries.delaunay_triangles(**kwargs)
-
-    temp_triangulation_pkl = "temp_triangulation.pkl"
-    triangulation.to_pickle(temp_triangulation_pkl)
-
-    result = {"triangulation_file": temp_triangulation_pkl, "message": "Triangulation complete."}
-    
-    if store_artifacts:
-        if not file_path:
-            file_path = f"{uuid.uuid4().hex}.pkl"
-        client.fput_object(client_id, file_path, temp_triangulation_pkl)
-        os.remove(temp_triangulation_pkl)
-        result["triangulation_file"] = file_path
-        result["message"] = "Triangulation uploaded to MinIO."
-        print(file_path)
+    try:
+        with client.get_object(client_id, artifact_url) as response:
+            gdf = gpd.read_file(io.BytesIO(response.read()))
         
-    else:
-        print("Data not saved. Set store_artefacts to True to save the data to minio.")
-        print("Data buffered successfully")
-    
-    os.remove(temp_input_pkl)
-    return result
+        if isinstance(gdf, gpd.GeoDataFrame):
+            geo_series = gdf.geometry
+        elif isinstance(gdf, gpd.GeoSeries):
+            geo_series = gdf
+        else:
+            raise TypeError("Input must be a GeoDataFrame or GeoSeries.")
+
+        if geo_series.empty or len(geo_series) < 3:
+            raise ValueError("At least 3 points are required for Delaunay triangulation.")
+
+        triangulation = geo_series.delaunay_triangles(**kwargs)
+
+        if store_artifact:
+            save_feature(
+                client_id=client_id,
+                store_artifact=store_artifact,
+                gdf=triangulation,
+                file_path=file_path,
+                config_path=config
+            )
+        else:
+            print("Data not saved. Set store_artifact to 'minio' or 'local' to save the data.")
+            print("Delaunay triangulation completed successfully.")
+
+        return {"status": "success", "triangles": len(triangulation)}
+
+    except Exception as e:
+        raise RuntimeError(f"Error during Delaunay triangulation: {e}")
+
+
+# make_delaunay_triangles(
+#     config= 'config.json',
+#     client_id= 'c669d152-592d-4a1f-bc98-b5b73111368e ',
+#     artifact_url= 'vectors/School_Varanasi_81537895-3da1-4dcd-af6f-053bc07afcf9.geojson',
+#     store_artifact= 'minio',
+#     file_path= 'delaunay/School_var_delaunay_triangles.geojson')

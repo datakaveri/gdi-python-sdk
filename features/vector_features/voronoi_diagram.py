@@ -1,20 +1,28 @@
 import geopandas as gpd
 from common.minio_ops import connect_minio
-import pickle as pkl
-import os
-import uuid
+from common.save_feature_artifact import save_feature
+import io
 from shapely.geometry import box
 
-def create_voronoi_diagram(config: str, client_id: str, input_artefact_url: str, extend_artefact_url: str = None, store_artefacts: bool = False, file_path: str = None, tolerance: float = 0.0, only_edges: bool = False) -> gpd.GeoDataFrame:
+def create_voronoi_diagram(
+    config: str,
+    client_id: str,
+    input_artefact_url: str,
+    extend_artefact_url: str = None,
+    store_artifact: str = None,
+    file_path: str = None,
+    tolerance: float = 0.0,
+    only_edges: bool = False
+) -> gpd.GeoDataFrame:
     """
-    Reads geospatial point data from MinIO, computes Voronoi polygons, and saves the processed data back to MinIO, while adding point attributes to the polygons. In editor it will be renamed as create-voronoi-diagram.
+    Reads geospatial point data, computes Voronoi polygons, and saves the processed data back to MinIO or locally, while adding point attributes to the polygons. In editor it will be renamed as create-voronoi-diagram.
     Parameters
     ----------
     config : str (Reactflow will translate it as input)
     client_id : str (Reactflow will translate it as input)
-    input_artefact_url : str (Reactflow will translate it as input)
-    extend_artefact_url : str (Reactflow will translate it as input)
-    store_artefacts : enum [True, False] (Reactflow will translate it as input)
+    input_artefact_url : str (Reactflow will take it from the previous step)
+    extend_artefact_url : str (Reactflow will take it from the previous step)
+    store_artifact : str (Reactflow will translate it as input)
     file_path : str (Reactflow will ignore this parameter)
     tolerance : float (Reactflow will translate it as input)
     only_edges : enum [True, False] (Reactflow will translate it as input)
@@ -23,7 +31,7 @@ def create_voronoi_diagram(config: str, client_id: str, input_artefact_url: str,
     
     try:
         with client.get_object(client_id, input_artefact_url) as response:
-            points_gdf = pkl.loads(response.read())
+            points_gdf = gpd.read_file(io.BytesIO(response.read()))
         
         if not all(points_gdf.geometry.geom_type == "Point"):
             raise ValueError("Input file must contain only Point geometries.")
@@ -31,7 +39,7 @@ def create_voronoi_diagram(config: str, client_id: str, input_artefact_url: str,
         extend_to = None
         if extend_artefact_url:
             with client.get_object(client_id, extend_artefact_url) as ext_response:
-                extend_gdf = pkl.loads(ext_response.read())
+                extend_gdf = gpd.read_file(io.BytesIO(ext_response.read()))
                 extend_to = extend_gdf.geometry.unary_union
 
         # Generate Voronoi polygons based on the points
@@ -55,20 +63,15 @@ def create_voronoi_diagram(config: str, client_id: str, input_artefact_url: str,
     except Exception as e:
         raise e
     
-    if store_artefacts:
-        if not file_path:
-            file_path = f"{uuid.uuid4()}.pkl"
-        try:
-            client.fput_object(client_id, file_path, "temp.pkl")
-            os.remove("temp.pkl")
-            print(f"File stored successfully at: {file_path}")
-        except Exception as e:
-            raise Exception(f"Error while saving file: {e}")
-    else:
-        print("Data not saved. Set store_artefacts to True to save the data to MinIO.")
-    
-    print(f"Voronoi diagram generated successfully in {file_path}")
+    if store_artifact:
+        save_feature(client_id=client_id, store_artifact=store_artifact, gdf=joined_gdf, file_path=file_path, config_path=config)
 
+    else:
+        print("Data not saved. Set store_artifact to minio/local to save the data to minio or locally.")
+        print("Computed geometry successfully")
+        # print(gdata)
+
+    return 
 
 
 # create_voronoi_diagram(
@@ -76,7 +79,7 @@ def create_voronoi_diagram(config: str, client_id: str, input_artefact_url: str,
 #     client_id='c669d152-592d-4a1f-bc98-b5b73111368e',
 #     input_artefact_url='School_Varanasi_81537895-3da1-4dcd-af6f-053bc07afcf9.pkl',
 #     extend_artefact_url=None,
-#     store_artefacts=True,
+#     store_artefacts=minio,
 #     file_path='vector_voronoi/Voronoi_school_v9.pkl',
 # )
 

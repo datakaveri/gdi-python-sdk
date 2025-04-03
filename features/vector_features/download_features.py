@@ -2,8 +2,8 @@ import geopandas as gpd
 from common.minio_ops import connect_minio
 import warnings
 warnings.filterwarnings("ignore")
-import pickle as pkl
 import os 
+import io
 from datetime import timedelta
 import uuid
 def download_features(config : str, client_id : str, artefact_url : str, save_as : str) -> str:
@@ -15,14 +15,13 @@ def download_features(config : str, client_id : str, artefact_url : str, save_as
     client_id : str (Reactflow will translate it as input)
     artefact_url : str (Reactflow will take it from the previous step)
     save_as : str (Reactflow will ignore this parameter)
-
     """ 
     
     client = connect_minio(config, client_id)
 
     try :
         with client.get_object(client_id, artefact_url) as response:
-            data = pkl.loads(response.read())
+            data = gpd.read_file(io.BytesIO(response.read()))  
             data.to_file('temp.geojson', driver='GeoJSON')        
     except Exception as e:
         print(e)

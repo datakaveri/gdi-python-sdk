@@ -28,7 +28,20 @@ def gen_token(client_id, client_secret, role):
 
 
 def get_resource(client_id, client_secret, role, resource_id, save_object, config_path, file_path):
-    
+    """
+    Fetch data for a specified resource using the generated token.
+
+    Parameters
+    ----------
+    client_id : str (Reactflow will translate it as input)
+    client_secret : str (Reactflow will translate it as input)
+    role : enum [consumer, provider, admin] (Reactflow will translate it as input)
+    resource_id : str (Reactflow will translate it as input)
+    save_object : enum [True, False] (Reactflow will translate it as input)
+    config_path : str (Reactflow will translate it as input)
+    file_path : str (Reactflow will ignore this parameter)
+
+    """
     fetcher = ResourceFetcher(client_id, client_secret, role)
     resource_data = fetcher.fetch_resource_data(resource_id, save_object, config_path, file_path)
     return resource_data
@@ -51,12 +64,14 @@ def generate_token(client_id, client_secret, role):
 @click.option('--client-secret', required=True, help="Client secret for authentication.")
 @click.option('--role', required=True, help="Role for the token.", default = "consumer")
 @click.option('--resource-id', required=True, help="ID of the resource to fetch.")
-@click.option('--save-object',  help="Save the fetched object to Minio. set it to True or False.")
-@click.option('--config-path',  help="Path to the Minio configuration file. Olny if you are saving the object.")
+@click.option('--store-artifact',  help="Save the fetched object to Minio or locally. set it as local or minio")
+@click.option('--config-path',  help="Path to the Minio configuration file. Only if you are saving the object.")
 @click.option('--file-path', help="Path to save the fetched object.")
-def fetch_resource(client_id, client_secret, role, resource_id, save_object, config_path, file_path):
+
+
+def fetch_resource(client_id, client_secret, role, resource_id, store_artifact, config_path, file_path):
     """Fetch resource data."""
-    resource_data = get_resource(client_id, client_secret, role, resource_id, save_object, config_path, file_path)
+    resource_data = get_resource(client_id, client_secret, role, resource_id, store_artifact, config_path, file_path)
     
 
 
@@ -94,7 +109,7 @@ def download_artifact(config, client_id, artifact_url, save_as):
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--artifact-url', required=True, help="URL of the artifact to buffer.")
 @click.option('--buffer-d', required=True, help="Buffer distance.")
-@click.option('--store-artifact', help="Store the buffered artifact.")
+@click.option('--store-artifact', help="Store the buffered artifact. Set it to local/minio.")
 @click.option('--file-path', help="Path to save the buffered artifact.")
 def create_buffer(config, client_id, artifact_url, buffer_d, store_artifact, file_path):
     """Buffer the artifact."""
@@ -106,7 +121,7 @@ def create_buffer(config, client_id, artifact_url, buffer_d, store_artifact, fil
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--left_feature', required=True, help="URL of the first artifact.")
 @click.option('--right_feature', required=True, help="URL of the second artifact.")
-@click.option('--store-artifact', help="Store the intersected artifact.")
+@click.option('--store-artifact', help="Store the intersected artifact.Set it to local/minio.")
 @click.option('--file-path', help="Path to save the intersected artifact.")
 def create_intersection(config, client_id, left_feature, right_feature, store_artifact, file_path):
     """Intersect the artifacts."""
@@ -124,8 +139,8 @@ def list_data(location):
 @click.option('--config', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--artifact-url', required=True, help="URL of the artifact to download.")
-@click.option('--store-artifact', help="Store the intersected artifact.")
-@click.option('--file-path', help="Path to save the intersected artifact.")
+@click.option('--store-artifact', help="Store the compute geomtery artifact. Set it to local/minio.")
+@click.option('--file-path', help="Path to save the compute geomtery artifact.")
 def compute_geometry(config, client_id, artifact_url, store_artifact, file_path):
     """
     Reads geospatial data from MinIO, computes geometry measures, and optionally saves the processed data back to MinIO.
@@ -137,26 +152,26 @@ def compute_geometry(config, client_id, artifact_url, store_artifact, file_path)
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--artifact-url', required=True, help="URL of the artifact.")
 @click.option('--attribute', required=True, help="Attribute to reduce.")
-@click.option('--grid-size', required=True, type=int, help="Size of the grid.")
+@click.option('--grid-size', required=True, type=float, help="Size of the grid.")
 @click.option('--reducer', required=True, help="Reducer operation.")
-@click.option('--store-artefacts', help="Store the intersected artifact.")
-@click.option('--file-path', help="Path to save the intersected artifact.")
+@click.option('--store-artifact', help="Store reduced raster. Set it to local/minio.")
+@click.option('--file-path', help="Path to save the reduced raster artifact.")
 
-def reduce_to_img(config, client_id, artifact_url, attribute, grid_size, reducer, store_artefacts, file_path):
+def reduce_to_img(config, client_id, artifact_url, attribute, grid_size, reducer, store_artifact, file_path):
     """
     Reads vector data from MinIO, applies reduction operation, and stores the output raster in MinIO.
     """
-    reduce_to_image(config, client_id, artifact_url, attribute, grid_size, reducer, store_artefacts, file_path)
+    reduce_to_image(config, client_id, artifact_url, attribute, grid_size, reducer, store_artifact, file_path)
 
 
 @click.command(name="create-optimal-route")
 @click.option('--config', required=True, help="Path to MinIO config file.")
 @click.option('--client-id', required=True, help="MinIO bucket name.")
-@click.option('--artifact-url', required=True, help="Pickled road network object name in MinIO.")
+@click.option('--artifact-url', required=True, help="URL to road network object name in MinIO.")
 @click.option('--points-filepath', required=True, help="Local path to the sample points (GeoJSON/Shapefile...).")
-@click.option('--store-artifacts', help="Set to upload final route & points to MinIO.")
-@click.option('--route-file-path', help="MinIO object name to store final route (GeoJSON).")
-def create_optimal_route(config, client_id, artifact_url, points_filepath, store_artifacts, route_file_path):
+@click.option('--store-artifact', help="Store final route & points. Set it to local/minio.")
+@click.option('--file-path', help="MinIO object name to store final route (GeoJSON).")
+def create_optimal_route(config, client_id, artifact_url, points_filepath, store_artifact, file_path):
     """
     Compute a TSP-based optimal route by:
       - downloading a pickled road network from MinIO,
@@ -164,49 +179,48 @@ def create_optimal_route(config, client_id, artifact_url, points_filepath, store
       - building & solving TSP,
       - optionally storing route & points back to MinIO.
     """
-    compute_optimal_route(config, client_id, artifact_url, points_filepath, store_artifacts, route_file_path)
+    compute_optimal_route(config, client_id, artifact_url, points_filepath, store_artifact, file_path)
 
 @click.command()
 @click.option('--config', required=True, help="Path to the config file.")
-@click.option('--client-id', required=True, help="Client ID for authentication.")
+@click.option('--client-id', required=True, help="MinIO bucket name.")
 @click.option('--input-artifact-url', required=True, help="URL of the point artifact to generate voronoi polygon.")
 @click.option('--extend-artifact-url', default=None, help="URL of the artifact to define extend of output.")
 @click.option('--tolerance', type=float, default=0.0, help="Snap input vertices together if their distance is less than this value.")
 @click.option('--edges', type=bool, default=False, help="If set to True, the diagram will return LineStrings instead of Polygons.")
-@click.option('--store-artifact', type=bool, default=False, help="Set to True to store the artifact in MinIO.")
-@click.option('--file-path', default=None, help="Path to save the buffered artifact.")
+@click.option('--store-artifact', help="Store the voronoi polygons. Set it to local/minio.")
+@click.option('--file-path', default=None, help="Path to save the voronoi artifact.")
 def create_voronoi(config, client_id, input_artifact_url, extend_artifact_url, tolerance, edges, store_artifact, file_path):
     """Create Voronoi diagram based on input artefact"""
     create_voronoi_diagram(config, client_id, input_artifact_url, extend_artifact_url, store_artifact, file_path, tolerance, edges)
 
 @click.command(name="clip-vector")
-@click.option('--config', required=True, help="Path to the MinIO config file.")
+@click.option('--config', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="MinIO bucket name.")
-@click.option('--target-artifact-url', required=True, help="MinIO object name for the target .pkl.")
-@click.option('--clip-artifact-url', required=True, help="MinIO object name for the clip .pkl.")
-@click.option('--store-artifacts', type=bool, default=False, help="Set to True to store the artifact in MinIO.")
-@click.option('--file-path', default="", help="MinIO key for the clipped .pkl. If omitted, uses a random UUID.")
-def clip_vector(config, client_id, target_artifact_url, clip_artifact_url,store_artifacts, file_path):
+@click.option('--target-artifact-url', required=True, help="URL of the target artifact.")
+@click.option('--clip-artifact-url', required=True, help="URL of the clip artifact")
+@click.option('--store-artifact',  help="Store the clipped artifact. Set it to local/minio")
+@click.option('--file-path', default="None", help="Path to save the clipped artifact")
+def clip_vector(config, client_id, target_artifact_url, clip_artifact_url, store_artifact, file_path):
     """
-    Clip a target GeoDataFrame by a clip layer, both loaded from MinIO pickles,
-    optionally uploading the clipped result back to MinIO.
+    Clip a target feature to the extent of the clip feature,
     """
-    make_clip(config, client_id, target_artifact_url, clip_artifact_url,store_artifacts, file_path)
+    make_clip(config, client_id, target_artifact_url, clip_artifact_url, store_artifact, file_path)
 
-@click.command(name="create-delaunay-triangles")
-@click.option('--config', required=True, help="Path to MinIO config file.")
+@click.command()
+@click.option('--config', required=True, help="Path to minio config file.")
 @click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
-@click.option('--artifact-url', required=True, help="MinIO object name of the input .pkl (GeoDataFrame/GeoSeries).")
-@click.option('--store-artifacts', type=bool, default=False, help="Set to True to store the artifact in MinIO.")
-@click.option('--file-path', default="", help="MinIO key name for triangulation. If not provided, a UUID name is used.")
+@click.option('--artifact-url', required=True, help="URL of the input artifact.")
+@click.option('--store-artifact', help="Store delaunay artifact. Set it to local/minio")
+@click.option('--file-path', default="None", help="Path to save the delaunay artifact")
 @click.option('--qhull-options', default="", help="Additional Qhull options for scipy.spatial.Delaunay.")
-def create_delaunay_triangles(config, client_id, artifact_url, store_artifacts, file_path, qhull_options):
+def create_delaunay_triangles(config, client_id, artifact_url, store_artifact, file_path, qhull_options):
     """
     Create Delaunay triangles from a pickled GeoDataFrame/GeoSeries stored in MinIO,
     optionally uploading the result back to MinIO.
     """
     extra_kwargs = {"qhull_options": qhull_options} if qhull_options else {}
-    make_delaunay_triangles(config, client_id, artifact_url, store_artifacts, file_path,**extra_kwargs)
+    make_delaunay_triangles(config, client_id, artifact_url, store_artifact, file_path,**extra_kwargs)
 
 
 # Raster feature utilities
