@@ -11,15 +11,15 @@ import uuid
 
 def make_buffer(config : str, client_id : str, artefact_url : str, buffer_d : float, store_artefacts : bool = False, file_path : str = None) -> None:
     """
-    Function to buffer the geometries in a geodataframe and save the buffered data to minio.
+    Function to buffer the geometries in a geodataframe and save the buffered data to minio.In editor it will be rename as create-buffer.
     Parameters
     ----------
-    config : str (Node red will translate it as input)
-    client_id : str (Node red will translate it as input)
-    artefact_url : str (Node red will translate it as input)
-    buffer_d : float (Node red will translate it as input)
-    store_artefacts : enum [True, False] (Node red will translate it as input)
-    file_path : str (Node red will ignore this parameter)
+    config : str (Reactflow will translate it as input)
+    client_id : str (Reactflow will translate it as input)
+    artefact_url : str (Reactflow will translate it as input)
+    buffer_d : float (Reactflow will translate it as input)
+    store_artefacts : enum [True, False] (Reactflow will translate it as input)
+    file_path : str (Reactflow will ignore this parameter)
     """
     
     client = connect_minio(config, client_id)

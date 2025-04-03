@@ -18,10 +18,10 @@ def get_bounding_box(location:str):
 def list_features(name: str) -> dict:
 
     """
-      Function to query the geoserver api for data within a bounding box.
+     Function to query the geoserver api for data within a bounding box.In editor it will be rename as list-data.
      Parameters
-    ------------
-    name : str (Node red will translate it as input)
+     ----------
+     name : str (Reactflow will translate it as input)
     """
 
 

@@ -188,7 +188,17 @@ def convert_to_cog(input_tiff):
 
 def reduce_to_image(config: str, client_id: str, artifact_url: str, attribute: str, grid_size: int, reducer: str, store_artifacts: bool = False, file_path: str = None) -> rasterio.io.DatasetWriter:
     """
-    Reads vector data from MinIO, applies reduction operation, and stores the output raster in MinIO.
+    Reads vector data from MinIO, applies reduction operation, and stores the output raster in MinIO.In editor it will be rename as reduce-to-img.
+    Parameters
+    ----------
+    config : str (Reactflow will translate it as input)
+    client_id : str (Reactflow will translate it as input)
+    artifact_url : str (Reactflow will translate it as input)
+    attribute : str (Reactflow will translate it as input)
+    grid_size : int (Reactflow will translate it as input)
+    reducer : str (Reactflow will translate it as input)
+    store_artifacts : bool (Reactflow will translate it as input)
+    file_path : str (Reactflow will translate it as input)
     """
     client = connect_minio(config, client_id)
     

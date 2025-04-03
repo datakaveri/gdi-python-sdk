@@ -6,13 +6,13 @@ import pickle as pkl
 
 def count_features(config : str, client_id : str, artefact_url : str, store_artefacts : bool = False):
     """
-    Function to count the number of features in a geodataframe and save the count to minio.
-     Parameters
-    ------------
-    config : str (Node red will translate it as input)
-    client_id : str (Node red will translate it as input)
-    artefact_url : str (Node red will translate it as input)
-    store_artefacts : enum [True, False] (Node red will translate it as input)
+    Function to count the number of features in a geodataframe and save the count to minio.In editor it will be rename as features-count.
+    Parameters
+    ----------
+    config : str (Reactflow will translate it as input)
+    client_id : str (Reactflow will translate it as input)
+    artefact_url : str (Reactflow will translate it as input)
+    store_artefacts : enum [True, False] (Reactflow will translate it as input)
     """
     
     client = connect_minio(config, client_id)

@@ -28,20 +28,7 @@ def gen_token(client_id, client_secret, role):
 
 
 def get_resource(client_id, client_secret, role, resource_id, save_object, config_path, file_path):
-    """
-    Fetch data for a specified resource using the generated token.
-
-    Parameters
-    ----------
-    client_id : str (Node red will translate it as input)
-    client_secret : str (Node red will translate it as input)
-    role : enum [consumer, provider, admin] (Node red will translate it as input)
-    resource_id : str (Node red will translate it as input)
-    save_object : enum [True, False] (Node red will translate it as input)
-    config_path : str (Node red will translate it as input)
-    file_path : str (Node red will ignore this parameter)
-
-    """
+    
     fetcher = ResourceFetcher(client_id, client_secret, role)
     resource_data = fetcher.fetch_resource_data(resource_id, save_object, config_path, file_path)
     return resource_data
@@ -67,8 +54,6 @@ def generate_token(client_id, client_secret, role):
 @click.option('--save-object',  help="Save the fetched object to Minio. set it to True or False.")
 @click.option('--config-path',  help="Path to the Minio configuration file. Olny if you are saving the object.")
 @click.option('--file-path', help="Path to save the fetched object.")
-
-
 def fetch_resource(client_id, client_secret, role, resource_id, save_object, config_path, file_path):
     """Fetch resource data."""
     resource_data = get_resource(client_id, client_secret, role, resource_id, save_object, config_path, file_path)

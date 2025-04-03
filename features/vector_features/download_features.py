@@ -8,14 +8,13 @@ from datetime import timedelta
 import uuid
 def download_features(config : str, client_id : str, artefact_url : str, save_as : str) -> str:
     """
-    Download features from the minio bucket and save it as a geopackage file.
-
-    Parameters:
-    ------------
-    config : str (Node red will translate it as input)
-    client_id : str (Node red will translate it as input)
-    artefact_url : str (Node red will take it from the previous step)
-    save_as : str (Node red will ignore this)
+    Download features from the minio bucket and save it as a geopackage file.In editor it will be rename as download-artifact.
+    Parameters
+    ----------
+    config : str (Reactflow will translate it as input)
+    client_id : str (Reactflow will translate it as input)
+    artefact_url : str (Reactflow will take it from the previous step)
+    save_as : str (Reactflow will ignore this parameter)
 
     """ 
     

@@ -7,18 +7,17 @@ from shapely.geometry import box
 
 def create_voronoi_diagram(config: str, client_id: str, input_artefact_url: str, extend_artefact_url: str = None, store_artefacts: bool = False, file_path: str = None, tolerance: float = 0.0, only_edges: bool = False) -> gpd.GeoDataFrame:
     """
-    Reads geospatial point data from MinIO, computes Voronoi polygons, and saves the processed data back to MinIO, while adding point attributes to the polygons.
-
+    Reads geospatial point data from MinIO, computes Voronoi polygons, and saves the processed data back to MinIO, while adding point attributes to the polygons. In editor it will be rename as create-voronoi-diagram.
     Parameters
     ----------
-    config : str (Node red will translate it as input)
-    client_id : str (Node red will translate it as input)
-    input_artefact_url : str (Node red will translate it as input)
-    extend_artefact_url : str (Node red will translate it as input)
-    store_artefacts : enum [True, False] (Node red will translate it as input)
-    file_path : str (Node red will ignore this parameter)
-    tolerance : float (Node red will translate it as input)
-    only_edges : enum [True, False] (Node red will translate it as input)
+    config : str (Reactflow will translate it as input)
+    client_id : str (Reactflow will translate it as input)
+    input_artefact_url : str (Reactflow will translate it as input)
+    extend_artefact_url : str (Reactflow will translate it as input)
+    store_artefacts : enum [True, False] (Reactflow will translate it as input)
+    file_path : str (Reactflow will ignore this parameter)
+    tolerance : float (Reactflow will translate it as input)
+    only_edges : enum [True, False] (Reactflow will translate it as input)
     """
     client = connect_minio(config, client_id)
     
