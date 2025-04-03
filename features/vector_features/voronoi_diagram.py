@@ -7,7 +7,7 @@ from shapely.geometry import box
 
 def create_voronoi_diagram(config: str, client_id: str, input_artefact_url: str, extend_artefact_url: str = None, store_artefacts: bool = False, file_path: str = None, tolerance: float = 0.0, only_edges: bool = False) -> gpd.GeoDataFrame:
     """
-    Reads geospatial point data from MinIO, computes Voronoi polygons, and saves the processed data back to MinIO, while adding point attributes to the polygons. In editor it will be rename as create-voronoi-diagram.
+    Reads geospatial point data from MinIO, computes Voronoi polygons, and saves the processed data back to MinIO, while adding point attributes to the polygons. In editor it will be renamed as create-voronoi-diagram.
     Parameters
     ----------
     config : str (Reactflow will translate it as input)

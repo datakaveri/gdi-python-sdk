@@ -8,7 +8,7 @@ import uuid
 
 def make_intersection(config : str, client_id : str, left_feature : str, right_feature : str,  store_artefacts : bool = False, file_path : str = None)-> None:
     """
-    Function to intersect two geodataframes and save the intersected data to minio.In editor it will be rename as create-intersection.
+    Function to intersect two geodataframes and save the intersected data to minio.In editor it will be renamed as create-intersection.
     Parameters
     ----------
     config : str (Reactflow will translate it as input)

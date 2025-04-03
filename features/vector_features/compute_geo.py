@@ -6,7 +6,7 @@ import uuid
 
 def compute_geometry_measures(config: str, client_id: str, artifact_url: str, store_artifacts: bool = False, file_path: str = None)->None:
     """
-    Reads geospatial data from MinIO, computes geometry measures, and optionally saves the processed data back to MinIO.In editor it will be rename as compute-geometry.
+    Reads geospatial data from MinIO, computes geometry measures, and optionally saves the processed data back to MinIO.In editor it will be renamed as compute-geometry.
     Parameters
     ----------
     config : str (Reactflow will translate it as input)

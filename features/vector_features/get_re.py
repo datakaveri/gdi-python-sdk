@@ -17,7 +17,7 @@ class ResourceFetcher:
 
     def fetch_resource_data(self, resource_id:str ,save_object : bool = False,  config_path:str = None ,file_path : str = None ) -> dict:
         """
-        Function to fetch the resource data from the collections API using the resource_id.In editor it will be rename as fetch-resource.
+        Function to fetch the resource data from the collections API using the resource_id.In editor it will be renamed as fetch-resource.
         Parameters
         ----------
         client_id : str (Reactflow will translate it as input)
