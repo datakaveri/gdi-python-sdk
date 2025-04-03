@@ -31,7 +31,7 @@ def _delaunay_patch():
 
 def make_delaunay_triangles(config: str, client_id: str, artifact_url: str, store_artifacts: bool = False, file_path: str = None, **kwargs) -> dict:
     """
-    Function to download a pickled GeoDataFrame/GeoSeries from MinIO, perform Delaunay triangulation, and optionally upload the triangulation back to MinIO.In editor it will be rename as create-delaunay-triangles.    
+    Function to download a pickled GeoDataFrame/GeoSeries from MinIO, perform Delaunay triangulation, and optionally upload the triangulation back to MinIO.In editor it will be renamed as create-delaunay-triangles.    
     Parameters
     ----------
     config : str (Reactflow will translate it as input)

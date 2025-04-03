@@ -14,7 +14,7 @@ def make_clip(
 ) -> dict:
     """
     Clip a target GeoDataFrame with another GeoDataFrame (clip layer),
-    both downloaded from MinIO. Optionally upload the clipped result back to MinIO.In editor it will be rename as clip-vector.
+    both downloaded from MinIO. Optionally upload the clipped result back to MinIO.In editor it will be renamed as clip-vector.
     Parameters
     ----------
     config : str (Reactflow will translate it as input)

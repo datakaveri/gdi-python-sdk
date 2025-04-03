@@ -6,7 +6,7 @@ import pickle as pkl
 
 def count_features(config : str, client_id : str, artefact_url : str, store_artefacts : bool = False):
     """
-    Function to count the number of features in a geodataframe and save the count to minio.In editor it will be rename as features-count.
+    Function to count the number of features in a geodataframe and save the count to minio.In editor it will be renamed as features-count.
     Parameters
     ----------
     config : str (Reactflow will translate it as input)

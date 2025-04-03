@@ -29,4 +29,4 @@
 
 ## 4. Feature
 1. functions which are written with documentation can be transform as nodes 
-2. if you write `In editor it will be rename as (string-with-hyphen-and-without-small-brakcet)` it will rename it as `string-with-hyphen` you can see it in `output_data.json`
+2. if you write `In editor it will be renamed as (string-with-hyphen-and-without-small-brakcet)` it will rename it as `string-with-hyphen` you can see it in `output_data.json`
