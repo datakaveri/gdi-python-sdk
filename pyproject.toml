@@ -20,7 +20,7 @@ scipy = "1.15.2"
 tqdm = '4.67.0'
 rioxarray = {git = "https://github.com/corteva/rioxarray.git"}
 scikit-image = '0.25.2'
-gdal = '3.6.2'
+gdal = {file = "asset_files/GDAL-3.8.4-cp312-cp312-win_amd64.whl"}
 
 [tool.poetry.scripts]
 gdi = "gdi:cli"

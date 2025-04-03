@@ -20,15 +20,15 @@ def compute_optimal_route(
     file_path: str = None       # Base name for your route .pkl in MinIO
 ) -> dict:
     """
-    Function to compute the optimal route through a road network for a set of input points.
-    Parameters:
+    Function to compute the optimal route through a road network for a set of input points.In editor it will be renamed as create-optimal-route.
+    Parameters
     ----------
-    config : str (Node red will translate it as input)
-    client_id : str (Node red will translate it as input)
-    artifact_url : str (Node red will translate it as input)
-    points_file : str (Node red will translate it as input)
-    store_artifact : enum [True, False] (Node red will translate it as input)
-    file_path : str (Node red will ignore this parameter)
+    config : str (Reactflow will translate it as input)
+    client_id : str (Reactflow will translate it as input)
+    artifact_url : str (Reactflow will translate it as input)
+    points_file : str (Reactflow will translate it as input)
+    store_artifact : enum [True, False] (Reactflow will translate it as input)
+    file_path : str (Reactflow will ignore this parameter)
     """
 
     # 1. Connect to MinIO

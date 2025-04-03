@@ -14,16 +14,15 @@ def make_clip(
 ) -> dict:
     """
     Clip a target GeoDataFrame with another GeoDataFrame (clip layer),
-    both downloaded from MinIO. Optionally upload the clipped result back to MinIO.
-    
+    both downloaded from MinIO. Optionally upload the clipped result back to MinIO.In editor it will be rename as clip-vector.
     Parameters
-    ------------
-    config : str (Node red will translate it as input)
-    client_id : str (Node red will translate it as input)
-    target_artifact_url : str (Node red will translate it as input)
-    clip_artifact_url : str (Node red will translate it as input)
-    store_artifacts : enum [True, False] (Node red will translate it as input)
-    file_path : str (Node red will ignore this parameter)
+    ----------
+    config : str (Reactflow will translate it as input)
+    client_id : str (Reactflow will translate it as input)
+    target_artifact_url : str (Reactflow will translate it as input)
+    clip_artifact_url : str (Reactflow will translate it as input)
+    store_artifacts : enum [True, False] (Reactflow will translate it as input)
+    file_path : str (Reactflow will ignore this parameter)
     """
     
     client = connect_minio(config, client_id)
