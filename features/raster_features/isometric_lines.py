@@ -1,6 +1,4 @@
-import os
 import io
-import uuid
 import numpy as np
 import rasterio
 import geopandas as gpd
@@ -8,7 +6,8 @@ from skimage.measure import find_contours
 from shapely.geometry import LineString
 from tqdm import tqdm
 import warnings
-from common.minio_ops import connect_minio, stream_to_minio
+from common.minio_ops import connect_minio
+from common.save_feature_artifact import save_feature
 
 warnings.filterwarnings("ignore")
 
@@ -78,25 +77,13 @@ def isometric_lines(
         geo_df = gpd.GeoDataFrame({'level': contour_values, 'geometry': geometries}, crs=raster_crs)
 
         if store_artifact:
-            if not file_path:
-                file_path = f"contours/contours_{uuid.uuid4()}.pkl"
-
-            # Write GeoJSON locally
-            temp_iso_line = "temp_contours.pkl"
-            geo_df.to_pickle(temp_iso_line)
-
-            # Upload to MinIO using stream_to_minio
-            stream_to_minio(minio_client, client_id, file_path, temp_iso_line)
-            print(f"[INFO] Contours GeoJSON saved to MinIO: {file_path}")
-
-            # Cleanup
-            os.remove(temp_iso_line)
-
-            return file_path
+            save_feature(client_id=client_id, store_artifact=store_artifact, gdf=geo_df, file_path=file_path, config_path=config)
 
         else:
-            print("[INFO] store_artifact=False. Output not saved to MinIO.")
-            return "Contour generation done, output not saved."
+            print("Data not saved. Set store_artifact to 'minio' or 'local' to save the data.")
+            print("Clipping completed successfully.")
+
+        return 
 
     except Exception as e:
         raise RuntimeError(f"[ERROR] Contour generation failed: {e}")
