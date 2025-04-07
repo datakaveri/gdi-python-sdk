@@ -257,8 +257,8 @@ def flood_fill_model(config, client_id, artifact_url, threshold, store_artifact,
 @click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
 @click.option('--artifact-url', required=True, help="MinIO object name of the input raster.")
 @click.option('--interval', required=True, type=float, help="Specify intervals based on which defines the number of levels for isometric lines generated.")
-@click.option('--store-artifact', type=bool, default=False, help="Set to True to store the artifact in MinIO.")
-@click.option('--file-path', default="", help="MinIO key name for saving isometric lines generated. If not provided, a UUID name is used.")
+@click.option('--store-artifact', help="Store isometric lines artifact. Set it to local/minio")
+@click.option('--file-path', default="", help="Path for for saving isometric lines generated. If not provided, a UUID name is used.")
 
 def generate_isometric_lines(config, client_id, artifact_url, interval, store_artifact, file_path):
     '''Create flood inundated raster based on input DEM and threshold value'''
