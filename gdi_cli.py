@@ -77,7 +77,7 @@ def fetch_resource(client_id, client_secret, role, resource_id, store_artifact, 
 
 
 @click.command()
-@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--config-path', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="used as the bucket name.")
 @click.option('--artifact-url', required=True, help="URL of the artifact to count features.")
 def features_count(config, client_id, artifact_url):
@@ -87,7 +87,7 @@ def features_count(config, client_id, artifact_url):
 
 
 @click.command()
-@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--config-path', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="used as the bucket name.")
 def ls_objects(config, client_id):
     """List objects in the bucket."""
@@ -95,7 +95,7 @@ def ls_objects(config, client_id):
 
 
 @click.command()
-@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--config-path', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--artifact-url', required=True, help="URL of the artifact to download.")
 @click.option('--save-as', help="Save the fetched object to Minio as the given file name.")
@@ -105,7 +105,7 @@ def download_artifact(config, client_id, artifact_url, save_as):
 
 
 @click.command()
-@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--config-path', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--artifact-url', required=True, help="URL of the artifact to buffer.")
 @click.option('--buffer-d', required=True, help="Buffer distance.")
@@ -117,7 +117,7 @@ def create_buffer(config, client_id, artifact_url, buffer_d, store_artifact, fil
 
 
 @click.command()
-@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--config-path', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--left_feature', required=True, help="URL of the first artifact.")
 @click.option('--right_feature', required=True, help="URL of the second artifact.")
@@ -136,7 +136,7 @@ def list_data(location):
     click.echo(data)
 
 @click.command()
-@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--config-path', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--artifact-url', required=True, help="URL of the artifact to download.")
 @click.option('--store-artifact', help="Store the compute geomtery artifact. Set it to local/minio.")
@@ -148,7 +148,7 @@ def compute_geometry(config, client_id, artifact_url, store_artifact, file_path)
     compute_geometry_measures(config, client_id, artifact_url, store_artifact, file_path)
 
 @click.command()
-@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--config-path', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--artifact-url', required=True, help="URL of the artifact.")
 @click.option('--attribute', required=True, help="Attribute to reduce.")
@@ -165,7 +165,7 @@ def reduce_to_img(config, client_id, artifact_url, attribute, grid_size, reducer
 
 
 @click.command(name="create-optimal-route")
-@click.option('--config', required=True, help="Path to MinIO config file.")
+@click.option('--config-path', required=True, help="Path to MinIO config file.")
 @click.option('--client-id', required=True, help="MinIO bucket name.")
 @click.option('--artifact-url', required=True, help="URL to road network object name in MinIO.")
 @click.option('--points-filepath', required=True, help="Local path to the sample points (GeoJSON/Shapefile...).")
@@ -182,7 +182,7 @@ def create_optimal_route(config, client_id, artifact_url, points_filepath, store
     compute_optimal_route(config, client_id, artifact_url, points_filepath, store_artifact, file_path)
 
 @click.command()
-@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--config-path', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="MinIO bucket name.")
 @click.option('--input-artifact-url', required=True, help="URL of the point artifact to generate voronoi polygon.")
 @click.option('--extend-artifact-url', default=None, help="URL of the artifact to define extend of output.")
@@ -195,7 +195,7 @@ def create_voronoi(config, client_id, input_artifact_url, extend_artifact_url, t
     create_voronoi_diagram(config, client_id, input_artifact_url, extend_artifact_url, store_artifact, file_path, tolerance, edges)
 
 @click.command(name="clip-vector")
-@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--config-path', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="MinIO bucket name.")
 @click.option('--target-artifact-url', required=True, help="URL of the target artifact.")
 @click.option('--clip-artifact-url', required=True, help="URL of the clip artifact")
@@ -208,7 +208,7 @@ def clip_vector(config, client_id, target_artifact_url, clip_artifact_url, store
     make_clip(config, client_id, target_artifact_url, clip_artifact_url, store_artifact, file_path)
 
 @click.command()
-@click.option('--config', required=True, help="Path to minio config file.")
+@click.option('--config-path', required=True, help="Path to minio config file.")
 @click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
 @click.option('--artifact-url', required=True, help="URL of the input artifact.")
 @click.option('--store-artifact', help="Store delaunay artifact. Set it to local/minio")
@@ -236,13 +236,13 @@ def search_cat(collection_ids):
 @click.option('--client-secret', required=True, help="Client secret for authentication.")
 @click.option('--role', required=True, help="Role for the token.")
 @click.option('--collection-ids', required=True, help="Collection ID to search and access a specific collection")
-@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--config-path', required=True, help="Path to the config file.")
 def get_stac_assets(client_id, client_secret, role, collection_ids, config):
     '''Download Cartosat images from the STAC browser and stream to minio'''
     get_assets(client_id, client_secret, role, collection_ids, config)
 
 @click.command()
-@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--config-path', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
 @click.option('--artifact-url', required=True, help="MinIO object name of the input DEM.")
 @click.option('--threshold', required=True, type=float, help="threshold elevation upto which it is inundated.")
@@ -253,7 +253,7 @@ def flood_fill_model(config, client_id, artifact_url, threshold, store_artifact,
     flood_fill(config, client_id, artifact_url, threshold, store_artifact, file_path)
 
 @click.command()
-@click.option('--config', required=True, help="Path to the config file.")
+@click.option('--config-path', required=True, help="Path to the config file.")
 @click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
 @click.option('--artifact-url', required=True, help="MinIO object name of the input raster.")
 @click.option('--interval', required=True, type=float, help="Specify intervals based on which defines the number of levels for isometric lines generated.")
