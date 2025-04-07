@@ -11,11 +11,11 @@ def make_buffer(config : str, client_id : str, artifact_url : str, buffer_d : fl
     Function to buffer the geometries in a geodataframe and save the buffered data to minio or locally.In editor it will be renamed as create-buffer.
     Parameters
     ----------
-    config : str (Reactflow will translate it as input)
+    config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     artefact_url : str (Reactflow will take it from the previous step)
     buffer_d : float (Reactflow will translate it as input)
-    store_artifact : str (Reactflow will translate it as input)
+    store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
     """
     

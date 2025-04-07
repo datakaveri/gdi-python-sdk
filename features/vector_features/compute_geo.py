@@ -9,10 +9,10 @@ def compute_geometry_measures(config: str, client_id: str, artifact_url: str, st
     Reads geospatial data from MinIO, computes geometry measures, and optionally saves the processed data back to MinIO or save locally.In editor it will be renamed as compute-geometry.
     Parameters
     ----------
-    config : str (Reactflow will translate it as input)
+    config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
-    store_artifact : str (Reactflow will translate it as input)
+    store_artifact : str (Reactflow will ignore this parameter)
     file_path : (Reactflow will ignore this parameter)
     """
     client = connect_minio(config, client_id)

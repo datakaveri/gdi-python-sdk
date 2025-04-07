@@ -6,7 +6,7 @@ import networkx as nx
 from shapely.geometry import Point, LineString
 from scipy.spatial import KDTree
 from networkx.algorithms.approximation import traveling_salesman_problem
-from tqdm import tqdm
+# from tqdm import tqdm
 
 from common.minio_ops import connect_minio
 from common.save_feature_artifact import save_feature
@@ -24,24 +24,24 @@ def compute_optimal_route(
     Function to compute the optimal route through a road network for a set of input points.In editor it will be renamed as create-optimal-route.
     Parameters
     ----------
-    config : str (Reactflow will translate it as input)
+    config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     points_file : str (Reactflow will translate it as input)
-    store_artifact : str (Reactflow will translate it as input)
+    store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
     """
 
     # 1. Connect to MinIO
     minio_client = connect_minio(config, client_id)
-    print("[INFO] Connected to MinIO successfully.")
+    # print("[INFO] Connected to MinIO successfully.")
 
     # 2. Download the road network (pickled GeoDataFrame) from MinIO
     import io
     try:
         with minio_client.get_object(bucket_name=client_id, object_name=artifact_url) as response:
             road_gdf = gpd.read_file(io.BytesIO(response.read()))
-        print(f"[INFO] Road network artifact '{artifact_url}' loaded from MinIO.")
+        # print(f"[INFO] Road network artifact '{artifact_url}' loaded from MinIO.")
     except Exception as e:
         raise RuntimeError(f"[ERROR] Unable to download/load road artifact from MinIO: {e}")
 
@@ -53,15 +53,15 @@ def compute_optimal_route(
 
     # If no CRS on road_gdf, assume EPSG:4326
     if road_gdf.crs is None:
-        print("[WARN] Road network has no CRS; assuming EPSG:4326.")
+        # print("[WARN] Road network has no CRS; assuming EPSG:4326.")
         road_gdf.set_crs("EPSG:4326", inplace=True)
 
     # 3. Build bounding box & construct a NetworkX graph
     minx, miny, maxx, maxy = road_gdf.total_bounds
-    print(f"[INFO] Road bounding box: ({minx}, {miny}, {maxx}, {maxy})")
+    # print(f"[INFO] Road bounding box: ({minx}, {miny}, {maxx}, {maxy})")
 
     G = nx.Graph()
-    for _, row in tqdm(road_gdf.iterrows(), total=len(road_gdf), desc="Building graph"):
+    for _, row in road_gdf.iterrows():
         geom = row.geometry
         if geom.geom_type == "LineString":
             coords = list(geom.coords)
@@ -69,7 +69,7 @@ def compute_optimal_route(
                 node1, node2 = coords[i], coords[i + 1]
                 dist = Point(node1).distance(Point(node2))
                 G.add_edge(node1, node2, weight=dist)
-    print(f"[INFO] Created graph with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges.")
+    # print(f"[INFO] Created graph with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges.")
 
     # 4. Read local points file
     points_gdf = gpd.read_file(points_file)
@@ -78,12 +78,12 @@ def compute_optimal_route(
 
     # If no CRS on points, assume EPSG:7755
     if points_gdf.crs is None:
-        print("[INFO] Points file has no CRS; assigning EPSG:7755 as default.")
+        # print("[INFO] Points file has no CRS; assigning EPSG:7755 as default.")
         points_gdf.set_crs("EPSG:7755", inplace=True)
 
     # Reproject points if needed
     if road_gdf.crs != points_gdf.crs:
-        print("[WARN] CRS mismatch: reprojecting points to match road network CRS.")
+        # print("[WARN] CRS mismatch: reprojecting points to match road network CRS.")
         try:
             points_gdf = points_gdf.to_crs(road_gdf.crs)
         except Exception as reproj_err:
@@ -104,7 +104,7 @@ def compute_optimal_route(
 
     snapped_nodes = []
     original_points = []
-    for idx, row in tqdm(points_gdf.iterrows(), total=len(points_gdf), desc="Snapping points"):
+    for idx, row in points_gdf.iterrows():
         pt = row.geometry
         x, y = pt.x, pt.y
 
@@ -117,7 +117,7 @@ def compute_optimal_route(
         snapped_nodes.append(snapped_node)
         original_points.append(pt)
 
-    print(f"[INFO] Snapped {len(snapped_nodes)} input points to the road network.")
+    # print(f"[INFO] Snapped {len(snapped_nodes)} input points to the road network.")
 
     # 6. Compute paths using A* instead of Dijkstra
     node_count = len(snapped_nodes)
@@ -126,7 +126,7 @@ def compute_optimal_route(
     # Define a heuristic function for A* using Euclidean distance
     heuristic = lambda u, v: Point(u).distance(Point(v))
     
-    for i in tqdm(range(node_count), desc="Computing A* shortest paths"):
+    for i in range(node_count):
         for j in range(i + 1, node_count):
             src = snapped_nodes[i]
             dst = snapped_nodes[j]
@@ -145,11 +145,11 @@ def compute_optimal_route(
 
     # Solve TSP
     tsp_order = traveling_salesman_problem(TSP_G, cycle=True)
-    print(f"[INFO] TSP visitation order (indices): {tsp_order}")
+    # print(f"[INFO] TSP visitation order (indices): {tsp_order}")
 
     # 7. Reconstruct final route
     tsp_full_path = []
-    for i in tqdm(range(len(tsp_order) - 1), desc="Building final route"):
+    for i in range(len(tsp_order) - 1):
         start_idx = tsp_order[i]
         end_idx = tsp_order[i + 1]
         
@@ -195,8 +195,9 @@ def compute_optimal_route(
         save_feature(client_id=client_id, store_artifact=store_artifact, gdf=points_ordered_gdf, file_path=points_file_path, config_path=config)
 
     else:
-        print("Data not saved. Set store_artifact to minio/local to save the data to minio or locally.")
-        print("Computed optimal route successfully")
+        pass
+    #     print("Data not saved. Set store_artifact to minio/local to save the data to minio or locally.")
+    #     print("Computed optimal route successfully")
 
-    print("[INFO] TSP route computation complete!")
+    # print("[INFO] TSP route computation complete!")
     return 

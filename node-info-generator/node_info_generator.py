@@ -3,12 +3,12 @@ import os
 import json
 import re 
 from docstring_parser import parse
-OUTPUT_JSON_PATH = 'C:/Users/Linda/python-notebooks/OPEN_EO_ANALYTICS/gdi-python-sdk/node-info-generator/generated-info.json'
-DIRECTORY_TO_SCAN = 'C:/Users/Linda/python-notebooks/OPEN_EO_ANALYTICS/gdi-python-sdk'
+OUTPUT_JSON_PATH = 'J:/New_folder_2/gdi-python-sdk/node-info-generator/generated-info.json'
+DIRECTORY_TO_SCAN = 'J:/New_folder_2/gdi-python-sdk'
 result = []
 allAttribute=["(Reactflow will translate it as input)","(Reactflow will ignore this parameter)","(Reactflow will take it from the previous step)"]
 def extract_name(text):
-    match = re.search(r"In editor it will be rename as (\S+)", text)
+    match = re.search(r"In editor it will be renamed as (\S+)", text)
     if match:
         return match.group(1).rstrip(".,")
     return None
