@@ -15,11 +15,11 @@ def make_clip(
     Clip a target GeoDataFrame with another GeoDataFrame (clip layer). Optionally upload the clipped result back to MinIO or save locally.In editor it will be renamed as clip-vector.
     Parameters
     ----------
-    config : str (Reactflow will translate it as input)
+    config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     target_artifact_url : str (Reactflow will take it from the previous step)
     clip_artifact_url : str (Reactflow will take it from the previous step)
-    store_artifact : str (Reactflow will translate it as input)
+    store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
     """
     

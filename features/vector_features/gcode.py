@@ -19,7 +19,8 @@ def list_features(name: str) -> dict:
 
     """
      Function to query the geoserver api for data within a bounding box.In editor it will be renamed as list-data.
-     Parameters
+
+     Parameters:
      ----------
      name : str (Reactflow will translate it as input)
     """

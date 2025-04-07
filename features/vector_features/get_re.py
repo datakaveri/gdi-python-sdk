@@ -20,11 +20,11 @@ class ResourceFetcher:
         ----------
         client_id : str (Reactflow will translate it as input)
         client_secret : str (Reactflow will translate it as input)
-        role : str (Reactflow will translate it as input)
+        role : enum [consumer, provider, admin] (Reactflow will translate it as input)
         resource_id : str (Reactflow will translate it as input)
-        store_artifact : str (Reactflow will translate it as input)
-        config_path : str (Reactflow will translate it as input)
-        file_path : str (Reactflow will translate it as input)
+        store_artifact : str (Reactflow will ignore this parameter)
+        config_path : str (Reactflow will ignore this parameter)
+        file_path : str (Reactflow will ignore this parameter)
         """
 
         try:

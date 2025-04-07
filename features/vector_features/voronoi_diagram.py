@@ -18,11 +18,11 @@ def create_voronoi_diagram(
     Reads geospatial point data, computes Voronoi polygons, and saves the processed data back to MinIO or locally, while adding point attributes to the polygons. In editor it will be renamed as create-voronoi-diagram.
     Parameters
     ----------
-    config : str (Reactflow will translate it as input)
+    config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     input_artefact_url : str (Reactflow will take it from the previous step)
     extend_artefact_url : str (Reactflow will take it from the previous step)
-    store_artifact : str (Reactflow will translate it as input)
+    store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
     tolerance : float (Reactflow will translate it as input)
     only_edges : enum [True, False] (Reactflow will translate it as input)

@@ -9,7 +9,7 @@ def count_features(config : str, client_id : str, artefact_url : str):
     Function to count the number of features in a geodataframe.In editor it will be renamed as features-count.
     Parameters
     ----------
-    config : str (Reactflow will translate it as input)
+    config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     artefact_url : str (Reactflow will take it from the previous step)
     """

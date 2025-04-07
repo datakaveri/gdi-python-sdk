@@ -138,14 +138,14 @@ def reduce_to_image(config: str, client_id: str, artifact_url: str, attribute: s
     Reads vector data from MinIO, applies reduction operation, and stores the output raster in MinIO.In editor it will be renamed as reduce-to-img.
     Parameters
     ----------
-    config : str (Reactflow will translate it as input)
+    config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     attribute : str (Reactflow will translate it as input)
     grid_size : int (Reactflow will translate it as input)
     reducer : str (Reactflow will translate it as input)
-    store_artifact : str (Reactflow will translate it as input)
-    file_path : str (Reactflow will translate it as input)
+    store_artifact : str (Reactflow will ignore this parameter)
+    file_path : str (Reactflow will ignore this parameter)
     """
 
     client = connect_minio(config, client_id)

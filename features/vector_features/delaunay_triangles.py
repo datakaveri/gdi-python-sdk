@@ -32,10 +32,10 @@ def make_delaunay_triangles(
     Function to perform Delaunay triangulation, and optionally upload the triangulation back to MinIO or save locally.In editor it will be renamed as create-delaunay-triangles.    
     Parameters
     ----------
-    config : str (Reactflow will translate it as input)
+    config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
-    store_artifact : str (Reactflow will translate it as input)
+    store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
     **kwargs : dict (Reactflow will ignore this parameter)
     """

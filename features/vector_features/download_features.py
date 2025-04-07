@@ -11,7 +11,7 @@ def download_features(config : str, client_id : str, artefact_url : str, save_as
     Download features from the minio bucket and save it as a geopackage file.In editor it will be renamed as download-artifact.
     Parameters
     ----------
-    config : str (Reactflow will translate it as input)
+    config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     artefact_url : str (Reactflow will take it from the previous step)
     save_as : str (Reactflow will ignore this parameter)
