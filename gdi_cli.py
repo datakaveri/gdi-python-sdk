@@ -18,6 +18,7 @@ from features.raster_features.search_cat import search_stac
 from features.raster_features.get_data import get_assets
 from features.raster_features.flood_fill import flood_fill
 from features.raster_features.isometric_lines import isometric_lines
+from features.raster_features.compute_slope import compute_slope
 
 from common.minio_ops import get_ls
 
@@ -251,4 +252,12 @@ def generate_isometric_lines(config_path, client_id, artifact_url, interval, sto
     '''Create flood inundated raster based on input DEM and threshold value'''
     isometric_lines(config_path, client_id, artifact_url, interval, store_artifact, file_path)
 
+@click.command()
+@click.option('--config-path', required=True, help="Path to the MinIO configuration file.")
+@click.option('--client-id', required=True, help="Client ID (also used as the bucket name).")
+@click.option('--artifact-url', required=True, help="MinIO object name for the DEM GeoTIFF (or COG).")
+@click.option('--store-artifact', default='minio', help="Store generated slope raster. Set it to local/minio")
+@click.option('--file-path', help="Path for for saving slope raster generated. If not provided, a UUID name is used.")
 
+def generate_slope(config_path, client_id, artifact_url, store_artifact, file_path):
+    compute_slope(config_path, client_id, artifact_url, store_artifact, file_path)

@@ -5,7 +5,7 @@ import numpy as np
 import rioxarray
 import warnings
 from common.minio_ops import connect_minio
-from features.raster_features.convert_to_cog import tiff_to_cogtiff
+from common.convert_to_cog import tiff_to_cogtiff
 from common.save_raster_artifact import save_raster_artifact
 
 warnings.filterwarnings("ignore")
@@ -18,11 +18,9 @@ def flood_fill(
     file_path: str = None
 ) -> str:
     """
-    Generate flood inundated raster based on DEM read from MinIO and input threshold value.
-    Optionally upload the clipped result back to MinIO.
-    
+    Generate flood inundated raster based on DEM read from MinIO and input threshold value. Optionally upload the clipped result back to MinIO.
     Parameters
-    ------------
+    ----------
     config : str (React flow will translate it as input)
     client_id : str (React flow will translate it as input)
     artifact_url : str (React flow will take it from the previous step)
@@ -30,6 +28,7 @@ def flood_fill(
     store_artifact : str (React flow will ignore this parameter)
     file_path : str (React flow will ignore this parameter)
     """
+    
     client = connect_minio(config, client_id)
     temp_dem = "temp_dem.tif"
     temp_flood_raw = "temp_flood_raw.tif"
