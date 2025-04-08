@@ -29,7 +29,7 @@ def isometric_lines(
     client_id : str (React flow will translate it as input)
     artifact_url : str (React flow will take it from the previous step)
     interval : int (React flow will translate it as input)
-    store_artifact : enum [True, False] (React flow will translate it as input)
+    store_artifact : str (React flow will ignore this parameter)
     file_path : str (React flow will ignore this parameter)
     """
 
@@ -38,7 +38,7 @@ def isometric_lines(
     try:
         with minio_client.get_object(client_id, artifact_url) as response:
             dem_bytes = response.read()
-        print(f"[INFO] Downloaded DEM from MinIO: {artifact_url}")
+        # print(f"[INFO] Downloaded DEM from MinIO: {artifact_url}")
     except Exception as e:
         raise RuntimeError(f"[ERROR] Failed to download DEM from MinIO: {e}")
 
@@ -65,7 +65,8 @@ def isometric_lines(
         geometries = []
         contour_values = []
 
-        for level in tqdm(levels, desc="Generating contours"):
+        # for level in tqdm(levels, desc="Generating contours"):
+        for level in levels:
             contours = find_contours(data, level)
             for contour in contours:
                 coords = [tuple(transform * (x, y)) for y, x in contour]
