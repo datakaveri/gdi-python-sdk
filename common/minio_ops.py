@@ -58,7 +58,8 @@ def connect_store_minio(config:str, client_id:str, local_file_path: str, object_
             client.make_bucket(client_id)
 
         client.fput_object(client_id, object_name, local_file_path)
-        print(f"Uploaded to MinIO: {object_name}")
+        # print(f"Uploaded to MinIO: {object_name}")
+        print(f"{object_name}")
 
     except Exception as e:
         raise Exception(f"Error uploading to MinIO: {e}")
@@ -79,7 +80,8 @@ def get_ls(config:str, client_id:str):
 def stream_to_minio(minio_client, bucket_name, file_name, file_path):
     try:
         minio_client.fput_object(bucket_name, file_name, file_path)  # use fput and instead of params data,sizeof, give the temp file created path
-        print(f"Uploaded to MinIO: {file_name}")
+        # print(f"Uploaded to MinIO: {file_name}")
+        print(f"{file_name}")
     except Exception as e:
         print(f"Failed to upload {file_name} to MinIO: {e}")
 
