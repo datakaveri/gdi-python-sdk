@@ -8,7 +8,7 @@ import os
 import io
 from tqdm import tqdm
 from common.minio_ops import connect_minio,stream_to_minio
-from features.raster_features.convert_to_cog import tiff_to_cogtiff
+from common.convert_to_cog import tiff_to_cogtiff
 
 
 def get_assets(client_id: str, client_secret: str, role: str, collection_ids: str, config: str) -> None:
