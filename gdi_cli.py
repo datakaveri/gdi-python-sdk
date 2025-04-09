@@ -19,6 +19,8 @@ from features.raster_features.get_data import get_assets
 from features.raster_features.flood_fill import flood_fill
 from features.raster_features.isometric_lines import isometric_lines
 from features.raster_features.compute_slope import compute_slope
+from features.raster_features.NDVI import compute_ndvi 
+
 
 from common.minio_ops import get_ls
 
@@ -253,11 +255,23 @@ def generate_isometric_lines(config_path, client_id, artifact_url, interval, sto
     isometric_lines(config_path, client_id, artifact_url, interval, store_artifact, file_path)
 
 @click.command()
-@click.option('--config-path', required=True, help="Path to the MinIO configuration file.")
-@click.option('--client-id', required=True, help="Client ID (also used as the bucket name).")
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
 @click.option('--artifact-url', required=True, help="MinIO object name for the DEM GeoTIFF (or COG).")
 @click.option('--store-artifact', default='minio', help="Store generated slope raster. Set it to local/minio")
 @click.option('--file-path', help="Path for for saving slope raster generated. If not provided, a UUID name is used.")
 
 def generate_slope(config_path, client_id, artifact_url, store_artifact, file_path):
+    '''Create slope raster for the input DEM raster'''
     compute_slope(config_path, client_id, artifact_url, store_artifact, file_path)
+
+@click.command()
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
+@click.option('--red-artifact-url', required=True, help="MinIO object name for the Red band GeoTIFF.")
+@click.option('--nir-artifact-url', required=True, help="MinIO object name for the NIR band GeoTIFF.")
+@click.option('--store-artifact', default='minio', help="Store generated NDVI raster. Set it to local/minio")
+@click.option('--file-path', help="Path for saving NDVI raster generated. If not provided, a UUID name is used.")
+def generate_ndvi(config_path, client_id, red_artifact_url, nir_artifact_url, store_artifact, file_path):
+    '''Create NDVI raster from the input Red and NIR band rasters'''
+    compute_ndvi(config_path, client_id, red_artifact_url, nir_artifact_url, store_artifact, file_path)

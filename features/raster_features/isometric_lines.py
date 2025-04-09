@@ -15,18 +15,18 @@ def isometric_lines(
     config: str,
     client_id: str,
     artifact_url: str,
-    interval: int = 10,
-    store_artifact: bool = False,
+    interval: float,
+    store_artifact: str,
     file_path: str = None
 ) -> str:
     """
-    Generate isometric (contour) lines from DEM read from MinIO and given interval. Optionally upload the result GeoJSON to MinIO.
+    Generate isometric (contour) lines from DEM read from MinIO and given interval. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-isometric-lines.
     Parameters
     ----------
     config : str (React flow will translate it as input)
     client_id : str (React flow will translate it as input)
     artifact_url : str (React flow will take it from the previous step)
-    interval : int (React flow will translate it as input)
+    interval : float (React flow will translate it as input)
     store_artifact : str (React flow will ignore this parameter)
     file_path : str (React flow will ignore this parameter)
     """
