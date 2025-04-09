@@ -13,7 +13,7 @@ geopandas = { git = "https://github.com/geopandas/geopandas.git" }
 minio = { git = "https://github.com/minio/minio-py.git" }
 geopy = { git = "https://github.com/geopy/geopy.git" }
 rasterio = "1.4.3"
-numpy = "2.2.3"
+numpy = "1.26.4"
 pystac-client = "0.8.6"
 networkx = { git = "https://github.com/networkx/networkx.git" }
 scipy = "1.15.2"

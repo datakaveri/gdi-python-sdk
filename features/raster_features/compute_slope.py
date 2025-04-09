@@ -10,7 +10,7 @@ warnings.filterwarnings("ignore")
 
 def compute_slope(config: str, client_id: str, artifact_url: str, store_artifact: str, file_path: str = None) -> None:
     """
-    Function to compute slope from a DEM (COG or regular GeoTIFF) using GDAL's gdaldem and save the result as a COG.
+    Function to compute slope from a DEM (COG or regular GeoTIFF) using GDAL's gdaldem. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-slope.
     Parameters
     ----------
     config : str (Reactflow will translate it as input)
