@@ -20,7 +20,7 @@ from features.raster_features.flood_fill import flood_fill
 from features.raster_features.isometric_lines import isometric_lines
 from features.raster_features.compute_slope import compute_slope
 from features.raster_features.NDVI import compute_ndvi 
-
+from features.raster_features.local_correlation import compute_local_correlation_5x5
 
 from common.minio_ops import get_ls
 
@@ -275,3 +275,20 @@ def generate_slope(config_path, client_id, artifact_url, store_artifact, file_pa
 def generate_ndvi(config_path, client_id, red_artifact_url, nir_artifact_url, store_artifact, file_path):
     '''Create NDVI raster from the input Red and NIR band rasters'''
     compute_ndvi(config_path, client_id, red_artifact_url, nir_artifact_url, store_artifact, file_path)
+
+@click.command()
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
+@click.option('--x', required=True, help="first raster key in MinIO.")
+@click.option('--y', required=True, help="second raster key in MinIO.")
+@click.option('--chunk-size', default=500, type=int, help="Chunk size for reading/writing blocks.")
+@click.option('--store-artifact', default='minio', help="Store generated correlation raster. Set it to local/minio")
+@click.option('--file-path', help="Path for for saving correlation raster generated. If not provided, a UUID name is used.")
+
+def generate_local_correlation(config_path, client_id, x, y, chunk_size, store_artifact, file_path):
+    """
+    Compute a 5x5 local correlation between two rasters, where the window size is fixed as 5.
+    """  
+    compute_local_correlation_5x5(config_path, client_id, x, y, chunk_size, store_artifact, file_path)
+
+
