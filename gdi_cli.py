@@ -227,9 +227,12 @@ def search_cat(collection_ids):
 @click.option('--role', required=True, help="Role for the token.")
 @click.option('--collection-ids', required=True, help="Collection ID to search and access a specific collection")
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
-def get_stac_assets(client_id, client_secret, role, collection_ids, config_path):
-    '''Download Cartosat images from the STAC browser and stream to minio'''
-    get_assets(client_id, client_secret, role, collection_ids, config_path)
+@click.option('--store-artifact', default='minio', help="Store downloaded STAC assets. Set it to local/minio")
+@click.option('--dir-path', help="Specify folder name to save the downloaded assets")
+@click.option('--item-id', help="STAC item if to be downloaded, if not specfied all assets in the collection id provided will be downloaded.")
+def get_stac_assets(client_id, client_secret, role, collection_ids, config_path, store_artifact, dir_path, item_id):
+    '''Download a particular assets or all the assets in the collections specified.'''
+    get_assets(client_id, client_secret, role, collection_ids, config_path,store_artifact, dir_path, item_id)
 
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
