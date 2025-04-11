@@ -31,9 +31,7 @@ def search_stac(collection_ids : list):
             
             print(item['assets'][key]['href'])
 
-
-
-def search_get_stac(collection_ids: list) -> dict:
+def get_stac_collection(collection_ids: list) -> dict:
     
     try:
         client = Client.open("https://geoserver.dx.geospatial.org.in/stac/")
@@ -44,7 +42,6 @@ def search_get_stac(collection_ids: list) -> dict:
     assets_dict = {}
 
     for item in search.items_as_dicts():
-        if 'C3_MX' in item['id']:
             assets_info = {}
 
             for a in item['assets']:
@@ -57,8 +54,33 @@ def search_get_stac(collection_ids: list) -> dict:
 
     return assets_dict if assets_dict else None
 
-# collection_id = ['28e16f74-0ff8-4f11-a509-60fe078d8d47']
+
+def get_stac_item(collection_ids: list, item_id: str) -> dict:
+    
+    try:
+        client = Client.open("https://geoserver.dx.geospatial.org.in/stac/")
+        search = client.search(collections=collection_ids)
+    except Exception as e:
+        raise e
+
+    assets_dict = {}
+
+    for item in search.items_as_dicts():
+        if item_id in item['id']:
+            assets_info = {}
+
+            for a in item['assets']:
+                asset_data = item['assets'][a]
+                if asset_data['type'] == 'image/tiff; application=geotiff':
+                    assets_info[asset_data['title']] = asset_data['href']
+
+            if assets_info:
+                assets_dict[item['id']] = assets_info
+
+    return assets_dict if assets_dict else None
+
+# collection_id = ['e5e22690-02a9-440d-ba59-306108712387']
 # # # search_stac(collection_id)
 
-# links = search_get_stac(collection_id)
+# links = search_get_stac(collection_id ,"Digital Elevation Model (DEM) at 50 K, Varanasi")
 # pretty(links)
