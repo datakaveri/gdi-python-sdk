@@ -109,8 +109,8 @@ def create_buffer(config_path, client_id, artifact_url, buffer_d, store_artifact
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
 @click.option('--client-id', required=True, help="Client ID for authentication.")
-@click.option('--left_feature', required=True, help="URL of the first artifact.")
-@click.option('--right_feature', required=True, help="URL of the second artifact.")
+@click.option('--left-feature', required=True, help="URL of the first artifact.")
+@click.option('--right-feature', required=True, help="URL of the second artifact.")
 @click.option('--store-artifact', default='minio', help="Store the intersected artifact.Set it to local/minio.")
 @click.option('--file-path', help="Path to save the intersected artifact.")
 def create_intersection(config_path, client_id, left_feature, right_feature, store_artifact, file_path):
