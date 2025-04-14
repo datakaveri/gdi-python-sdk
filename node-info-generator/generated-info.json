@@ -1,5 +1,73 @@
 [
   {
+    "nodeName": "generate-slope",
+    "inputs": {
+      "config": "str (Reactflow will translate it as input)",
+      "client_id": "str (Reactflow will translate it as input)",
+      "artifact_url": "str (Reactflow will take it from the previous step)",
+      "store_artifact": "str (Reactflow will ignore this parameter)",
+      "file_path": "str (Reactflow will ignore this parameter)"
+    }
+  },
+  {
+    "nodeName": "flood-fill-model",
+    "inputs": {
+      "config": "str (Reactflow will translate it as input)",
+      "client_id": "str (Reactflow will translate it as input)",
+      "artifact_url": "str (Reactflow will take it from the previous step)",
+      "threshold": "float (Reactflow will translate it as input)",
+      "store_artifact": "str (Reactflow will ignore this parameter)",
+      "file_path": "str (Reactflow will ignore this parameter)"
+    }
+  },
+  {
+    "nodeName": "generate-slope",
+    "inputs": {
+      "client_id": "str (Reactflow will translate it as input)",
+      "client_secret": "str (Reactflow will translate it as input)",
+      "role": "str (Reactflow will translate it as input)",
+      "collection_ids": "str (Reactflow will translate it as input)",
+      "config": "str (Reactflow will translate it as input)",
+      "store_artifact": "str (Reactflow will ignore this parameter)",
+      "dir_path": "str (Reactflow will ignore this parameter)  ",
+      "item_id": "str (Reactflow will translate it as input)"
+    }
+  },
+  {
+    "nodeName": "generate-isometric-lines",
+    "inputs": {
+      "config": "str (Reactflow will translate it as input)",
+      "client_id": "str (Reactflow will translate it as input)",
+      "artifact_url": "str (Reactflow will take it from the previous step)",
+      "interval": "float (Reactflow will translate it as input)",
+      "store_artifact": "str (Reactflow will ignore this parameter)",
+      "file_path": "str (Reactflow will ignore this parameter)"
+    }
+  },
+  {
+    "nodeName": "generate-ndvi",
+    "inputs": {
+      "config": "str (Reactflow will ignore this parameter)",
+      "client_id": "str (Reactflow will translate it as input)",
+      "x": "str (Reactflow will take it from the previous step)",
+      "y": "str (Reactflow will take it from the previous step)",
+      "chunk_size": "int (Reactflow will translate it as input)",
+      "store_artifact": "str (Reactflow will ignore this parameter)",
+      "file_path": "str (Reactflow will ignore this parameter)"
+    }
+  },
+  {
+    "nodeName": "generate-ndvi",
+    "inputs": {
+      "config": "str (Reactflow will ignore this parameter)",
+      "client_id": "str (Reactflow will translate it as input)",
+      "red_artifact_url": "str (Reactflow will take it from the previous step)",
+      "nir_artifact_url": "str (Reactflow will take it from the previous step)",
+      "store_artifact": "str (Reactflow will ignore this parameter)",
+      "file_path": "str (Reactflow will ignore this parameter)"
+    }
+  },
+  {
     "nodeName": "create-buffer",
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
@@ -28,7 +96,7 @@
       "client_id": "str (Reactflow will translate it as input)",
       "artifact_url": "str (Reactflow will take it from the previous step)",
       "store_artifact": "str (Reactflow will ignore this parameter)",
-      "file_path": "(Reactflow will ignore this parameter)"
+      "file_path": "str (Reactflow will ignore this parameter)"
     }
   },
   {
