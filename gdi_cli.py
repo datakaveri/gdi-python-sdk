@@ -22,6 +22,7 @@ from features.raster_features.compute_slope import compute_slope
 from features.raster_features.NDVI import compute_ndvi 
 from features.raster_features.local_correlation import compute_local_correlation_5x5
 from features.raster_features.reduce_to_feature import extract_raster_to_vector
+from features.raster_features.clip_raster import clip_raster
 
 from common.minio_ops import get_ls
 
@@ -311,4 +312,15 @@ def reduce_to_feature(config_path, client_id, raster_artifact_url, vector_artifa
     """
     extract_raster_to_vector(config_path, client_id, raster_artifact_url, vector_artifact_url, reducer, attribute, store_artifact, file_path)
 
+@click.command()
+@click.option('--config-path', default="./config.json",help="Path to the MinIO config file.")
+@click.option('--client-id', required=True,help="Bucket name (client‑id).")
+@click.option('--raster-key', required=True,help="Object key of the raster (COG/GeoTIFF) to clip.")
+@click.option('--geojson-key', required=True,help="Object key of the polygon GeoJSON used as the mask.")
+@click.option('--store-artifact', default='minio',  help="Save the fetched object to Minio or locally. set it as local or minio")
+@click.option('--file-path',help="Destination key for the final COG in MinIO ""(only used when --store-artifact=minio).")
+def raster_clip(config_path, client_id, raster_key, geojson_key,store_artifact, file_path):
+    """Clip a raster with a GeoJSON polygon and output one COG."""
+    final_path = clip_raster(config_path=config_path,client_id=client_id,raster_key=raster_key,geojson_key=geojson_key,store_artifact=store_artifact,file_path=file_path)
+    click.echo(final_path)
 
