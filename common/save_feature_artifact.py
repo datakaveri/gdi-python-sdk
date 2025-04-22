@@ -6,6 +6,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 def save_feature(client_id, gdf, file_path, config_path, store_artifact):
+    gdf = gdf.to_crs("EPSG:4326")
     if not file_path:
         file_path = f"{uuid.uuid4()}.geojson"
 
