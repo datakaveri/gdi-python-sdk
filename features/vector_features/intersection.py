@@ -39,7 +39,7 @@ def make_intersection(config : str, client_id : str, left_feature : str, right_f
         save_feature(client_id=client_id, store_artifact=store_artifact, gdf=intersected_data, file_path=file_path, config_path=config)
 
     else:
-        print("Data not saved. Set store_artefacts to minio/local to save the data to minio or locally.")
+        print("Data not saved. Set store_artifacts to minio/local to save the data to minio or locally.")
         print("Computed geometry successfully")
         # print(gdata)
 

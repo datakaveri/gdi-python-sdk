@@ -72,7 +72,7 @@
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
-      "artefact_url": "str (Reactflow will take it from the previous step)",
+      "artifact_url": "str (Reactflow will take it from the previous step)",
       "buffer_d": "float (Reactflow will translate it as input)",
       "store_artifact": "str (Reactflow will ignore this parameter)",
       "file_path": "str (Reactflow will ignore this parameter)"
@@ -104,7 +104,7 @@
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
-      "artefact_url": "str (Reactflow will take it from the previous step)"
+      "artifact_url": "str (Reactflow will take it from the previous step)"
     }
   },
   {
@@ -123,7 +123,7 @@
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
-      "artefact_url": "str (Reactflow will take it from the previous step)",
+      "artifact_url": "str (Reactflow will take it from the previous step)",
       "save_as": "str (Reactflow will ignore this parameter)"
     }
   },
@@ -179,8 +179,8 @@
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
-      "input_artefact_url": "str (Reactflow will take it from the previous step)",
-      "extend_artefact_url": "str (Reactflow will take it from the previous step)",
+      "input_artifact_url": "str (Reactflow will take it from the previous step)",
+      "extend_artifact_url": "str (Reactflow will take it from the previous step)",
       "store_artifact": "str (Reactflow will ignore this parameter)",
       "file_path": "str (Reactflow will ignore this parameter)",
       "tolerance": "float (Reactflow will translate it as input)",
