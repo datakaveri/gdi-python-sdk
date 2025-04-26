@@ -58,7 +58,7 @@ class ResourceFetcher:
                 save_feature(self.client_id, store_artifact=store_artifact, gdf=gdf, file_path=file_path, config_path=config_path)
 
             else:
-                print("Data not saved. Set store_artefacts to minio/local to save the data to minio or locally.")
+                print("Data not saved. Set store_artifacts to minio/local to save the data to minio or locally.")
                 print("Data buffered successfully")
                 # print(gdata)
 

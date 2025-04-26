@@ -42,7 +42,7 @@ gdi generate-token --client-id <client-id> --client-secret <client-secret> --rol
 
 ### Get the number of features in the vectors
 ```sh
-gdi features-count --config-path <config-path> --client-id <client-id> --artefact-url <artifact-url>
+gdi features-count --config-path <config-path> --client-id <client-id> --artifact-url <artifact-url>
 ```
 
 ### List objects in MinIO storage
