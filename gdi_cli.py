@@ -183,7 +183,7 @@ def create_optimal_route(config_path, client_id, artifact_url, points_filepath, 
 @click.option('--store-artifact', default='minio', help="Store the voronoi polygons. Set it to local/minio.")
 @click.option('--file-path', default=None, help="Path to save the voronoi artifact.")
 def create_voronoi(config_path, client_id, input_artifact_url, extend_artifact_url, tolerance, edges, store_artifact, file_path):
-    """Create Voronoi diagram based on input artefact"""
+    """Create Voronoi diagram based on input artifact"""
     create_voronoi_diagram(config_path, client_id, input_artifact_url, extend_artifact_url, store_artifact, file_path, tolerance, edges)
 
 @click.command(name="clip-vector")
