@@ -23,6 +23,7 @@ from features.raster_features.NDVI import compute_ndvi
 from features.raster_features.local_correlation import compute_local_correlation_5x5
 from features.raster_features.reduce_to_feature import extract_raster_to_vector
 from features.raster_features.clip_raster import clip_raster
+from features.raster_features.merge_rasters import merge_rasters  
 
 from common.minio_ops import get_ls
 
@@ -306,7 +307,7 @@ def generate_local_correlation(config_path, client_id, x, y, chunk_size, store_a
 @click.option('--reducer', required=True, type=click.Choice(['mean', 'min', 'max', 'count', 'sum']), help="Reducer operation to apply.")
 @click.option('--attribute', required=True, help="Name of attribute to store extracted value in output.")
 @click.option('--store-artifact', default='minio', help="Set to 'minio' to upload result, or 'local' to save locally.")
-@click.option('--file-path', default=None, help="Optional path to save output file. If not provided, a temp name is used.")
+@click.option('--file-path', default=None, help="Optional path to save output file. If not provided, a UUID name is used.")
 def reduce_to_feature(config_path, client_id, raster_artifact_url, vector_artifact_url, reducer, attribute, store_artifact, file_path):
     """
     Extract raster values into vector features using spatial join with a specified reducer.
@@ -320,9 +321,19 @@ def reduce_to_feature(config_path, client_id, raster_artifact_url, vector_artifa
 @click.option('--raster-key', required=True,help="Object key of the raster (COG/GeoTIFF) to clip.")
 @click.option('--geojson-key', required=True,help="Object key of the polygon GeoJSON used as the mask.")
 @click.option('--store-artifact', default='minio',  help="Save the fetched object to Minio or locally. set it as local or minio")
-@click.option('--file-path',help="Optional path to save output file. If not provided, a temp name is used..")
-def raster_clip(config_path, client_id, raster_key, geojson_key,store_artifact, file_path):
+@click.option('--file-path',help="Optional path to save output file. If not provided, a UUID name is used.")
+def raster_clip(config_path, client_id, raster_key, geojson_key, store_artifact, file_path):
     """Clip a raster with a GeoJSON polygon and output one COG."""
-    final_path = clip_raster(config_path=config_path,client_id=client_id,raster_key=raster_key,geojson_key=geojson_key,store_artifact=store_artifact,file_path=file_path)
+    final_path = clip_raster(config_path, client_id, raster_key, geojson_key, store_artifact, file_path)
     click.echo(final_path)
 
+@click.command()
+@click.option('--config-path', default="./config.json",help="Path to the MinIO config file.")
+@click.option('--client-id', required=True,help="Bucket name (client‑id).")
+@click.option('--prefix', required=True,help="MinIO folder prefix that holds the COG TIFs to merge.")
+@click.option('--store-artifact', default='minio',  help="Save the fetched object to Minio or locally. set it as local or minio")
+@click.option('--file-path',help="Destination key for the final COG in MinIO ""(only used when --store-artifact=minio).")
+def rasters_merge(config_path, client_id, prefix, store_artifact, file_path):
+    """Merge multiple rasters into a single COG and output its path."""
+    final_path = merge_rasters(config_path, client_id, prefix, store_artifact, file_path)
+    click.echo(final_path)
