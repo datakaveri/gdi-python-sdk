@@ -7,8 +7,8 @@ from shapely.geometry import box
 def create_voronoi_diagram(
     config: str,
     client_id: str,
-    input_artefact_url: str,
-    extend_artefact_url: str = None,
+    input_artifact_url: str,
+    extend_artifact_url: str = None,
     store_artifact: str = None,
     file_path: str = None,
     tolerance: float = 0.0,
@@ -20,8 +20,8 @@ def create_voronoi_diagram(
     ----------
     config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
-    input_artefact_url : str (Reactflow will take it from the previous step)
-    extend_artefact_url : str (Reactflow will take it from the previous step)
+    input_artifact_url : str (Reactflow will take it from the previous step)
+    extend_artifact_url : str (Reactflow will take it from the previous step)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
     tolerance : float (Reactflow will translate it as input)
@@ -30,15 +30,15 @@ def create_voronoi_diagram(
     client = connect_minio(config, client_id)
     
     try:
-        with client.get_object(client_id, input_artefact_url) as response:
+        with client.get_object(client_id, input_artifact_url) as response:
             points_gdf = gpd.read_file(io.BytesIO(response.read()))
         
         if not all(points_gdf.geometry.geom_type == "Point"):
             raise ValueError("Input file must contain only Point geometries.")
         
         extend_to = None
-        if extend_artefact_url:
-            with client.get_object(client_id, extend_artefact_url) as ext_response:
+        if extend_artifact_url:
+            with client.get_object(client_id, extend_artifact_url) as ext_response:
                 extend_gdf = gpd.read_file(io.BytesIO(ext_response.read()))
                 extend_to = extend_gdf.geometry.unary_union
 
@@ -77,9 +77,9 @@ def create_voronoi_diagram(
 # create_voronoi_diagram(
 #     config='config.json',
 #     client_id='c669d152-592d-4a1f-bc98-b5b73111368e',
-#     input_artefact_url='School_Varanasi_81537895-3da1-4dcd-af6f-053bc07afcf9.pkl',
-#     extend_artefact_url=None,
-#     store_artefacts=minio,
+#     input_artifact_url='School_Varanasi_81537895-3da1-4dcd-af6f-053bc07afcf9.pkl',
+#     extend_artifact_url=None,
+#     store_artifacts=minio,
 #     file_path='vector_voronoi/Voronoi_school_v9.pkl',
 # )
 
