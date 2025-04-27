@@ -96,7 +96,7 @@ def flood_fill(
             tiff_to_cogtiff(flood_raw, flood_cog)
 
             # Save via save_raster_artifact
-            return save_raster_artifact(
+            save_raster_artifact(
                 config=config,
                 client_id=client_id,
                 local_path=flood_cog,

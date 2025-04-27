@@ -59,7 +59,6 @@ def save_raster_artifact(config: str, client_id: str, local_path: str, file_path
                 aux_path = cog_path + ".aux.xml"
                 if os.path.exists(aux_path):
                     stream_to_minio(client, client_id, file_path + ".aux.xml", aux_path)
-
             except Exception as e:
                 raise Exception(f"Error while saving raster to MinIO: {e}")
 

@@ -246,7 +246,8 @@ def get_stac_assets(client_id, client_secret, role, collection_ids, config_path,
 def flood_fill_model(config_path, client_id, artifact_url, threshold, store_artifact, file_path):
     '''Create flood inundated raster based on input DEM and threshold value'''
     flood_fill(config_path, client_id, artifact_url, threshold, store_artifact, file_path)
-
+    click.echo(file_path)
+    
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
 @click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
@@ -254,10 +255,10 @@ def flood_fill_model(config_path, client_id, artifact_url, threshold, store_arti
 @click.option('--interval', required=True, type=float, help="Specify intervals based on which defines the number of levels for isometric lines generated.")
 @click.option('--store-artifact', default='minio', help="Store isometric lines artifact. Set it to local/minio")
 @click.option('--file-path', help="Path for for saving isometric lines generated. If not provided, a UUID name is used.")
-
 def generate_isometric_lines(config_path, client_id, artifact_url, interval, store_artifact, file_path):
     '''Create flood inundated raster based on input DEM and threshold value'''
     isometric_lines(config_path, client_id, artifact_url, interval, store_artifact, file_path)
+    # click.echo(file_path)
 
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
@@ -265,10 +266,10 @@ def generate_isometric_lines(config_path, client_id, artifact_url, interval, sto
 @click.option('--artifact-url', required=True, help="MinIO object name for the DEM GeoTIFF (or COG).")
 @click.option('--store-artifact', default='minio', help="Store generated slope raster. Set it to local/minio")
 @click.option('--file-path', help="Path for for saving slope raster generated. If not provided, a UUID name is used.")
-
 def generate_slope(config_path, client_id, artifact_url, store_artifact, file_path):
     '''Create slope raster for the input DEM raster'''
     compute_slope(config_path, client_id, artifact_url, store_artifact, file_path)
+    click.echo(file_path)
 
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
@@ -280,6 +281,7 @@ def generate_slope(config_path, client_id, artifact_url, store_artifact, file_pa
 def generate_ndvi(config_path, client_id, red_artifact_url, nir_artifact_url, store_artifact, file_path):
     '''Create NDVI raster from the input Red and NIR band rasters'''
     compute_ndvi(config_path, client_id, red_artifact_url, nir_artifact_url, store_artifact, file_path)
+    click.echo(file_path)
 
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
@@ -289,12 +291,12 @@ def generate_ndvi(config_path, client_id, red_artifact_url, nir_artifact_url, st
 @click.option('--chunk-size', default=500, type=int, help="Chunk size for reading/writing blocks.")
 @click.option('--store-artifact', default='minio', help="Store generated correlation raster. Set it to local/minio")
 @click.option('--file-path', help="Path for for saving correlation raster generated. If not provided, a UUID name is used.")
-
 def generate_local_correlation(config_path, client_id, x, y, chunk_size, store_artifact, file_path):
     """
     Compute a 5x5 local correlation between two rasters, where the window size is fixed as 5.
     """  
     compute_local_correlation_5x5(config_path, client_id, x, y, chunk_size, store_artifact, file_path)
+    click.echo(file_path)
 
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
@@ -305,12 +307,12 @@ def generate_local_correlation(config_path, client_id, x, y, chunk_size, store_a
 @click.option('--attribute', required=True, help="Name of attribute to store extracted value in output.")
 @click.option('--store-artifact', default='minio', help="Set to 'minio' to upload result, or 'local' to save locally.")
 @click.option('--file-path', default=None, help="Optional path to save output file. If not provided, a temp name is used.")
-
 def reduce_to_feature(config_path, client_id, raster_artifact_url, vector_artifact_url, reducer, attribute, store_artifact, file_path):
     """
     Extract raster values into vector features using spatial join with a specified reducer.
     """
     extract_raster_to_vector(config_path, client_id, raster_artifact_url, vector_artifact_url, reducer, attribute, store_artifact, file_path)
+    click.echo(file_path)
 
 @click.command()
 @click.option('--config-path', default="./config.json",help="Path to the MinIO config file.")
@@ -318,7 +320,7 @@ def reduce_to_feature(config_path, client_id, raster_artifact_url, vector_artifa
 @click.option('--raster-key', required=True,help="Object key of the raster (COG/GeoTIFF) to clip.")
 @click.option('--geojson-key', required=True,help="Object key of the polygon GeoJSON used as the mask.")
 @click.option('--store-artifact', default='minio',  help="Save the fetched object to Minio or locally. set it as local or minio")
-@click.option('--file-path',help="Destination key for the final COG in MinIO ""(only used when --store-artifact=minio).")
+@click.option('--file-path',help="Optional path to save output file. If not provided, a temp name is used..")
 def raster_clip(config_path, client_id, raster_key, geojson_key,store_artifact, file_path):
     """Clip a raster with a GeoJSON polygon and output one COG."""
     final_path = clip_raster(config_path=config_path,client_id=client_id,raster_key=raster_key,geojson_key=geojson_key,store_artifact=store_artifact,file_path=file_path)
