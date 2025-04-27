@@ -1,6 +1,4 @@
 import os
-import io
-import uuid
 import numpy as np
 import tempfile
 import warnings
