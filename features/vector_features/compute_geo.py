@@ -22,24 +22,24 @@ def compute_geometry_measures(config: str, client_id: str, artifact_url: str, st
             gdf = gpd.read_file(io.BytesIO(response.read()))
         
         if gdf.crs is None:
-            print("Warning: No CRS found! Assuming EPSG:4326 (WGS 84).")
+            # print("Warning: No CRS found! Assuming EPSG:4326 (WGS 84).")
             gdf.set_crs(epsg=4326, inplace=True)
         
         gdf = gdf.to_crs(epsg=7755)
-        print("Reprojected to EPSG:7755.")
+        # print("Reprojected to EPSG:7755.")
 
         geometry_type = gdf.geometry.iloc[0].geom_type
-        print(f"Geometry type identified: {geometry_type}")
+        # print(f"Geometry type identified: {geometry_type}")
 
         if geometry_type == "Point":
             print("Geometry is Point. No area or perimeter computation needed.")
         elif geometry_type in ["LineString", "MultiLineString"]:
             gdf["length_m"] = gdf.length
-            print("Geometry is Line or MultiLine. Computed length in meters.")
+            # print("Geometry is Line or MultiLine. Computed length in meters.")
         elif geometry_type in ["Polygon", "MultiPolygon"]:
             gdf["area_sq_m"] = gdf.area
             gdf["perimeter_m"] = gdf.length
-            print("Geometry is Polygon. Computed area and perimeter in meters.")
+            # print("Geometry is Polygon. Computed area and perimeter in meters.")
         else:
             print("Unsupported geometry type.")
     except Exception as e:
