@@ -20,8 +20,6 @@ from features.raster_features.flood_fill import flood_fill
 from features.raster_features.isometric_lines import isometric_lines
 from features.raster_features.compute_slope import compute_slope
 from features.raster_features.NDVI import compute_ndvi 
-from features.raster_features.local_correlation import compute_local_correlation_5x5
-from features.raster_features.reduce_to_feature import extract_raster_to_vector
 from features.raster_features.clip_raster import clip_raster
 from features.raster_features.merge_rasters import merge_rasters  
 
@@ -149,13 +147,12 @@ def compute_geometry(config_path, client_id, artifact_url, store_artifact, file_
 @click.option('--reducer', required=True, help="Reducer operation.")
 @click.option('--store-artifact', default='minio', help="Store reduced raster. Set it to local/minio.")
 @click.option('--file-path', help="Path to save the reduced raster artifact.")
-
 def reduce_to_img(config_path, client_id, artifact_url, attribute, grid_size, reducer, store_artifact, file_path):
     """
     Reads vector data from MinIO, applies reduction operation, and stores the output raster in MinIO.
     """
     reduce_to_image(config_path, client_id, artifact_url, attribute, grid_size, reducer, store_artifact, file_path)
-
+    click.echo(file_path)
 
 @click.command(name="create-optimal-route")
 @click.option('--config-path', required=False, default="./config.json", help="Path to MinIO config file.")
@@ -282,37 +279,6 @@ def generate_slope(config_path, client_id, artifact_url, store_artifact, file_pa
 def generate_ndvi(config_path, client_id, red_artifact_url, nir_artifact_url, store_artifact, file_path):
     '''Create NDVI raster from the input Red and NIR band rasters'''
     compute_ndvi(config_path, client_id, red_artifact_url, nir_artifact_url, store_artifact, file_path)
-    click.echo(file_path)
-
-@click.command()
-@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
-@click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
-@click.option('--x', required=True, help="first raster key in MinIO.")
-@click.option('--y', required=True, help="second raster key in MinIO.")
-@click.option('--chunk-size', default=500, type=int, help="Chunk size for reading/writing blocks.")
-@click.option('--store-artifact', default='minio', help="Store generated correlation raster. Set it to local/minio")
-@click.option('--file-path', help="Path for for saving correlation raster generated. If not provided, a UUID name is used.")
-def generate_local_correlation(config_path, client_id, x, y, chunk_size, store_artifact, file_path):
-    """
-    Compute a 5x5 local correlation between two rasters, where the window size is fixed as 5.
-    """  
-    compute_local_correlation_5x5(config_path, client_id, x, y, chunk_size, store_artifact, file_path)
-    click.echo(file_path)
-
-@click.command()
-@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
-@click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
-@click.option('--raster-artifact-url', required=True, help="Path to raster file in MinIO.")
-@click.option('--vector-artifact-url', required=True, help="Path to vector file (GeoJSON or GPKG).")
-@click.option('--reducer', required=True, type=click.Choice(['mean', 'min', 'max', 'count', 'sum']), help="Reducer operation to apply.")
-@click.option('--attribute', required=True, help="Name of attribute to store extracted value in output.")
-@click.option('--store-artifact', default='minio', help="Set to 'minio' to upload result, or 'local' to save locally.")
-@click.option('--file-path', default=None, help="Optional path to save output file. If not provided, a UUID name is used.")
-def reduce_to_feature(config_path, client_id, raster_artifact_url, vector_artifact_url, reducer, attribute, store_artifact, file_path):
-    """
-    Extract raster values into vector features using spatial join with a specified reducer.
-    """
-    extract_raster_to_vector(config_path, client_id, raster_artifact_url, vector_artifact_url, reducer, attribute, store_artifact, file_path)
     click.echo(file_path)
 
 @click.command()

@@ -29,6 +29,7 @@ def make_buffer(config : str, client_id : str, artifact_url : str, buffer_d : fl
 
     try:        
         buffer_d = float(buffer_d)
+        gdf = gdf.to_crs(epsg=7755)
         gdf['geometry'] = gdf['geometry'].buffer(buffer_d)
     except Exception as e:
         raise e
