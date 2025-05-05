@@ -1,27 +1,32 @@
 [
   {
+    "nodeName": "generate-ndvi",
+    "description": "Function to compute NDVI from Red and NIR bands. Optionally upload the result back to MinIO or save locally.",
+    "inputs": {
+      "config": "str (Reactflow will ignore this parameter)",
+      "client_id": "str (Reactflow will translate it as input)",
+      "red_artifact_url": "str (Reactflow will take it from the previous step)",
+      "nir_artifact_url": "str (Reactflow will take it from the previous step)",
+      "store_artifact": "str (Reactflow will ignore this parameter)",
+      "file_path": "str (Reactflow will ignore this parameter)"
+    },
+    "featureType": "raster"
+  },
+  {
     "nodeName": "generate-slope",
+    "description": "Function to compute slope from a DEM (COG or regular GeoTIFF) using GDAL's gdaldem. Optionally upload the result back to MinIO or save locally.",
     "inputs": {
       "config": "str (Reactflow will translate it as input)",
       "client_id": "str (Reactflow will translate it as input)",
       "artifact_url": "str (Reactflow will take it from the previous step)",
       "store_artifact": "str (Reactflow will ignore this parameter)",
       "file_path": "str (Reactflow will ignore this parameter)"
-    }
-  },
-  {
-    "nodeName": "flood-fill-model",
-    "inputs": {
-      "config": "str (Reactflow will translate it as input)",
-      "client_id": "str (Reactflow will translate it as input)",
-      "artifact_url": "str (Reactflow will take it from the previous step)",
-      "threshold": "float (Reactflow will translate it as input)",
-      "store_artifact": "str (Reactflow will ignore this parameter)",
-      "file_path": "str (Reactflow will ignore this parameter)"
-    }
+    },
+    "featureType": "raster"
   },
   {
     "nodeName": "generate-slope",
+    "description": "Function to download STAC assets. Optionally upload the result back to MinIO or save locally.",
     "inputs": {
       "client_id": "str (Reactflow will translate it as input)",
       "client_secret": "str (Reactflow will translate it as input)",
@@ -31,21 +36,12 @@
       "store_artifact": "str (Reactflow will ignore this parameter)",
       "dir_path": "str (Reactflow will ignore this parameter)  ",
       "item_id": "str (Reactflow will translate it as input)"
-    }
-  },
-  {
-    "nodeName": "generate-isometric-lines",
-    "inputs": {
-      "config": "str (Reactflow will translate it as input)",
-      "client_id": "str (Reactflow will translate it as input)",
-      "artifact_url": "str (Reactflow will take it from the previous step)",
-      "interval": "float (Reactflow will translate it as input)",
-      "store_artifact": "str (Reactflow will ignore this parameter)",
-      "file_path": "str (Reactflow will ignore this parameter)"
-    }
+    },
+    "featureType": "raster"
   },
   {
     "nodeName": "generate-ndvi",
+    "description": "Compute local (5x5) correlation between two rasters. Optionally upload the result back to MinIO or save locally.",
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
@@ -54,32 +50,79 @@
       "chunk_size": "int (Reactflow will translate it as input)",
       "store_artifact": "str (Reactflow will ignore this parameter)",
       "file_path": "str (Reactflow will ignore this parameter)"
-    }
+    },
+    "featureType": "raster"
   },
   {
-    "nodeName": "generate-ndvi",
+    "nodeName": "flood-fill-model",
+    "description": "Generate flood inundated raster based on DEM read from MinIO and input threshold value. Optionally upload the result back to MinIO or save locally.",
     "inputs": {
-      "config": "str (Reactflow will ignore this parameter)",
+      "config": "str (Reactflow will translate it as input)",
       "client_id": "str (Reactflow will translate it as input)",
-      "red_artifact_url": "str (Reactflow will take it from the previous step)",
-      "nir_artifact_url": "str (Reactflow will take it from the previous step)",
+      "artifact_url": "str (Reactflow will take it from the previous step)",
+      "threshold": "float (Reactflow will translate it as input)",
       "store_artifact": "str (Reactflow will ignore this parameter)",
       "file_path": "str (Reactflow will ignore this parameter)"
-    }
+    },
+    "featureType": "raster"
+  },
+  {
+    "nodeName": "generate-isometric-lines",
+    "description": "Generate isometric (contour) lines from DEM read from MinIO and given interval. Optionally upload the result back to MinIO or save locally.",
+    "inputs": {
+      "config": "str (Reactflow will translate it as input)",
+      "client_id": "str (Reactflow will translate it as input)",
+      "artifact_url": "str (Reactflow will take it from the previous step)",
+      "interval": "float (Reactflow will translate it as input)",
+      "store_artifact": "str (Reactflow will ignore this parameter)",
+      "file_path": "str (Reactflow will ignore this parameter)"
+    },
+    "featureType": "raster"
+  },
+  {
+    "nodeName": "flood-fill-model",
+    "description": "Extract raster values to vector features using polygonized raster and spatial join with reducer. Optionally upload the result back to MinIO or save locally.",
+    "inputs": {
+      "config": "str (Reactflow will translate it as input)",
+      "client_id": "str (Reactflow will translate it as input)",
+      "raster_artifact_url": "str (Reactflow will take it from the previous step)",
+      "vector_artifact_url": "str (Reactflow will take it from the previous step)",
+      "reducer": "str (Reactflow will translate it as input)",
+      "sttribute": "str (Reactflow will translate it as input)",
+      "store_artifact": "str (Reactflow will ignore this parameter)",
+      "file_path": "str (Reactflow will ignore this parameter)"
+    },
+    "featureType": "raster"
+  },
+  {
+    "nodeName": "clip-raster",
+    "description": "Clip a raster with a polygon GeoJSON, producing one Cloud-Optimized GeoTIFF. \n",
+    "inputs": {
+      "config_path": "str (Reactflow will ignore this parameter)",
+      "client_id": "str (Reactflow will translate it as input)",
+      "raster_key": "str (Reactflow will take it from the previous step)",
+      "geojson_key": "str (Reactflow will take it from the previous step)",
+      "store_artifact": "str (Reactflow will ignore this parameter)",
+      "file_path": "str (Reactflow will ignore this parameter)"
+    },
+    "featureType": "raster"
   },
   {
     "nodeName": "create-buffer",
+    "description": "Function to buffer the geometries in a geodataframe and save the buffered data to minio or locally.",
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
-      "artifact_url": "str (Reactflow will take it from the previous step)",
+      "artefact_url": "str (Reactflow will take it from the previous step)",
       "buffer_d": "float (Reactflow will translate it as input)",
       "store_artifact": "str (Reactflow will ignore this parameter)",
       "file_path": "str (Reactflow will ignore this parameter)"
-    }
+    },
+    "featureType": "vector"
   },
   {
     "nodeName": "clip-vector",
+    "description": "Clip a target GeoDataFrame with another GeoDataFrame (clip layer). Optionally upload the clipped result back to MinIO or save locally.",
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
@@ -87,28 +130,22 @@
       "clip_artifact_url": "str (Reactflow will take it from the previous step)",
       "store_artifact": "str (Reactflow will ignore this parameter)",
       "file_path": "str (Reactflow will ignore this parameter)"
-    }
-  },
-  {
-    "nodeName": "compute-geometry",
-    "inputs": {
-      "config": "str (Reactflow will ignore this parameter)",
-      "client_id": "str (Reactflow will translate it as input)",
-      "artifact_url": "str (Reactflow will take it from the previous step)",
-      "store_artifact": "str (Reactflow will ignore this parameter)",
-      "file_path": "str (Reactflow will ignore this parameter)"
-    }
+    },
+    "featureType": "vector"
   },
   {
     "nodeName": "features-count",
+    "description": "Function to count the number of features in a geodataframe.",
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
-      "artifact_url": "str (Reactflow will take it from the previous step)"
-    }
+      "artefact_url": "str (Reactflow will take it from the previous step)"
+    },
+    "featureType": "vector"
   },
   {
     "nodeName": "create-delaunay-triangles",
+    "description": "Function to perform Delaunay triangulation, and optionally upload the triangulation back to MinIO or save locally.    ",
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
@@ -116,19 +153,23 @@
       "store_artifact": "str (Reactflow will ignore this parameter)",
       "file_path": "str (Reactflow will ignore this parameter)",
       "**kwargs": "dict (Reactflow will ignore this parameter)"
-    }
+    },
+    "featureType": "vector"
   },
   {
     "nodeName": "download-artifact",
+    "description": "Download features from the minio bucket and save it as a geopackage file.",
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
-      "artifact_url": "str (Reactflow will take it from the previous step)",
+      "artefact_url": "str (Reactflow will take it from the previous step)",
       "save_as": "str (Reactflow will ignore this parameter)"
-    }
+    },
+    "featureType": "vector"
   },
   {
     "nodeName": "fetch-resource",
+    "description": "Function to fetch the resource data from the collections API using the resource_id.",
     "inputs": {
       "client_id": "str (Reactflow will translate it as input)",
       "client_secret": "str (Reactflow will translate it as input)",
@@ -137,10 +178,12 @@
       "store_artifact": "str (Reactflow will ignore this parameter)",
       "config_path": "str (Reactflow will ignore this parameter)",
       "file_path": "str (Reactflow will ignore this parameter)"
-    }
+    },
+    "featureType": "vector"
   },
   {
     "nodeName": "create-intersection",
+    "description": "Function to intersect two geodataframes and save the intersected data to minio or locally.",
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
@@ -148,10 +191,12 @@
       "right_feature": "str (Reactflow will take it from the previous step)",
       "store_artifact": "str (Reactflow will ignore this parameter)",
       "file_path": "str (Reactflow will ignore this parameter)"
-    }
+    },
+    "featureType": "vector"
   },
   {
     "nodeName": "create-optimal-route",
+    "description": "Function to compute the optimal route through a road network for a set of input points.",
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
@@ -159,10 +204,27 @@
       "points_file": "str (Reactflow will translate it as input)",
       "store_artifact": "str (Reactflow will ignore this parameter)",
       "file_path": "str (Reactflow will ignore this parameter)"
-    }
+    },
+    "featureType": "vector"
+  },
+  {
+    "nodeName": "create-voronoi-diagram",
+    "description": "Reads geospatial point data, computes Voronoi polygons, and saves the processed data back to MinIO or locally, while adding point attributes to the polygons. ",
+    "inputs": {
+      "config": "str (Reactflow will ignore this parameter)",
+      "client_id": "str (Reactflow will translate it as input)",
+      "input_artefact_url": "str (Reactflow will take it from the previous step)",
+      "extend_artefact_url": "str (Reactflow will take it from the previous step)",
+      "store_artifact": "str (Reactflow will ignore this parameter)",
+      "file_path": "str (Reactflow will ignore this parameter)",
+      "tolerance": "float (Reactflow will translate it as input)",
+      "only_edges": "enum [True, False] (Reactflow will translate it as input)"
+    },
+    "featureType": "vector"
   },
   {
     "nodeName": "reduce-to-img",
+    "description": "Reads vector data from MinIO, applies reduction operation, and stores the output raster in MinIO.",
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
@@ -172,19 +234,19 @@
       "reducer": "str (Reactflow will translate it as input)",
       "store_artifact": "str (Reactflow will ignore this parameter)",
       "file_path": "str (Reactflow will ignore this parameter)"
-    }
+    },
+    "featureType": "vector"
   },
   {
-    "nodeName": "create-voronoi-diagram",
+    "nodeName": "compute-geometry",
+    "description": "Reads geospatial data from MinIO, computes geometry measures, and optionally saves the processed data back to MinIO or save locally.",
     "inputs": {
       "config": "str (Reactflow will ignore this parameter)",
       "client_id": "str (Reactflow will translate it as input)",
-      "input_artifact_url": "str (Reactflow will take it from the previous step)",
-      "extend_artifact_url": "str (Reactflow will take it from the previous step)",
+      "artifact_url": "str (Reactflow will take it from the previous step)",
       "store_artifact": "str (Reactflow will ignore this parameter)",
-      "file_path": "str (Reactflow will ignore this parameter)",
-      "tolerance": "float (Reactflow will translate it as input)",
-      "only_edges": "enum [True, False] (Reactflow will translate it as input)"
-    }
+      "file_path": "str (Reactflow will ignore this parameter)"
+    },
+    "featureType": "vector"
   }
 ]
