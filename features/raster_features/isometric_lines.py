@@ -77,7 +77,7 @@ def isometric_lines(
 
         if store_artifact:
             save_feature(client_id=client_id, store_artifact=store_artifact, gdf=geo_df, file_path=file_path, config_path=config)
-
+            print(f"{file_path}")
         else:
             print("Data not saved. Set store_artifact to 'minio' or 'local' to save the data.")
             print("Clipping completed successfully.")
