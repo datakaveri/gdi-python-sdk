@@ -86,6 +86,7 @@ def compute_slope(config: str, client_id: str, artifact_url: str, store_artifact
 
     if store_artifact:
         save_raster_artifact(config=config, client_id=client_id, local_path=temp_slope_cog, file_path=file_path, store_artifact=store_artifact)
+        print(f"{file_path}")
     else:
         print("Data not saved. Set store_artifact to minio/local to save the data.")
         print("Slope computed successfully.")

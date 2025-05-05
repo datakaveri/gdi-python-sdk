@@ -9,6 +9,7 @@ import io
 from tqdm import tqdm
 from common.minio_ops import connect_minio,stream_to_minio
 from common.convert_to_cog import tiff_to_cogtiff
+from common.save_raster_artifact import save_raster_artifact
 
 
 def get_assets(client_id: str, client_secret: str, role: str, collection_ids: str, config: str, store_artifact: str = 'minio', dir_path: str = None, item_id: str = None) -> None:
@@ -25,6 +26,7 @@ def get_assets(client_id: str, client_secret: str, role: str, collection_ids: st
     dir_path : str (Reactflow will ignore this parameter)  
     item_id: str (Reactflow will translate it as input)
     """
+    links_list = []
 
     if item_id is not None:
         links_dict = get_stac_item([collection_ids], item_id)
@@ -47,35 +49,40 @@ def get_assets(client_id: str, client_secret: str, role: str, collection_ids: st
                 if dir_path is None:
                     dir_path = "downloaded_from_stac"
                 # Construct filename inside MinIO bucket as key/{band_name}.tif
-                filename = f"{dir_path}/{folder_name}/{band_name}_cog.tif"
-                
+                filename = f"{dir_path}/{folder_name}/{folder_name}_{band_name}_cog.tif"
+                links_list.append(filename) # use join https://www.w3schools.com/python/ref_string_join.asp
                 # file_data = io.BytesIO(response.content)
                 
                 # Write temp files of tiff and geotiff locally
                 temp_tif = "temp_geotiff.tif"
                 with open(temp_tif, "wb") as f:
                     f.write(response.content)
-                if store_artifact == 'local':
-                    output_dir = os.path.join(dir_path, folder_name)
-                    os.makedirs(output_dir, exist_ok=True)
-                    filename = os.path.join(output_dir, f"{band_name}_cog.tif")
-                    # Convert the tiff files    
-                    cog_tif = tiff_to_cogtiff(temp_tif, filename)
-                    print(filename)
-                else:
-                    temp_cogtif = "temp_cogtiff.tif"
-                    cog_tif = tiff_to_cogtiff(temp_tif, temp_cogtif)            
-                    #upload to minio 
-                    stream_to_minio(client, client_id, filename, cog_tif)
-                    os.remove(temp_cogtif)
+
+                # Convert to COG
+                temp_cogtif = "temp_cogtiff.tif"
+                tiff_to_cogtiff(temp_tif, temp_cogtif)
+
+                # Save via save_raster_artifact
+                save_raster_artifact(
+                    config=config,
+                    client_id=client_id,
+                    local_path=temp_cogtif,
+                    file_path=filename,
+                    store_artifact=store_artifact
+                )
+
                 #remove temp files
                 os.remove(temp_tif)
+                os.remove(temp_cogtif)
                 
 
     except Exception as e:
         print(f"Failed to download assets:\n {e}")
 
+    output_paths = '$'.join(links_list)
+    print(output_paths)
 
+  
 # Example Usage
 # client_id = '7dcf1193-4237-48a7-a5f2-4b530b69b1cb'
 # client_secret = "a863cafce5bd3d1bd302ab079242790d18cec974"
