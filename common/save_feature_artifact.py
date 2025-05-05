@@ -22,6 +22,7 @@ def reproject_with_ogr(input_path, output_path, target_epsg="4326"):
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"[ERROR] ogr2ogr reprojection failed: {e}")
 
+
 def save_feature(client_id, gdf, file_path, config_path, store_artifact):
     """
     Save a GeoDataFrame after ensuring it is projected to EPSG:4326 using ogr2ogr.
