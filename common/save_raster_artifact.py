@@ -1,11 +1,8 @@
 import os
 import uuid
-import tempfile
 import shutil
 import warnings
-from osgeo import gdal, osr
 from common.minio_ops import connect_minio, stream_to_minio
-from common.convert_to_cog import tiff_to_cogtiff
 
 warnings.filterwarnings("ignore")
 
