@@ -13,7 +13,7 @@ from common.convert_to_cog import tiff_to_cogtiff
 
 def get_assets(client_id: str, client_secret: str, role: str, collection_ids: str, config: str, store_artifact: str = 'minio', dir_path: str = None, item_id: str = None) -> None:
     """
-    Function to download STAC assets. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-slope.
+    Function to download STAC assets. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as get-stac-assets.
     Parameters
     ----------
     client_id : str (Reactflow will translate it as input)
