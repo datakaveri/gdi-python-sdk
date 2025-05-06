@@ -24,7 +24,7 @@ def get_assets(client_id: str, client_secret: str, role: str, collection_ids: st
     config : str (Reactflow will translate it as input)
     store_artifact : str (Reactflow will ignore this parameter)
     dir_path : str (Reactflow will ignore this parameter)  
-    item_id: str (Reactflow will translate it as input)
+    item_id: str (Reactflow will translate it as input, This parameter will be optoinal)
     """
     links_list = []
 

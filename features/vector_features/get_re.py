@@ -23,8 +23,8 @@ class ResourceFetcher:
         role : enum [consumer, provider, admin] (Reactflow will translate it as input)
         resource_id : str (Reactflow will translate it as input)
         store_artifact : str (Reactflow will ignore this parameter)
-        config_path : str (Reactflow will ignore this parameter)
-        file_path : str (Reactflow will ignore this parameter)
+        config_path : str (Reactflow will ignore this parameter, This parameter will be optoinal)
+        file_path : str (Reactflow will ignore this parameter, This parameter will be optoinal)
         """
 
         try:

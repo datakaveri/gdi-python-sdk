@@ -14,7 +14,7 @@ def download_features(config : str, client_id : str, artifact_url : str, save_as
     config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
-    save_as : str (Reactflow will ignore this parameter)
+    save_as : str (Reactflow will ignore this parameter, This parameter will be optoinal)
     """ 
     
     client = connect_minio(config, client_id)
