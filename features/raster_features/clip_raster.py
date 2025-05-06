@@ -49,7 +49,7 @@ def clip_raster(
     file_path: str | None = None,
 ) -> str:
     """
-    Clip a raster with a polygon GeoJSON, producing one Cloud-Optimized GeoTIFF..In editor it will be renamed as clip-raster.
+    Clip a raster with a polygon GeoJSON, producing one Cloud-Optimized GeoTIFF..In editor it will be renamed as raster-clip.
 
     Parameters
     ----------
