@@ -17,7 +17,7 @@ def compute_slope(config: str, client_id: str, artifact_url: str, store_artifact
     client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     store_artifact : str (Reactflow will ignore this parameter)
-    file_path : str (Reactflow will ignore this parameter)
+    file_path : str (Reactflow will ignore this parameter, This parameter will be optoinal)
     """
 
     client = connect_minio(config, client_id)

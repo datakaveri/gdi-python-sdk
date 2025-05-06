@@ -145,7 +145,7 @@ def reduce_to_image(config: str, client_id: str, artifact_url: str, attribute: s
     grid_size : int (Reactflow will translate it as input)
     reducer : str (Reactflow will translate it as input)
     store_artifact : str (Reactflow will ignore this parameter)
-    file_path : str (Reactflow will ignore this parameter)
+    file_path : str (Reactflow will ignore this parameter, This parameter will be optoinal)
     """
 
     client = connect_minio(config, client_id)
