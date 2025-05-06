@@ -25,7 +25,7 @@ def extract_raster_to_vector(
     Extract raster values to vector features using polygonized raster and spatial join with reducer. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as reduce-to-feature.
     Parameters
     ----------
-    config : str (Reactflow will translate it as input)
+    config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     raster_artifact_url : str (Reactflow will take it from the previous step)
     vector_artifact_url : str (Reactflow will take it from the previous step)

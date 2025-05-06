@@ -23,7 +23,7 @@ def isometric_lines(
     Generate isometric (contour) lines from DEM read from MinIO and given interval. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-isometric-lines.
     Parameters
     ----------
-    config : str (Reactflow will translate it as input)
+    config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     interval : float (Reactflow will translate it as input)
