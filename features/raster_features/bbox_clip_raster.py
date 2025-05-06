@@ -38,25 +38,25 @@ def reproject_raster(input_raster: str, output_raster: str, target_srs_wkt: str)
         srcDSOrSrcDSTab=input_raster,
         options=warp_options
     )
-    # print(f"[INFO] Raster reprojected to match vector CRS.")
 
-def clip_raster(
+
+def bbox_clip_raster(
     config_path: str,
     client_id: str,
     raster_key: str,
-    geojson_key: str,
+    vector_path: str,
     store_artifact: str = "minio",
     file_path: str | None = None,
 ) -> str:
     """
-    Clip a raster with a polygon GeoJSON, producing one Cloud-Optimized GeoTIFF..In editor it will be renamed as raster-clip.
+    Clip a raster with a bbox input as polygon GeoJSON (provided locally), producing one Cloud-Optimized GeoTIFF. In editor it will be renamed as bbox-raster-clip.
 
     Parameters
     ----------
     config_path : str (Reactflow will ignore this parameter)
     client_id   : str (Reactflow will translate it as input)
     raster_key  : str (Reactflow will take it from the previous step)
-    geojson_key : str (Reactflow will take it from the previous step)
+    vector_path : str (Reactflow will translate it as input)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path   : str (Reactflow will ignore this parameter)
     """
@@ -64,36 +64,32 @@ def clip_raster(
     client = connect_minio(config_path, client_id)
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        loc_geo   = os.path.join(tmpdir, "clip_poly.geojson")
         loc_rst   = os.path.join(tmpdir, "input_raster.tif")
         aligned_rst = os.path.join(tmpdir, "aligned_raster.tif")
         raw_clip  = os.path.join(tmpdir, "raw_clip.tif")
         final_cog = os.path.join(tmpdir, "clip_cog.tif")
 
-        # Download inputs from MinIO
-        client.fget_object(client_id, geojson_key, loc_geo)
+        # Download raster from MinIO
         client.fget_object(client_id, raster_key, loc_rst)
 
         # Step 1: Check CRS
         raster_crs = get_crs(loc_rst)
-        vector_crs = get_crs(loc_geo)
+        vector_crs = get_crs(vector_path)
 
         if raster_crs != vector_crs:
-            # print("[WARNING] CRS mismatch detected. Reprojecting raster to match vector CRS...")
             reproject_raster(loc_rst, aligned_rst, target_srs_wkt=vector_crs)
             raster_to_use = aligned_rst
         else:
-            # print("[INFO] Raster and vector CRS match. Proceeding directly.")
             raster_to_use = loc_rst
 
         # Step 2: Clip raster using vector
         warp_options = gdal.WarpOptions(
             format="GTiff",
-            cutlineDSName=loc_geo,
+            cutlineDSName=vector_path,
             cropToCutline=True,
-            dstNodata=0,           # Set 0 outside polygon
-            resampleAlg='near',    # Nearest neighbor
-            outputType=gdal.GDT_Float32,  # Preserve DEM precision
+            dstNodata=0,
+            resampleAlg='near',
+            outputType=gdal.GDT_Float32,
             multithread=True,
             warpMemoryLimit=512,
             cutlineBlend=0,
@@ -109,12 +105,12 @@ def clip_raster(
             raise RuntimeError("[ERROR] GDAL Warp failed during clipping.")
 
         result.FlushCache()
-        result = None  # Close GDAL dataset
+        result = None
 
         # Step 3: Convert clipped raster to Cloud Optimized GeoTIFF
         tiff_to_cogtiff(raw_clip, final_cog)
 
-        # Step 4: Save clipped COG to MinIO or locally
+        # Step 4: Save to MinIO or locally
         with io.StringIO() as _buf, redirect_stdout(_buf):
             save_raster_artifact(
                 config=config_path,
@@ -125,4 +121,3 @@ def clip_raster(
             )
         print(f"{file_path}")
         return file_path if store_artifact.lower() == "minio" else final_cog
-
