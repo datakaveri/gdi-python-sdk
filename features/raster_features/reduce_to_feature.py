@@ -22,7 +22,7 @@ def extract_raster_to_vector(
     file_path: str = None
 ) -> str:
     """
-    Extract raster values to vector features using polygonized raster and spatial join with reducer. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as flood-fill-model.
+    Extract raster values to vector features using polygonized raster and spatial join with reducer. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as reduce-to-feature.
     Parameters
     ----------
     config : str (Reactflow will translate it as input)
