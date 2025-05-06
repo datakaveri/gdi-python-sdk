@@ -28,7 +28,7 @@ def isometric_lines(
     artifact_url : str (Reactflow will take it from the previous step)
     interval : float (Reactflow will translate it as input)
     store_artifact : str (Reactflow will ignore this parameter)
-    file_path : str (Reactflow will ignore this parameter, This parameter will be optoinal)
+    file_path : str (Reactflow will ignore this parameter)
     """
  
     minio_client = connect_minio(config, client_id)
