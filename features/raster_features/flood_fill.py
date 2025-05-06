@@ -21,7 +21,7 @@ def flood_fill(
     Generate flood inundated raster based on DEM read from MinIO and input threshold value. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as flood-fill-model.
     Parameters
     ----------
-    config : str (Reactflow will translate it as input)
+    config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     threshold : float (Reactflow will translate it as input)

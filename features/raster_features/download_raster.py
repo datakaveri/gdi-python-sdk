@@ -8,7 +8,7 @@ from datetime import timedelta
 import uuid
 def download_rasters(config : str, client_id : str, artifact_url : str) -> str:
     """
-    Download features from the minio bucket and save it as a geopackage file.In editor it will be renamed as download-artifact.
+    Download features from the minio bucket and save it as a geopackage file.In editor it will be renamed as download-raster-artifact.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)

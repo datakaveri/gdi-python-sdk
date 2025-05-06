@@ -13,6 +13,7 @@ from features.vector_features.optimalRoute import compute_optimal_route
 from features.vector_features.voronoi_diagram import create_voronoi_diagram
 from features.vector_features.clip_data import make_clip
 from features.vector_features.delaunay_triangles import make_delaunay_triangles
+from features.vector_features.bbox_clip_feature import bbox_clip_feature
 
 from features.raster_features.search_cat import search_stac
 from features.raster_features.get_data import get_assets
@@ -22,6 +23,10 @@ from features.raster_features.compute_slope import compute_slope
 from features.raster_features.NDVI import compute_ndvi 
 from features.raster_features.clip_raster import clip_raster
 from features.raster_features.merge_rasters import merge_rasters  
+from features.raster_features.download_raster import download_rasters
+from features.raster_features.bbox_clip_raster import bbox_clip_raster
+from features.raster_features.local_correlation import compute_local_correlation_5x5
+from features.raster_features.reduce_to_feature import extract_raster_to_vector
 
 from common.minio_ops import get_ls
 
@@ -212,6 +217,18 @@ def create_delaunay_triangles(config_path, client_id, artifact_url, store_artifa
     extra_kwargs = {"qhull_options": qhull_options} if qhull_options else {}
     make_delaunay_triangles(config_path, client_id, artifact_url, store_artifact, file_path,**extra_kwargs)
 
+@click.command()
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name.")
+@click.option('--target-artifact-url', required=True, help="URL of the target artifact.")
+@click.option('--clip-vector-path', required=True, help="Local filepath of the polygon GeoJSON used as the bbox to clip.")
+@click.option('--store-artifact', default='minio',  help="Store the clipped artifact. Set it to local/minio")
+@click.option('--file-path', default="None", help="Path to save the clipped artifact")
+def bbox_feature_clip(config_path, client_id, target_artifact_url, clip_vector_path, store_artifact, file_path):
+    """
+    Clip a target feature to the extent bbox, input as a geojson from local path.
+    """
+    bbox_clip_feature(config_path, client_id, target_artifact_url, clip_vector_path, store_artifact, file_path)
 
 # Raster feature utilities
 
@@ -244,7 +261,7 @@ def get_stac_assets(client_id, client_secret, role, collection_ids, config_path,
 def flood_fill_model(config_path, client_id, artifact_url, threshold, store_artifact, file_path):
     '''Create flood inundated raster based on input DEM and threshold value'''
     flood_fill(config_path, client_id, artifact_url, threshold, store_artifact, file_path)
-    click.echo(file_path)
+
     
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
@@ -256,7 +273,6 @@ def flood_fill_model(config_path, client_id, artifact_url, threshold, store_arti
 def generate_isometric_lines(config_path, client_id, artifact_url, interval, store_artifact, file_path):
     '''Create flood inundated raster based on input DEM and threshold value'''
     isometric_lines(config_path, client_id, artifact_url, interval, store_artifact, file_path)
-    # click.echo(file_path)
 
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
@@ -267,7 +283,6 @@ def generate_isometric_lines(config_path, client_id, artifact_url, interval, sto
 def generate_slope(config_path, client_id, artifact_url, store_artifact, file_path):
     '''Create slope raster for the input DEM raster'''
     compute_slope(config_path, client_id, artifact_url, store_artifact, file_path)
-    click.echo(file_path)
 
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
@@ -279,7 +294,7 @@ def generate_slope(config_path, client_id, artifact_url, store_artifact, file_pa
 def generate_ndvi(config_path, client_id, red_artifact_url, nir_artifact_url, store_artifact, file_path):
     '''Create NDVI raster from the input Red and NIR band rasters'''
     compute_ndvi(config_path, client_id, red_artifact_url, nir_artifact_url, store_artifact, file_path)
-    click.echo(file_path)
+
 
 @click.command()
 @click.option('--config-path', default="./config.json",help="Path to the MinIO config file.")
@@ -291,7 +306,6 @@ def generate_ndvi(config_path, client_id, red_artifact_url, nir_artifact_url, st
 def raster_clip(config_path, client_id, raster_key, geojson_key, store_artifact, file_path):
     """Clip a raster with a GeoJSON polygon and output one COG."""
     final_path = clip_raster(config_path, client_id, raster_key, geojson_key, store_artifact, file_path)
-    click.echo(final_path)
 
 @click.command()
 @click.option('--config-path', default="./config.json",help="Path to the MinIO config file.")
@@ -302,4 +316,51 @@ def raster_clip(config_path, client_id, raster_key, geojson_key, store_artifact,
 def rasters_merge(config_path, client_id, prefix, store_artifact, file_path):
     """Merge multiple rasters into a single COG and output its path."""
     final_path = merge_rasters(config_path, client_id, prefix, store_artifact, file_path)
-    click.echo(final_path)
+
+@click.command()
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--client-id', required=True, help="Client ID for authentication.")
+@click.option('--artifact-url', required=True, help="URL of the artifact to download.")
+def download_raster_artifact(config_path, client_id, artifact_url, save_as):
+    """Generate presigned url to download raster artifact."""
+    download_rasters(config_path, client_id, artifact_url, save_as)
+
+@click.command()
+@click.option('--config-path', default="./config.json",help="Path to the MinIO config file.")
+@click.option('--client-id', required=True,help="Bucket name (client‑id).")
+@click.option('--raster-key', required=True,help="Object key of the raster (COG/GeoTIFF) to clip.")
+@click.option('--vector-path', required=True,help="Local filepath of the polygon GeoJSON used as the mask.")
+@click.option('--store-artifact', default='minio',  help="Save the fetched object to Minio or locally. set it as local or minio")
+@click.option('--file-path',help="Optional path to save output file. If not provided, a UUID name is used.")
+def bbox_raster_clip(config_path, client_id, raster_key, vector_path, store_artifact, file_path):
+    """Clip a raster with a GeoJSON polygon and output one COG."""
+    final_path = bbox_clip_raster(config_path, client_id, raster_key, vector_path, store_artifact, file_path)
+
+@click.command()
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
+@click.option('--x', required=True, help="first raster key in MinIO.")
+@click.option('--y', required=True, help="second raster key in MinIO.")
+@click.option('--chunk-size', default=500, type=int, help="Chunk size for reading/writing blocks.")
+@click.option('--store-artifact', default='minio', help="Store generated correlation raster. Set it to local/minio")
+@click.option('--file-path', help="Path for for saving correlation raster generated. If not provided, a UUID name is used.")
+def generate_local_correlation(config_path, client_id, x, y, chunk_size, store_artifact, file_path):
+    """
+    Compute a 5x5 local correlation between two rasters, where the window size is fixed as 5.
+    """  
+    compute_local_correlation_5x5(config_path, client_id, x, y, chunk_size, store_artifact, file_path)
+
+@click.command()
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
+@click.option('--raster-artifact-url', required=True, help="Path to raster file in MinIO.")
+@click.option('--vector-artifact-url', required=True, help="Path to vector file (GeoJSON or GPKG).")
+@click.option('--reducer', required=True, type=click.Choice(['mean', 'min', 'max', 'count', 'sum']), help="Reducer operation to apply.")
+@click.option('--attribute', required=True, help="Name of attribute to store extracted value in output.")
+@click.option('--store-artifact', default='minio', help="Set to 'minio' to upload result, or 'local' to save locally.")
+@click.option('--file-path', default=None, help="Optional path to save output file. If not provided, a UUID name is used.")
+def reduce_to_feature(config_path, client_id, raster_artifact_url, vector_artifact_url, reducer, attribute, store_artifact, file_path):
+    """
+    Extract raster values into vector features using spatial join with a specified reducer.
+    """
+    extract_raster_to_vector(config_path, client_id, raster_artifact_url, vector_artifact_url, reducer, attribute, store_artifact, file_path)

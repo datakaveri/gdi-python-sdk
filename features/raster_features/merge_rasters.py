@@ -53,7 +53,7 @@ def merge_rasters(
     file_path: str | None = None,
 ) -> str:
     """
-    Merge every raster under <client_id>/<prefix>/ recursively into a single COG.
+    Merge every raster under <client_id>/<prefix>/ recursively into a single COG. In editor it will be renamed as rasters-merge.
 
     Parameters
     ----------
@@ -84,5 +84,5 @@ def merge_rasters(
                 file_path=file_path,
                 store_artifact=store_artifact,
             )
-            print(f"{file_path}")
+        print(f"{file_path}")
         return file_path if store_artifact.lower() == "minio" else cog_local
