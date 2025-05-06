@@ -23,7 +23,7 @@ def create_voronoi_diagram(
     input_artifact_url : str (Reactflow will take it from the previous step)
     extend_artifact_url : str (Reactflow will take it from the previous step)
     store_artifact : str (Reactflow will ignore this parameter)
-    file_path : str (Reactflow will ignore this parameter, This parameter will be optoinal)
+    file_path : str (Reactflow will ignore this parameter)
     tolerance : float (Reactflow will translate it as input, This parameter will be optoinal)
     only_edges : enum [True, False] (Reactflow will translate it as input, This parameter will be optoinal)
     """
