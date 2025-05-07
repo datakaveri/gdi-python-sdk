@@ -27,6 +27,7 @@ from features.raster_features.download_raster import download_rasters
 from features.raster_features.bbox_clip_raster import bbox_clip_raster
 from features.raster_features.local_correlation import compute_local_correlation_5x5
 from features.raster_features.reduce_to_feature import extract_raster_to_vector
+from features.raster_features.band_extraction import band_extraction
 
 from common.minio_ops import get_ls
 
@@ -364,3 +365,13 @@ def reduce_to_feature(config_path, client_id, raster_artifact_url, vector_artifa
     Extract raster values into vector features using spatial join with a specified reducer.
     """
     extract_raster_to_vector(config_path, client_id, raster_artifact_url, vector_artifact_url, reducer, attribute, store_artifact, file_path)
+
+@click.command()
+@click.option('--asset-list', required=True, help="String of paths to geotiff separated by delimiter $")
+@click.option('--item-key', required=True, help="Item title as key")
+@click.option('--asset-key', required=True, help="Keyword in stac asset to enable search in string of paths")
+def extract_band_path(asset_list, item_key, asset_key):
+    """
+    To extract a band/ raster image path with item id and asset keyword from string of paths separated by delimiter $.
+    """
+    band_extraction(asset_list, item_key, asset_key)
