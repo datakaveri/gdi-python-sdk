@@ -15,7 +15,7 @@ def make_intersection(config : str, client_id : str, left_feature : str, right_f
     left_feature : str (Reactflow will take it from the previous step)
     right_feature : str (Reactflow will take it from the previous step)
     store_artifact : str (Reactflow will ignore this parameter)
-    file_path : str (Reactflow will ignore this parameter, This parameter will be optoinal)
+    file_path : str (Reactflow will ignore this parameter)
     """
     
     client = connect_minio(config, client_id)

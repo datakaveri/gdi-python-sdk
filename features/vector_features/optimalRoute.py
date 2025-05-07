@@ -29,7 +29,7 @@ def compute_optimal_route(
     artifact_url : str (Reactflow will take it from the previous step)
     points_file : str (Reactflow will translate it as input)
     store_artifact : str (Reactflow will ignore this parameter)
-    file_path : str (Reactflow will ignore this parameter, This parameter will be optoinal)
+    file_path : str (Reactflow will ignore this parameter)
     """
 
     # 1. Connect to MinIO
