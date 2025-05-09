@@ -24,8 +24,8 @@ def create_voronoi_diagram(
     extend_artifact_url : str (Reactflow will take it from the previous step, This parameter will be optoinal)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
-    tolerance : float (Reactflow will translate it as input, This parameter will be optoinal)
-    only_edges : enum [True, False] (Reactflow will translate it as input, This parameter will be optoinal)
+    tolerance : float (Reactflow will translate it as input, This parameter will be optional)
+    only_edges : enum [True, False] (Reactflow will translate it as input, This parameter will be optional)
     """
     client = connect_minio(config, client_id)
     
