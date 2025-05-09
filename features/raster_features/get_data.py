@@ -19,7 +19,7 @@ def get_assets(client_id: str, client_secret: str, role: str, collection_ids: st
     ----------
     client_id : str (Reactflow will translate it as input)
     client_secret : str (Reactflow will translate it as input)
-    role : str (Reactflow will translate it as input)
+    role : enum [consumer, provider, admin] (Reactflow will translate it as input)
     collection_ids : str (Reactflow will translate it as input)
     config : str (Reactflow will ignore this parameter)
     store_artifact : str (Reactflow will ignore this parameter)

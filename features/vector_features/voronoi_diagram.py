@@ -21,7 +21,7 @@ def create_voronoi_diagram(
     config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     input_artifact_url : str (Reactflow will take it from the previous step)
-    extend_artifact_url : str (Reactflow will take it from the previous step)
+    extend_artifact_url : str (Reactflow will take it from the previous step, This parameter will be optoinal)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
     tolerance : float (Reactflow will translate it as input, This parameter will be optoinal)
