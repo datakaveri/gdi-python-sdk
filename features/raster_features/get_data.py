@@ -14,7 +14,7 @@ from common.save_raster_artifact import save_raster_artifact
 
 def get_assets(client_id: str, client_secret: str, role: str, collection_ids: str, config: str, store_artifact: str = 'minio', dir_path: str = None, item_id: str = None) -> None:
     """
-    Function to download STAC assets. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as get-stac-assets.
+    Function to download STAC assets. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as get-raster-data.
     Parameters
     ----------
     client_id : str (Reactflow will translate it as input)

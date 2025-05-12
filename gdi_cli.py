@@ -66,7 +66,7 @@ def generate_token(client_id, client_secret, role):
 @click.option('--file-path', help="Path to save the fetched object.")
 
 
-def fetch_resource(client_id, client_secret, role, resource_id, store_artifact, config_path, file_path):
+def get_vector_data(client_id, client_secret, role, resource_id, store_artifact, config_path, file_path):
     """Fetch resource data."""
     resource_data = get_resource(client_id, client_secret, role, resource_id, store_artifact, config_path, file_path)
     
@@ -96,7 +96,7 @@ def ls_objects(config_path, client_id):
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--artifact-url', required=True, help="URL of the artifact to download.")
 @click.option('--save-as', help="Save the fetched object to Minio as the given file name.")
-def download_artifact(config_path, client_id, artifact_url, save_as):
+def download_vector_features(config_path, client_id, artifact_url, save_as):
     """Download the artifact."""
     download_features(config_path, client_id, artifact_url, save_as)
 
@@ -127,7 +127,7 @@ def create_intersection(config_path, client_id, left_feature, right_feature, sto
 
 @click.command()
 @click.option('--location', required=True, help="Name of the place. City, State, Country etc.")
-def list_data(location):
+def list_vector_data(location):
     """List data for a location."""
     data = list_features(location)
     click.echo(data)
@@ -153,7 +153,7 @@ def compute_geometry(config_path, client_id, artifact_url, store_artifact, file_
 @click.option('--reducer', required=True, help="Reducer operation.")
 @click.option('--store-artifact', default='minio', help="Store reduced raster. Set it to local/minio.")
 @click.option('--file-path', help="Path to save the reduced raster artifact.")
-def reduce_to_img(config_path, client_id, artifact_url, attribute, grid_size, reducer, store_artifact, file_path):
+def reduce_to_raster(config_path, client_id, artifact_url, attribute, grid_size, reducer, store_artifact, file_path):
     """
     Reads vector data from MinIO, applies reduction operation, and stores the output raster in MinIO.
     """
@@ -248,7 +248,7 @@ def search_cat(collection_ids):
 @click.option('--store-artifact', default='minio', help="Store downloaded STAC assets. Set it to local/minio")
 @click.option('--dir-path', help="Specify folder name to save the downloaded assets")
 @click.option('--item-id', help="STAC item if to be downloaded, if not specfied all assets in the collection id provided will be downloaded.")
-def get_stac_assets(client_id, client_secret, role, collection_ids, config_path, store_artifact, dir_path, item_id):
+def get_raster_data(client_id, client_secret, role, collection_ids, config_path, store_artifact, dir_path, item_id):
     '''Download a particular assets or all the assets in the collections specified.'''
     get_assets(client_id, client_secret, role, collection_ids, config_path,store_artifact, dir_path, item_id)
 
@@ -322,7 +322,7 @@ def rasters_merge(config_path, client_id, prefix, store_artifact, file_path):
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--artifact-url', required=True, help="URL of the artifact to download.")
-def download_raster_artifact(config_path, client_id, artifact_url, save_as):
+def download_raster(config_path, client_id, artifact_url, save_as):
     """Generate presigned url to download raster artifact."""
     download_rasters(config_path, client_id, artifact_url, save_as)
 
