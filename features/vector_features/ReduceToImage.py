@@ -135,7 +135,7 @@ def _add_rat(file_path, category_descriptions):
 
 def reduce_to_image(config: str, client_id: str, artifact_url: str, attribute: str, grid_size: float, reducer: str, store_artifact: str, file_path: str = None) -> None:
     """
-    Reads vector data from MinIO, applies reduction operation, and stores the output raster in MinIO.In editor it will be renamed as reduce-to-img.
+    Reads vector data from MinIO, applies reduction operation, and stores the output raster in MinIO.In editor it will be renamed as reduce-to-raster.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)

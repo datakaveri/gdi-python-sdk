@@ -8,7 +8,7 @@ from datetime import timedelta
 import uuid
 def download_features(config : str, client_id : str, artifact_url : str, save_as : str) -> str:
     """
-    Download features from the minio bucket and save it as a geopackage file.In editor it will be renamed as download-artifact.
+    Download features from the minio bucket and save it as a geopackage file.In editor it will be renamed as download-vector-features.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
