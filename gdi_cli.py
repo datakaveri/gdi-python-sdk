@@ -23,7 +23,7 @@ from features.raster_features.compute_slope import compute_slope
 from features.raster_features.NDVI import compute_ndvi 
 from features.raster_features.clip_raster import clip_raster
 from features.raster_features.merge_rasters import merge_rasters  
-from features.raster_features.download_raster import download_rasters
+from features.raster_features.download_raster import download_rasters_artifact
 from features.raster_features.bbox_clip_raster import bbox_clip_raster
 from features.raster_features.local_correlation import compute_local_correlation_5x5
 from features.raster_features.reduce_to_feature import extract_raster_to_vector
@@ -324,7 +324,7 @@ def rasters_merge(config_path, client_id, prefix, store_artifact, file_path):
 @click.option('--artifact-url', required=True, help="URL of the artifact to download.")
 def download_raster(config_path, client_id, artifact_url, save_as):
     """Generate presigned url to download raster artifact."""
-    download_rasters(config_path, client_id, artifact_url, save_as)
+    download_rasters_artifact(config_path, client_id, artifact_url, save_as)
 
 @click.command()
 @click.option('--config-path', default="./config.json",help="Path to the MinIO config file.")
