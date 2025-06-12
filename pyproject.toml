@@ -26,6 +26,21 @@ numba = "0.61.2"
 [tool.poetry.scripts]
 gdi = "gdi:cli"
 
+[[tool.poetry.packages]]
+include = "gdi_cli.py"
+
+[[tool.poetry.packages]]
+include = "gdi.py"
+
+[[tool.poetry.packages]]
+include = "auth"
+
+[[tool.poetry.packages]]
+include = "common"
+
+[[tool.poetry.packages]]
+include = "features"
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
