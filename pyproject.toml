@@ -6,7 +6,7 @@ authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.12,<4"
+python = ">=3.11,<4"
 click = { git = "https://github.com/pallets/click.git" }
 requests = { git = "https://github.com/psf/requests.git" }
 geopandas = { git = "https://github.com/geopandas/geopandas.git" }
