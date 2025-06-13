@@ -49,11 +49,15 @@ def save_feature(client_id, gdf, file_path, config_path, store_artifact):
             raise Exception(f"[ERROR] Error while saving to MinIO: {e}")
     elif store_artifact.lower() == "local":
         try:
-            os.makedirs(os.path.dirname(file_path), exist_ok=True)
-            reprojected_gdf.to_file(file_path, driver="GeoJSON")
-            print(f"[INFO] Data saved locally to {file_path}")
+            folder = os.path.dirname(file_path)
+            if folder:
+                os.makedirs(folder, exist_ok=True)
+            save_path = file_path if folder else os.path.join(os.getcwd(), file_path)
+            reprojected_gdf.to_file(save_path, driver="GeoJSON")
+            print(f"[INFO] Data saved locally to {save_path}")
         except Exception as e:
             raise Exception(f"[ERROR] Error while saving locally: {e}")
+
     else:
         raise ValueError("[ERROR] Invalid value for store_artifact. Use either 'local' or 'minio'.")
 
