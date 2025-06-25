@@ -244,7 +244,7 @@ def search_cat(collection_ids):
 @click.option('--client-secret', required=True, help="Client secret for authentication.")
 @click.option('--role', required=True, help="Role for the token.")
 @click.option('--collection-ids', required=True, help="Collection ID to search and access a specific collection")
-@click.option('--config-path', required=False, help="Path to the config file.")
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
 @click.option('--store-artifact', default='minio', help="Store downloaded STAC assets. Set it to local/minio")
 @click.option('--dir-path', help="Specify folder name to save the downloaded assets")
 @click.option('--item-id', help="STAC item if to be downloaded, if not specfied all assets in the collection id provided will be downloaded.")

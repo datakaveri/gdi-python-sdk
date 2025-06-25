@@ -35,7 +35,7 @@ def get_assets(client_id: str, client_secret: str, role: str, collection_ids: st
     token_generator = StacTokenGenerator(client_id, client_secret, role, collection_ids)
     auth_token = token_generator.generate_token()
     headers = {"Authorization": f"Bearer {auth_token}"}
-    client = connect_minio(config, client_id)
+    # client = connect_minio(config, client_id)
 
     try:
         for folder_name, assets in links_dict.items():
