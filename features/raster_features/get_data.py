@@ -72,8 +72,9 @@ def get_assets(client_id: str, client_secret: str, role: str, collection_ids: st
                 )
 
                 #remove temp files
-                os.remove(temp_tif)
-                os.remove(temp_cogtif)
+                for f in [temp_tif, temp_cogtif]:
+                    if os.path.exists(f):
+                        os.remove(f)
                 
 
     except Exception as e:
