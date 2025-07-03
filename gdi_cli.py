@@ -14,6 +14,7 @@ from features.vector_features.voronoi_diagram import create_voronoi_diagram
 from features.vector_features.clip_data import make_clip
 from features.vector_features.delaunay_triangles import make_delaunay_triangles
 from features.vector_features.bbox_clip_feature import bbox_clip_feature
+from features.vector_features.vector_format_comvert import convert_format
 
 from features.raster_features.search_cat import search_stac
 from features.raster_features.get_data import get_assets
@@ -230,6 +231,42 @@ def bbox_feature_clip(config_path, client_id, target_artifact_url, clip_vector_p
     Clip a target feature to the extent bbox, input as a geojson from local path.
     """
     bbox_clip_feature(config_path, client_id, target_artifact_url, clip_vector_path, store_artifact, file_path)
+
+
+@click.command()
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name.")
+@click.option('--store-artifact', default='minio', help="Store the raster artifact. Set it to local/minio.")
+@click.option('--input-vector', required=True, help="URL of the input raster artifact.")
+@click.option('--file-path', default="None", help="Path to save the raster artifact.")
+def convert_vector(config_path, client_id, store_artifact, input_vector, file_path):
+    """
+    Convert vector data to a different format (GeoJSON, Shapefile, GPKG) and save it.
+    """
+    convert_format(config_path, client_id, store_artifact, input_vector, file_path)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Raster feature utilities
 
