@@ -20,8 +20,10 @@ scipy = "1.15.2"
 tqdm = '4.67.0'
 rioxarray = {git = "https://github.com/corteva/rioxarray.git"}
 scikit-image = '0.25.2'
-
+fiona ="1.10.1"
 numba = "0.61.2"
+
+
 
 [tool.poetry.scripts]
 gdi = "gdi:cli"
