@@ -128,10 +128,10 @@ def create_intersection(config_path, client_id, left_feature, right_feature, sto
 
 @click.command()
 @click.option('--location', required=True, help="Name of the place. City, State, Country etc.")
-def list_vector_data(location):
+def list_data(location):
     """List data for a location."""
-    data = list_features(location)
-    click.echo(data)
+    list_features(location)
+    
 
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
