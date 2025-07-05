@@ -236,14 +236,16 @@ def bbox_feature_clip(config_path, client_id, target_artifact_url, clip_vector_p
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
 @click.option('--client-id', required=True, help="MinIO bucket name.")
-@click.option('--store-artifact', default='minio', help="Store the raster artifact. Set it to local/minio.")
-@click.option('--input-vector', required=True, help="URL of the input raster artifact.")
-@click.option('--file-path', default="None", help="Path to save the raster artifact.")
-def convert_vector(config_path, client_id, store_artifact, input_vector, file_path):
+@click.option('--input-vector', required=True, help="URL of the input vector artifact.")
+@click.option('--input-artifact', required=True, help="Store the vector artifact. Set it to local/minio.")
+@click.option('--file-path', default="None", help="Path to save the vector artifact.")
+@click.option('--store-artifact', default='minio', help="Store the vector artifact. Set it to local/minio.")
+
+def convert_vector(config_path, client_id, store_artifact, input_vector, file_path, input_artifact):
     """
     Convert vector data to a different format (GeoJSON, Shapefile, GPKG) and save it.
     """
-    convert_format(config_path, client_id, store_artifact, input_vector, file_path)
+    convert_format(config_path, client_id, input_vector, input_artifact, file_path, store_artifact)
 
 
 

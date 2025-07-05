@@ -1,103 +1,95 @@
 import geopandas as gpd
 import fiona
 import os
-from common.minio_ops import connect_minio, stream_to_minio
 import io
+import tempfile
+from typing import Optional
+from common.minio_ops import connect_minio, stream_to_minio
 
+# Enable KML support
 fiona.supported_drivers['KML'] = 'rw'
 
+# Mapping of file extensions to Fiona drivers
+DRIVER_MAPPING = {
+    '.geojson': 'GeoJSON',
+    '.shp': 'ESRI Shapefile',
+    '.gpkg': 'GPKG',
+    '.kml': 'KML'
+}
 
-def convert_format(config : str, client_id : str, store_artifact : str, input_vector: str, file_path: str ) -> None:
-   
-    # Edge cases
-   if os.path.splitext(input_vector)[1] == os.path.splitext(file_path)[1]:
-        print("The original and new filenames have the same extension. No conversion needed.")
+
+def convert_vector_format(
+    config_path: str,
+    client_id:str,
+    input_path: str,
+    input_store: str,
+    output_path: str,
+    output_store: str,
+    
+    
+) -> None:
+    """
+    Convert a vector file from one supported format to another, optionally reading from
+    or writing to a MinIO bucket.
+
+    Parameters:
+    - input_path: Local path or MinIO object name of the source file
+    - output_path: Local path or MinIO object name for the converted file
+    - input_store: 'local' or 'minio'; where to read the source from
+    - output_store: 'local' or 'minio'; where to write the result
+    - config_path: Path to MinIO config JSON
+    - client_id: MinIO bucket name (required if using MinIO stores)
+    """
+    # Validate store parameters
+    if input_store not in ('local', 'minio') or output_store not in ('local', 'minio'):
+        raise ValueError("input_store and output_store must be either 'local' or 'minio'.")
+
+    # Validate extensions
+    src_ext = os.path.splitext(input_path)[1].lower()
+    dst_ext = os.path.splitext(output_path)[1].lower()
+    if src_ext == dst_ext:
+        print("Source and destination formats are identical; skipping conversion.")
         return
-   if not isinstance(input_vector, str) or not isinstance(file_path, str):
-        raise TypeError("Both input_vector and file_path must be strings.")
-   
-   if not input_vector or not file_path:
-        raise ValueError("Both input_vector and file_path must be provided and cannot be empty.")
+    if src_ext not in DRIVER_MAPPING or dst_ext not in DRIVER_MAPPING:
+        raise ValueError(f"Unsupported format. Supported extensions: {list(DRIVER_MAPPING.keys())}")
 
-   if not os.path.exists(input_vector):
-        raise FileNotFoundError(f"The original file '{input_vector}' does not exist.")
-   
-   if os.path.splitext(input_vector)[1] not in ['.geojson', '.shp', '.gpkg', '.kml']:
-        raise ValueError("Unsupported original file format. Supported formats are: .geojson, .shp, .gpkg, .kml")
+    # Prepare MinIO client if needed
+    client = None
+    if 'minio' in (input_store, output_store):
+        if not client_id:
+            raise ValueError("client_id must be provided when using MinIO store.")
+        client = connect_minio(config_path, client_id)
 
+    # Read the source into a GeoDataFrame
+    if input_store == 'local':
+        if not os.path.exists(input_path):
+            raise FileNotFoundError(f"Input file '{input_path}' does not exist.")
+        gdf = gpd.read_file(input_path)
+    else:
+        resp = client.get_object(client_id, input_path)
+        with io.BytesIO(resp.read()) as bio:
+            gdf = gpd.read_file(bio)
 
+    # Ensure CRS is EPSG:4326
+    if gdf.crs is None:
+        gdf = gdf.set_crs(epsg=4326)
+    elif gdf.crs.to_epsg() != 4326:
+        gdf = gdf.to_crs(epsg=4326)
 
+    # Perform conversion
+    driver = DRIVER_MAPPING[dst_ext]
 
+    if output_store == 'local':
+        # Write directly to the local filesystem
+        gdf.to_file(output_path, driver=driver)
+        print(f"Converted file saved locally at '{output_path}'.")
 
-   
-   if store_artifact == "minio" :
-        client = connect_minio(config, client_id)
+    else:
+        # Write to a temporary local file, then stream to MinIO
+        with tempfile.NamedTemporaryFile(suffix=dst_ext, delete=False) as tmp:
+            temp_path = tmp.name
+        gdf.to_file(temp_path, driver=driver)
+        stream_to_minio(client, client_id, temp_path, output_path)
+        os.remove(temp_path)
+        print(f"Converted file stored in MinIO at '{output_path}'.")
 
-   # conversion logic 
-   if file_path.endswith('.geojson'):
-        if store_artifact == "minio":
-            with client.get_object(client_id, input_vector) as response:
-                gdf = gpd.read_file(io.BytesIO(response.read()))
-            if gdf.crs is None:
-                gdf.set_crs("EPSG:4326", inplace=True)
-            if gdf.crs.to_epsg() != 4326:
-                gdf = gdf.to_crs("EPSG:4326")
-
-            gdf.to_file(file_path, driver='GeoJSON')
-            stream_to_minio(client, client_id, file_path, file_path)
-            os.remove(file_path)
-        if store_artifact == "local":
-           # Read the GeoDataFrame from the input vector file
-            gdf = gpd.read_file(input_vector)
-            gdf.to_file(file_path, driver='GeoJSON')
-
-   if file_path.endswith('.shp'):
-        if store_artifact == "minio":
-            with client.get_object(client_id, input_vector) as response:
-                gdf = gpd.read_file(io.BytesIO(response.read()))
-            if gdf.crs is None:
-                gdf.set_crs("EPSG:4326", inplace=True)
-            if gdf.crs.to_epsg() != 4326:
-                gdf = gdf.to_crs("EPSG:4326")
-
-            gdf.to_file(file_path)
-            stream_to_minio(client, client_id, file_path, file_path)
-            os.remove(file_path)
-        if store_artifact == "local":
-           # Read the GeoDataFrame from the input vector file
-            gdf = gpd.read_file(input_vector)
-            gdf.to_file(file_path)
-    
-   if file_path.endswith('.gpkg'):
-        if store_artifact == "minio":
-            with client.get_object(client_id, input_vector) as response:
-                gdf = gpd.read_file(io.BytesIO(response.read()))
-            if gdf.crs is None:
-                gdf.set_crs("EPSG:4326", inplace=True)
-            if gdf.crs.to_epsg() != 4326:
-                gdf = gdf.to_crs("EPSG:4326")
-
-            gdf.to_file(file_path, driver='GPKG')
-            stream_to_minio(client, client_id, file_path, file_path)
-            os.remove(file_path)
-        if store_artifact == "local":
-           # Read the GeoDataFrame from the input vector file
-            gdf = gpd.read_file(input_vector)
-            gdf.to_file(file_path, driver='GPKG')
-    
-   if file_path.endswith('.kml'):
-        if store_artifact == "minio":
-            with client.get_object(client_id, input_vector) as response:
-                gdf = gpd.read_file(io.BytesIO(response.read()))
-            if gdf.crs is None:
-                gdf.set_crs("EPSG:4326", inplace=True)
-            if gdf.crs.to_epsg() != 4326:
-                gdf = gdf.to_crs("EPSG:4326")
-
-            gdf.to_file(file_path, driver='KML')
-            stream_to_minio(client, client_id, file_path, file_path)
-            os.remove(file_path)
-        if store_artifact == "local":
-           # Read the GeoDataFrame from the input vector file
-            gdf = gpd.read_file(input_vector)
-            gdf.to_file(file_path, driver='KML')
