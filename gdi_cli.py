@@ -29,6 +29,7 @@ from features.raster_features.bbox_clip_raster import bbox_clip_raster
 from features.raster_features.local_correlation import compute_local_correlation_5x5
 from features.raster_features.reduce_to_feature import extract_raster_to_vector
 from features.raster_features.band_extraction import band_extraction
+from features.raster_features.raster_format_convert import convert_raster_format
 
 from common.minio_ops import get_ls
 
@@ -414,3 +415,24 @@ def extract_band_path(asset_list, item_key, asset_key):
     To extract a band/ raster image path with item id and asset keyword from string of paths separated by delimiter $.
     """
     band_extraction(asset_list, item_key, asset_key)
+
+@click.command()
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name.")
+@click.option('--input-raster', required=True, help="Path or MinIO key of the input raster file.")
+@click.option('--input-artifact', required=True, help="Where the input raster is stored: local or minio.")
+@click.option('--file-path', required=True, help="Path or MinIO key to save the converted raster file.")
+@click.option('--store-artifact', default='minio', help="Where to store the converted raster file: local or minio.")
+def convert_raster(config_path, client_id, store_artifact, input_raster, file_path, input_artifact):
+    """
+    Convert raster data to a different format (GeoTIFF, IMG) and save it.
+    """
+    convert_raster_format( 
+        config_path=config_path,
+        client_id=client_id,
+        input_path=input_raster,
+        input_store=input_artifact,
+        output_path=file_path,
+        output_store=store_artifact
+    )
+
