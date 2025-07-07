@@ -14,7 +14,7 @@ from features.vector_features.voronoi_diagram import create_voronoi_diagram
 from features.vector_features.clip_data import make_clip
 from features.vector_features.delaunay_triangles import make_delaunay_triangles
 from features.vector_features.bbox_clip_feature import bbox_clip_feature
-from features.vector_features.vector_format_comvert import convert_format
+from features.vector_features.vector_format_convert import convert_vector_format
 
 from features.raster_features.search_cat import search_stac
 from features.raster_features.get_data import get_assets
@@ -245,7 +245,7 @@ def convert_vector(config_path, client_id, store_artifact, input_vector, file_pa
     """
     Convert vector data to a different format (GeoJSON, Shapefile, GPKG) and save it.
     """
-    convert_format(config_path, client_id, input_vector, input_artifact, file_path, store_artifact)
+    convert_vector_format(config_path, client_id, input_vector, input_artifact, file_path, store_artifact)
 
 
 
