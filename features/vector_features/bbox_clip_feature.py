@@ -29,9 +29,12 @@ def bbox_clip_feature(
         # Fetch target GeoDataFrame from MinIO
         with client.get_object(client_id, target_artifact_url) as target_response:
             target_gdf = gpd.read_file(io.BytesIO(target_response.read()))
+        
+        with client.get_object(client_id, clip_vector_path) as target_response:
+            clip_gdf = gpd.read_file(io.BytesIO(target_response.read()))
 
-        # Read clip GeoDataFrame from local file path
-        clip_gdf = gpd.read_file(clip_vector_path)
+
+        
         
         if not isinstance(target_gdf, gpd.GeoDataFrame) or not isinstance(clip_gdf, gpd.GeoDataFrame):
             raise TypeError("Both target and clip data must be GeoDataFrames.")
