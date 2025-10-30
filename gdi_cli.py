@@ -16,6 +16,7 @@ from features.vector_features.delaunay_triangles import make_delaunay_triangles
 from features.vector_features.bbox_clip_feature import bbox_clip_feature
 from features.vector_features.vector_format_convert import convert_vector_format
 
+
 from features.raster_features.search_cat import search_stac
 from features.raster_features.get_data import get_assets
 from features.raster_features.flood_fill import flood_fill
@@ -30,6 +31,8 @@ from features.raster_features.local_correlation import compute_local_correlation
 from features.raster_features.reduce_to_feature import extract_raster_to_vector
 from features.raster_features.band_extraction import band_extraction
 from features.raster_features.raster_format_convert import convert_raster_format
+from features.raster_features.compute_aspect import compute_aspect
+from features.raster_features.compute_hillshade import compute_hillshade
 
 from common.minio_ops import get_ls
 
@@ -271,6 +274,7 @@ def convert_vector(config_path, client_id, store_artifact, input_vector, file_pa
 
 
 
+
 # Raster feature utilities
 
 @click.command()
@@ -324,6 +328,27 @@ def generate_isometric_lines(config_path, client_id, artifact_url, interval, sto
 def generate_slope(config_path, client_id, artifact_url, store_artifact, file_path):
     '''Create slope raster for the input DEM raster'''
     compute_slope(config_path, client_id, artifact_url, store_artifact, file_path)
+
+@click.command()
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
+@click.option('--artifact-url', required=True, help="MinIO object name for the DEM GeoTIFF (or COG).")
+@click.option('--store-artifact', default='minio', help="Store generated aspect raster. Set it to local/minio")
+@click.option('--file-path', help="Path for saving aspect raster generated. If not provided, a UUID name is used.")
+def generate_aspect(config_path, client_id, artifact_url, store_artifact, file_path):
+    '''Create aspect raster for the input DEM raster'''
+    compute_aspect(config_path, client_id, artifact_url, store_artifact, file_path)
+
+@click.command()
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
+@click.option('--artifact-url', required=True, help="MinIO object name for the DEM GeoTIFF (or COG).")
+@click.option('--store-artifact', default='minio', help="Store generated hillshade raster. Set it to local/minio")
+@click.option('--file-path', help="Path for for saving hillshade raster generated. If not provided, a UUID name is used.")
+def generate_hillshade(config_path, client_id, artifact_url, store_artifact, file_path):
+    '''Create hillshade raster for the input DEM raster'''
+    compute_hillshade(config_path, client_id, artifact_url, store_artifact, file_path)
+
 
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
