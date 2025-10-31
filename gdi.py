@@ -39,4 +39,4 @@ cli.add_command(gdi_cli.reduce_to_feature)
 cli.add_command(gdi_cli.extract_band_path)
 cli.add_command(gdi_cli.convert_vector)
 cli.add_command(gdi_cli.convert_raster)
-
+cli.add_command(gdi_cli.generate_canny_edge)

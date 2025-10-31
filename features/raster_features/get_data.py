@@ -1,16 +1,15 @@
 import requests
 from pystac_client import Client, ItemSearch
-import warnings
 from .search_cat import get_stac_collection, get_stac_item
 from auth.stac_token_gen import StacTokenGenerator
-warnings.filterwarnings("ignore")
 import os
 import io
 from tqdm import tqdm
 from common.minio_ops import connect_minio,stream_to_minio
 from common.convert_to_cog import tiff_to_cogtiff
 from common.save_raster_artifact import save_raster_artifact
-
+import warnings
+warnings.filterwarnings("ignore")
 
 def get_assets(client_id: str, client_secret: str, role: str, collection_ids: str, config: str, store_artifact: str = 'minio', dir_path: str = None, item_id: str = None) -> None:
     """
