@@ -33,6 +33,7 @@ from features.raster_features.band_extraction import band_extraction
 from features.raster_features.raster_format_convert import convert_raster_format
 from features.raster_features.compute_aspect import compute_aspect
 from features.raster_features.compute_hillshade import compute_hillshade
+from features.raster_features.canny_edge import compute_canny_edge
 
 from common.minio_ops import get_ls
 
@@ -460,4 +461,16 @@ def convert_raster(config_path, client_id, store_artifact, input_raster, file_pa
         output_path=file_path,
         output_store=store_artifact
     )
+
+@click.command()
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name (client ID).")
+@click.option('--artifact-url', required=True, help="MinIO object name for the input raster.")
+@click.option('--store-artifact', default='minio', help="Store generated edge raster. Set it to local/minio.")
+@click.option('--file-path', help="Path for saving edge raster. If not provided, a UUID name is used.")
+@click.option('--threshold1', default=100, help="Lower threshold for Canny edge detection.")
+@click.option('--threshold2', default=200, help="Upper threshold for Canny edge detection.")
+def generate_canny_edge(config_path, client_id, artifact_url, store_artifact, file_path, threshold1, threshold2):
+    """Perform Canny edge detection on the input raster."""
+    compute_canny_edge(config_path, client_id, artifact_url, store_artifact, file_path, threshold1, threshold2)
 
