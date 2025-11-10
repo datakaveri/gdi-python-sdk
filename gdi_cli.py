@@ -15,6 +15,7 @@ from features.vector_features.clip_data import make_clip
 from features.vector_features.delaunay_triangles import make_delaunay_triangles
 from features.vector_features.bbox_clip_feature import bbox_clip_feature
 from features.vector_features.vector_format_convert import convert_vector_format
+from features.vector_features.simplify_geom import simplify_geometry_DP
 
 
 from features.raster_features.search_cat import search_stac
@@ -252,7 +253,27 @@ def convert_vector(config_path, client_id, store_artifact, input_vector, file_pa
     """
     convert_vector_format(config_path, client_id, input_vector, input_artifact, file_path, store_artifact)
 
-
+@click.command("simplify-geometry")
+@click.option("--config-path", required=True, type=str, help="Path to config.json")
+@click.option("--client-id", required=True, type=str, help="Client or bucket name")
+@click.option("--artifact-url", required=True, type=str, help="Input vector artifact URL (GeoJSON/GPKG)")
+@click.option("--store-artifact", required=True, type=str, help="Where to store output: minio or local")
+@click.option("--file-path", required=False, type=str, help="Optional output file path")
+@click.option("--tolerance", required=False, default=1.0, type=float, help="Simplification tolerance (default=1.0)")
+@click.option("--preserve-topology", required=False, default=True, type=bool, help="Preserve topology for polygons (default=True)")
+def simplify_geometry(config_path, client_id, artifact_url, store_artifact, file_path, tolerance, preserve_topology):
+    """
+    Simplify vector geometries (LineString or Polygon only) using shapely.simplify().
+    """
+    simplify_geometry_DP(
+        config=config_path,
+        client_id=client_id,
+        artifact_url=artifact_url,
+        store_artifact=store_artifact,
+        file_path=file_path,
+        tolerance=tolerance,
+        preserve_topology=preserve_topology
+    )
 
 
 

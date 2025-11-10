@@ -22,8 +22,8 @@ def compute_canny_edge(config: str, client_id: str, artifact_url: str,
     artifact_url : str (Reactflow will take it from the previous step)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
-    threshold1 : float (Reactflow will translate it as input)
-    threshold2 : float (Reactflow will translate it as input)
+    threshold1 : float (Reactflow will translate it as input, This parameter will be optional)
+    threshold2 : float (Reactflow will translate it as input, This parameter will be optional)
     """
 
     client = connect_minio(config, client_id)
