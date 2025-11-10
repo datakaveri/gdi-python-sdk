@@ -35,6 +35,7 @@ from features.raster_features.raster_format_convert import convert_raster_format
 from features.raster_features.compute_aspect import compute_aspect
 from features.raster_features.compute_hillshade import compute_hillshade
 from features.raster_features.canny_edge import compute_canny_edge
+from features.raster_features.hough_transform import get_hough_transform
 
 from common.minio_ops import get_ls
 
@@ -494,4 +495,60 @@ def convert_raster(config_path, client_id, store_artifact, input_raster, file_pa
 def generate_canny_edge(config_path, client_id, artifact_url, store_artifact, file_path, threshold1, threshold2):
     """Perform Canny edge detection on the input raster."""
     compute_canny_edge(config_path, client_id, artifact_url, store_artifact, file_path, threshold1, threshold2)
+
+
+@click.command()
+@click.option("--config", required=True, type=str, help="Path to configuration JSON file")
+@click.option("--client-id", required=True, type=str, help="Client ID or MinIO bucket identifier")
+@click.option("--artifact-url", required=True, type=str, help="Input raster path or URL in MinIO")
+@click.option("--store-artifact", required=True, type=str, help="Where to store the processed artifact (minio/local)")
+@click.option("--file-path", required=False, type=str, help="Path to save processed output raster")
+# Hough method
+@click.option("--method", required=True, type=click.Choice(["line", "circle"]), help="Hough transform type")
+# Optional parameters for line detection
+@click.option("--canny-thresh1", default=100, type=int, help="Canny threshold 1 (only for line method)")
+@click.option("--canny-thresh2", default=200, type=int, help="Canny threshold 2 (only for line method)")
+@click.option("--hough-thresh", default=50, type=int, help="Hough line threshold (only for line method)")
+@click.option("--min-line-length", default=10, type=int, help="Minimum line length (only for line method)")
+@click.option("--max-line-gap", default=10, type=int, help="Maximum allowed gap between line segments (only for line method)")
+# Optional parameters for circle detection
+@click.option("--dp", default=1, type=float, help="Inverse ratio of accumulator resolution to image resolution (only for circle method)")
+@click.option("--min-dist", default=20, type=int, help="Minimum distance between circle centers (only for circle method)")
+@click.option("--param1", default=100, type=int, help="Upper threshold for internal Canny edge detector (only for circle method)")
+@click.option("--param2", default=30, type=int, help="Threshold for center detection (only for circle method)")
+@click.option("--min-radius", default=0, type=int, help="Minimum circle radius (only for circle method)")
+@click.option("--max-radius", default=0, type=int, help="Maximum circle radius (only for circle method)")
+def generate_hough_transform(config, client_id, artifact_url, store_artifact, file_path, method,
+        canny_thresh1, canny_thresh2, hough_thresh, min_line_length, max_line_gap,
+        dp, min_dist, param1, param2, min_radius, max_radius):
+    """
+    Perform Hough Transform - powerful feature extraction technique in image processing and Geographic Information Systems (GIS) used to detect simple, predefined geometric shapes such as lines and circles on raster datasets.
+    """
+    kwargs = {}
+    if method == "line":
+        kwargs.update({
+            "canny_thresh1": canny_thresh1,
+            "canny_thresh2": canny_thresh2,
+            "hough_thresh": hough_thresh,
+            "min_line_length": min_line_length,
+            "max_line_gap": max_line_gap
+        })
+    elif method == "circle":
+        kwargs.update({
+            "dp": dp,
+            "min_dist": min_dist,
+            "param1": param1,
+            "param2": param2,
+            "min_radius": min_radius,
+            "max_radius": max_radius
+        })
+    get_hough_transform(
+        config=config,
+        client_id=client_id,
+        artifact_url=artifact_url,
+        store_artifact=store_artifact,
+        file_path=file_path,
+        method=method,
+        **kwargs
+    )
 
