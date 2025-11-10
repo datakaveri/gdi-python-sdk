@@ -14,7 +14,7 @@ def compute_canny_edge(config: str, client_id: str, artifact_url: str,
                        store_artifact: str, file_path: str = None,
                        threshold1: int = 100, threshold2: int = 200) -> None:
     """
-    Function to perform Canny edge detection on each raster band using GDAL and OpenCV. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate_canny_edge.
+    Function to perform Canny edge detection on each raster band using GDAL and OpenCV. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-canny-edge.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
