@@ -90,7 +90,7 @@ def compute_aspect(config: str, client_id: str, artifact_url: str,
             file_path=file_path,
             store_artifact=store_artifact
         )
-        print(f"[INFO] Aspect computation complete. Output: {file_path}")
+        print(f"{file_path}")
     else:
         print("[INFO] Aspect computed but not saved. Set store_artifact to 'minio' or 'local'.")
 
