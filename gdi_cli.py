@@ -16,6 +16,7 @@ from features.vector_features.delaunay_triangles import make_delaunay_triangles
 from features.vector_features.bbox_clip_feature import bbox_clip_feature
 from features.vector_features.vector_format_convert import convert_vector_format
 from features.vector_features.simplify_geom import simplify_geometry_DP
+from features.vector_features.clustering import generate_clusters
 
 
 from features.raster_features.search_cat import search_stac
@@ -276,6 +277,26 @@ def simplify_geometry(config_path, client_id, artifact_url, store_artifact, file
         preserve_topology=preserve_topology
     )
 
+@click.command()
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--client-id', required=True, help="MinIO bucket name or project ID.")
+@click.option('--artifact-url', required=True, help="List of MinIO object URLs to input vector files.")
+@click.option('--store-artifact', default='minio', help="Where to store the clustered output (minio/local/none).")
+@click.option('--n-clusters', default=20, show_default=True, help="Number of KMeans clusters to form.")
+@click.option('--file-path', default=None, help="Output file path to save the clustered result.")
+def kmeans_clustering(config_path, client_id, artifact_url, store_artifact, n_clusters, file_path):
+    """
+    Perform KMeans clustering on one or more input vector datasets.
+    Input vectors are fetched from MinIO and output can be saved locally or uploaded back.
+    """
+    generate_clusters(
+        config=config_path,
+        client_id=client_id,
+        artifact_url=artifact_url,
+        store_artifact=store_artifact,
+        n_clusters=n_clusters,
+        file_path=file_path
+    )
 
 
 
