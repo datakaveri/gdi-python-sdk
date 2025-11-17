@@ -19,6 +19,7 @@ from features.vector_features.simplify_geom import simplify_geometry_DP
 from features.vector_features.clustering import generate_clusters
 
 
+
 from features.raster_features.search_cat import search_stac
 from features.raster_features.get_data import get_assets
 from features.raster_features.flood_fill import flood_fill
@@ -48,7 +49,7 @@ def gen_token(client_id, client_secret, role):
 
 def get_resource(client_id, client_secret, role, resource_id, save_object, config_path, file_path):
    
-    fetcher = ResourceFetcher(client_id, client_secret, role)
+    fetcher = ResourceFetcher(client_id, client_secret, role, resource_id)
     resource_data = fetcher.fetch_resource_data(resource_id, save_object, config_path, file_path)
     return resource_data
 
@@ -79,8 +80,6 @@ def get_vector_data(client_id, client_secret, role, resource_id, store_artifact,
     """Fetch resource data."""
     resource_data = get_resource(client_id, client_secret, role, resource_id, store_artifact, config_path, file_path)
     
-
-
 
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
@@ -258,9 +257,9 @@ def convert_vector(config_path, client_id, store_artifact, input_vector, file_pa
 @click.command("simplify-geometry")
 @click.option("--config-path", required=True, type=str, help="Path to config.json")
 @click.option("--client-id", required=True, type=str, help="Client or bucket name")
-@click.option("--artifact-url", required=True, type=str, help="Input vector artifact URL (GeoJSON/GPKG)")
-@click.option("--store-artifact", required=True, type=str, help="Where to store output: minio or local")
-@click.option("--file-path", required=False, type=str, help="Optional output file path")
+@click.option("--artifact-url", required=True, type=str, help="Url of input vector artifact")
+@click.option("--store-artifact", required=True, type=str, help="Store the vector artifact. Set it to local/minio.")
+@click.option("--file-path", required=False, type=str, help="Path to save the output artifact.")
 @click.option("--tolerance", required=False, default=1.0, type=float, help="Simplification tolerance (default=1.0)")
 @click.option("--preserve-topology", required=False, default=True, type=bool, help="Preserve topology for polygons (default=True)")
 def simplify_geometry(config_path, client_id, artifact_url, store_artifact, file_path, tolerance, preserve_topology):
@@ -280,13 +279,13 @@ def simplify_geometry(config_path, client_id, artifact_url, store_artifact, file
 @click.command()
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
 @click.option('--client-id', required=True, help="MinIO bucket name or project ID.")
-@click.option('--artifact-url', required=True, help="List of MinIO object URLs to input vector files.")
-@click.option('--store-artifact', default='minio', help="Where to store the clustered output (minio/local/none).")
+@click.option('--artifact-url', required=True, help="Url of input vector artifact.")
+@click.option('--store-artifact', default='minio', help="Store the vector artifact. Set it to local/minio..")
 @click.option('--n-clusters', default=20, show_default=True, help="Number of KMeans clusters to form.")
 @click.option('--file-path', default=None, help="Output file path to save the clustered result.")
 def kmeans_clustering(config_path, client_id, artifact_url, store_artifact, n_clusters, file_path):
     """
-    Perform KMeans clustering on one or more input vector datasets.
+    Perform KMeans clustering on input vector datasets and an attribute denoting the cluster number each feature in input vector belong to.
     Input vectors are fetched from MinIO and output can be saved locally or uploaded back.
     """
     generate_clusters(
@@ -297,7 +296,6 @@ def kmeans_clustering(config_path, client_id, artifact_url, store_artifact, n_cl
         n_clusters=n_clusters,
         file_path=file_path
     )
-
 
 
 

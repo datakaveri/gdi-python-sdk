@@ -196,8 +196,7 @@ def compute_optimal_route(
 
     else:
         pass
-    #     print("Data not saved. Set store_artifact to minio/local to save the data to minio or locally.")
-    #     print("Computed optimal route successfully")
+        print("Data not saved. Set store_artifact to minio/local to save the data to minio or locally.")
+        print("Computed optimal route successfully")
 
-    # print("[INFO] TSP route computation complete!")
     return 

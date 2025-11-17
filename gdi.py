@@ -43,3 +43,4 @@ cli.add_command(gdi_cli.generate_canny_edge)
 cli.add_command(gdi_cli.simplify_geometry)
 cli.add_command(gdi_cli.generate_hough_transform)
 cli.add_command(gdi_cli.kmeans_clustering)
+

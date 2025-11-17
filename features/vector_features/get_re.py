@@ -8,9 +8,10 @@ import io
 
 
 class ResourceFetcher:
-    def __init__(self, client_id: str, client_secret: str, role: str):
+    def __init__(self, client_id: str, client_secret: str, role: str, resource_id: str):
         self.client_id = client_id
         self.client_secret = client_secret
+        self.collection_id = resource_id
         self.role = role
 
     def fetch_resource_data(self, resource_id: str, store_artifact: str = None, config_path: str = None, file_path: str = None) -> dict:
@@ -29,7 +30,7 @@ class ResourceFetcher:
 
         try:
             # Generate the token
-            token_generator = TokenGenerator(self.client_id, self.client_secret, self.role)
+            token_generator = TokenGenerator(self.client_id, self.client_secret, self.role, self.collection_id)
             auth_token = token_generator.generate_token()
 
             # Request the collections API to get asset links
@@ -63,7 +64,9 @@ class ResourceFetcher:
                 # print(gdata)
 
             return gdf
+
         except requests.RequestException as e:
+            print(f"{e.response.text}")
             raise Exception(f"Error fetching resource data: {e}")
 
 # # client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --client-secret a863cafce5bd3d1bd302ab079242790d18cec974 --role consumer --resource-id 024b0c51-e44d-424c-926e-254b6c966978
