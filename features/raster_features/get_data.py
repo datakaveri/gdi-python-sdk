@@ -11,6 +11,7 @@ from common.save_raster_artifact import save_raster_artifact
 import warnings
 warnings.filterwarnings("ignore")
 
+
 def get_assets(client_id: str, client_secret: str, role: str, collection_ids: str, config: str, store_artifact: str = 'minio', dir_path: str = None, item_id: str = None) -> None:
     """
     Function to download STAC assets. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as get-raster-data.
@@ -32,6 +33,7 @@ def get_assets(client_id: str, client_secret: str, role: str, collection_ids: st
     else:
         links_dict = get_stac_collection([collection_ids])
     token_generator = StacTokenGenerator(client_id, client_secret, role, collection_ids)
+    # token_generator.check_access_policy_in_catalogue(collection_ids)
     auth_token = token_generator.generate_token()
     headers = {"Authorization": f"Bearer {auth_token}"}
     # client = connect_minio(config, client_id)

@@ -20,7 +20,6 @@ def generate_clusters(
 ) -> dict:
     """
     Perform KMeans clustering on point-based vector data with default cluster count as 20 and adds attribute to the input vector denoting the cluster number. Optionally upload the clustered result to MinIO or save locally.In editor it will be renamed as kmeans-clustering.
-
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
