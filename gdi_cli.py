@@ -38,6 +38,8 @@ from features.raster_features.compute_aspect import compute_aspect
 from features.raster_features.compute_hillshade import compute_hillshade
 from features.raster_features.canny_edge import compute_canny_edge
 from features.raster_features.hough_transform import get_hough_transform
+from features.raster_features.get_datetime import get_datetime
+from features.raster_features.sen_slope import compute_sen_slope
 
 from common.minio_ops import get_ls
 
@@ -517,10 +519,10 @@ def generate_canny_edge(config_path, client_id, artifact_url, store_artifact, fi
 
 
 @click.command()
-@click.option("--config", required=True, type=str, help="Path to configuration JSON file")
+@click.option('--config', required=False, default="./config.json", help="Path to the config file.")
 @click.option("--client-id", required=True, type=str, help="Client ID or MinIO bucket identifier")
 @click.option("--artifact-url", required=True, type=str, help="Input raster path or URL in MinIO")
-@click.option("--store-artifact", required=True, type=str, help="Where to store the processed artifact (minio/local)")
+@click.option('--store-artifact', default='minio',  help="Save the fetched object to Minio or locally. set it as local or minio")
 @click.option("--file-path", required=False, type=str, help="Path to save processed output raster")
 # Hough method
 @click.option("--method", required=True, type=click.Choice(["line", "circle"]), help="Hough transform type")
@@ -571,3 +573,48 @@ def generate_hough_transform(config, client_id, artifact_url, store_artifact, fi
         **kwargs
     )
 
+
+@click.command()
+@click.option("--client-id", required=True, help="Client ID for authentication.")
+@click.option("--client-secret", required=True, help="Client Secret for authentication.")
+@click.option('--role', required=True, help="Role for the token.")
+@click.option("--collection-id", required=True, help="STAC Collection ID.")
+@click.option("--folder-name", required=True, help="MinIO folder or local folder containing COG files.")
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--store-artifact', default='minio',  help="Save the fetched object to Minio or locally. set it as local or minio")
+@click.option("--file-path", help="Name of output CSV file.")
+def stac_datetime (client_id, client_secret, role, collection_id, folder_name, config_path,
+                            store_artifact, file_path):
+    """
+    Fetch datetime metadata for items in a STAC collection and save as CSV.
+    """
+
+    get_datetime(
+        client_id=client_id,
+        client_secret=client_secret,
+        role=role,
+        collection_id=collection_id,
+        folder_name=folder_name,
+        config=config_path,
+        store_artifact=store_artifact,
+        output_csv=file_path
+    )
+
+
+@click.command()
+@click.option("--client-id", required=True, help="Client ID for authentication.")
+@click.option("--artifact-url", required=True, help="Path to the CSV artifact in MinIO.")
+@click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
+@click.option('--store-artifact', default='minio',  help="Save the fetched object to Minio or locally. set it as local or minio")
+@click.option("--file-path", help="Output raster file path (COG).")
+def senslope(client_id, artifact_url, config_path, store_artifact, file_path):
+    """
+    Compute Sen's slope from a CSV (filepath + datetime) stored in MinIO.
+    """
+    compute_sen_slope(
+        config=config_path,
+        client_id=client_id,
+        artifact_url=artifact_url,
+        store_artifact=store_artifact,
+        file_path=file_path
+    )
