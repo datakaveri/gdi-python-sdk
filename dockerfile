@@ -1,4 +1,3 @@
-
 FROM python:3.12-slim
 
 
@@ -9,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libgeos-dev \
     libproj-dev \
+    python3-opencv \
     && pip install --upgrade pip
 
 
