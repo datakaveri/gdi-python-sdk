@@ -431,9 +431,9 @@ def rasters_merge(config_path, client_id, prefix, store_artifact, file_path):
 @click.option('--config-path', required=False, default="./config.json", help="Path to the config file.")
 @click.option('--client-id', required=True, help="Client ID for authentication.")
 @click.option('--artifact-url', required=True, help="URL of the artifact to download.")
-def download_raster(config_path, client_id, artifact_url, save_as):
+def download_raster(config_path, client_id, artifact_url):
     """Generate presigned url to download raster artifact."""
-    download_rasters_artifact(config_path, client_id, artifact_url, save_as)
+    download_rasters_artifact(config_path, client_id, artifact_url)
 
 @click.command()
 @click.option('--config-path', default="./config.json",help="Path to the MinIO config file.")
