@@ -123,6 +123,6 @@ def clip_raster(
                 file_path=file_path,
                 store_artifact=store_artifact,
             )
-        print(f"{file_path}")
+        # print(f"{file_path}")
         return file_path if store_artifact.lower() == "minio" else final_cog
 

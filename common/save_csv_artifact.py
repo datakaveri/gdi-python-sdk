@@ -28,6 +28,7 @@ def save_csv_artifact(
         try:
             client = connect_minio(config, client_id)
             stream_to_minio(client, client_id, file_path, local_path)
+            print(f"{file_path}")
         except Exception as e:
             raise Exception(f"Error while saving CSV to MinIO: {e}")
 

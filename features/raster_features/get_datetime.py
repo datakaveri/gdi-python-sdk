@@ -111,7 +111,7 @@ def get_datetime(
                 file_path=final_path,
                 store_artifact="minio"
             )
-            print(f"{final_path}")
+            # print(f"{final_path}")
         except Exception as e:
             raise Exception(f"Error saving CSV to MinIO: {e}")
 
@@ -124,7 +124,7 @@ def get_datetime(
                 file_path=final_path,
                 store_artifact="local"
             )
-            print(f"{final_path}")
+            # print(f"{final_path}")
         except Exception as e:
             raise Exception(f"Error saving CSV locally: {e}")
 
