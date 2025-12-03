@@ -140,7 +140,7 @@ def compute_local_correlation_5x5(config, client_id, dem_artifact_url, lst_artif
     # Step 5: Save to local or MinIO
     if store_artifact:
         save_raster_artifact(config, client_id, cog_out, file_path, store_artifact)
-        print(f"{file_path}")
+        # print(f"{file_path}")
     else:
         print("Data not saved. Set store_artifact to minio/local to save the data.")
         print("NDVI computed successfully.")

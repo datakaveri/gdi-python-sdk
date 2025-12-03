@@ -85,7 +85,7 @@ def compute_ndvi(config: str, client_id: str, red_artifact_url: str, nir_artifac
 
     if store_artifact:
         save_raster_artifact(config=config, client_id=client_id, local_path=temp_ndvi_cog, file_path=file_path, store_artifact=store_artifact)
-        print(f"{file_path}")
+        # print(f"{file_path}")
     else:
         print("Data not saved. Set store_artifact to minio/local to save the data.")
         print("NDVI computed successfully.")

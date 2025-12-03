@@ -101,6 +101,6 @@ def flood_fill(
                 file_path=file_path,
                 store_artifact=store_artifact
             )
-            print(f"{file_path}")
+            # print(f"{file_path}")
         except Exception as e:
             raise RuntimeError(f"[ERROR] Flood fill failed: {e}")
