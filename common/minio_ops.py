@@ -18,7 +18,12 @@ def connect_minio(config:str, client_id:str)  -> Minio:
         minio_url = creds['minio_url']
         secure_flag = creds['secure']
 
-        client = Minio(minio_url, access_key=access_key, secret_key=secret_key,secure=secure_flag)
+        #check of there is session token
+        if 'session_token' in creds:
+            session_token = creds['session_token']
+            client = Minio(minio_url, access_key=access_key, secret_key=secret_key,secure=secure_flag, session_token=session_token)
+        else:
+            client = Minio(minio_url, access_key=access_key, secret_key=secret_key,secure=secure_flag)
         if client.bucket_exists(client_id):
            pass
         else:
@@ -52,7 +57,12 @@ def connect_store_minio(config:str, client_id:str, local_file_path: str, object_
         minio_url = creds['minio_url']
         secure_flag = creds['secure']
 
-        client = Minio(minio_url, access_key=access_key, secret_key=secret_key, secure=secure_flag)
+        # check if session token is present
+        if 'session_token' in creds:
+            session_token = creds['session_token']
+            client = Minio(minio_url, access_key=access_key, secret_key=secret_key, secure=secure_flag, session_token=session_token)
+        else:
+            client = Minio(minio_url, access_key=access_key, secret_key=secret_key, secure=secure_flag)
 
         if not client.bucket_exists(client_id):
             client.make_bucket(client_id)

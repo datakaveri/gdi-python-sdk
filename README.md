@@ -218,6 +218,34 @@ gdi <command-name> -- help
 ```
 
 ---
+
+
+
+## exmples of config.json 
+### without session token
+{
+    "minio_url": "127.0.0.1:9000",
+    "minio_access_key": "minioadmin",
+    "minio_secret_key": "minioadmin",
+    "secure": false,
+      
+}
+
+### with session token 
+{
+    "minio_url": "127.0.0.1:9000",
+    "minio_access_key": "minioadmin",
+    "minio_secret_key": "minioadmin",
+    "secure": false,
+    "session_token": "wefhkufrsdjknr"
+    
+}
+
+
+
+---
+
+
 ## 📄 Notes
 
 * Make sure your `config-path` file is correctly set up with MinIO credentials and bucket info.
