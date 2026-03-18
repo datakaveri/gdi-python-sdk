@@ -31,7 +31,7 @@ def save_raster_artifact(
     # Upload to minio or save locally
     if store_artifact.lower() == "minio":
         try:
-            client = connect_minio(config, client_id)
+            client = connect_minio(config)
             bucket_name = get_bucket_name(config)
             stream_to_minio(client, bucket_name, file_path, local_path)
             # print(f"{file_path}")
@@ -93,7 +93,7 @@ def get_assets(
     # token_generator.check_access_policy_in_catalogue(collection_ids)
     auth_token = token_generator.generate_token()
     headers = {"Authorization": f"Bearer {auth_token}"}
-    # client = connect_minio(config, client_id)
+    # client = connect_minio(config)
 
     try:
         for folder_name, assets in links_dict.items():

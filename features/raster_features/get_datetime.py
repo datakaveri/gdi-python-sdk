@@ -60,7 +60,7 @@ def get_datetime(
 
     if store_artifact.lower() == "minio":
         try:
-            minio_client = connect_minio(config, client_id)
+            minio_client = connect_minio(config)
             bucket_name = get_bucket_name(config)
             objects = minio_client.list_objects(
                 bucket_name, prefix=folder_name, recursive=True
