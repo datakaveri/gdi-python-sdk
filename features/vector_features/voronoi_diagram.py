@@ -21,7 +21,7 @@ def create_voronoi_diagram(
     config : str (Reactflow will ignore this parameter)
     client_id : str (Reactflow will translate it as input)
     input_artifact_url : str (Reactflow will take it from the previous step)
-    extend_artifact_url : str (Reactflow will take it from the previous step, This parameter will be optoinal)
+    extend_artifact_url : str (Reactflow will take it from the previous step, This parameter will be optional)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
     tolerance : float (Reactflow will translate it as input, This parameter will be optional)
@@ -82,4 +82,3 @@ def create_voronoi_diagram(
 #     store_artifacts=minio,
 #     file_path='vector_voronoi/Voronoi_school_v9.pkl',
 # )
-
