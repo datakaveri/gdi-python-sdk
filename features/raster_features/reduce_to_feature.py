@@ -6,27 +6,26 @@ import geopandas as gpd
 import warnings
 from osgeo import gdal, ogr, osr
 from shapely.geometry import mapping
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.save_feature_artifact import save_feature
 
 warnings.filterwarnings("ignore")
 
+
 def extract_raster_to_vector(
     config: str,
-    client_id: str,
     raster_artifact_url: str,
     vector_artifact_url: str,
     reducer: str,
     attribute: str,
     store_artifact: str,
-    file_path: str = None
+    file_path: str = None,
 ) -> str:
     """
     Extract raster values to vector features using polygonized raster and spatial join with reducer. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as reduce-to-feature.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
-    client_id : str (Reactflow will translate it as input)
     raster_artifact_url : str (Reactflow will take it from the previous step)
     vector_artifact_url : str (Reactflow will take it from the previous step)
     reducer : str (Reactflow will translate it as input)
@@ -35,18 +34,19 @@ def extract_raster_to_vector(
     file_path : str (Reactflow will ignore this parameter)
     """
 
-    client = connect_minio(config, client_id)
+    client = connect_minio(config)
+    bucket_name = get_bucket_name(config)
     temp_dir = tempfile.mkdtemp()
     temp_raster_path = os.path.join(temp_dir, "input_raster.tif")
 
     try:
         # --- Step 1: Download raster ---
-        with client.get_object(client_id, raster_artifact_url) as response:
+        with client.get_object(bucket_name, raster_artifact_url) as response:
             with open(temp_raster_path, "wb") as f:
                 f.write(response.read())
 
         # --- Step 2: Read vector data ---
-        with client.get_object(client_id, vector_artifact_url) as response:
+        with client.get_object(bucket_name, vector_artifact_url) as response:
             vec_gdf = gpd.read_file(io.BytesIO(response.read()))
 
         # ---  Explode MultiPolygons ---
@@ -68,14 +68,16 @@ def extract_raster_to_vector(
         srs.ImportFromWkt(wkt)
 
         for geom in vec_gdf.geometry:
-            mask_ds = gdal.GetDriverByName('MEM').Create('', raster_ds.RasterXSize, raster_ds.RasterYSize, 1, gdal.GDT_Byte)
+            mask_ds = gdal.GetDriverByName("MEM").Create(
+                "", raster_ds.RasterXSize, raster_ds.RasterYSize, 1, gdal.GDT_Byte
+            )
             mask_ds.SetGeoTransform(geotransform)
             mask_ds.SetProjection(raster_ds.GetProjection())
 
             # Create in-memory layer
-            mem_drv = ogr.GetDriverByName('Memory')
-            mem_ds = mem_drv.CreateDataSource('out')
-            mem_layer = mem_ds.CreateLayer('layer', srs=srs, geom_type=ogr.wkbPolygon)
+            mem_drv = ogr.GetDriverByName("Memory")
+            mem_ds = mem_drv.CreateDataSource("out")
+            mem_layer = mem_ds.CreateLayer("layer", srs=srs, geom_type=ogr.wkbPolygon)
             feature_def = mem_layer.GetLayerDefn()
 
             # Convert Shapely geometry to OGR
@@ -116,14 +118,15 @@ def extract_raster_to_vector(
         # --- Step 6: Save ---
         if store_artifact:
             save_feature(
-                client_id=client_id,
                 store_artifact=store_artifact,
                 gdf=vec_gdf,
                 file_path=file_path,
-                config_path=config
+                config_path=config,
             )
         else:
-            print("Output not saved. Set `store_artifact` to 'minio' or 'local' to save.")
+            print(
+                "Output not saved. Set `store_artifact` to 'minio' or 'local' to save."
+            )
 
     except Exception as e:
         raise RuntimeError(f"[ERROR] Failed during raster-to-vector extraction: {e}")

@@ -3,7 +3,7 @@ import sys
 import subprocess
 import warnings
 from osgeo import gdal, osr
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.convert_to_cog import tiff_to_cogtiff
 from common.save_raster_artifact import save_raster_artifact
 
@@ -16,36 +16,49 @@ def safe_gdal_edit_nodata(path, nodata_value=0):
     """
     try:
         subprocess.run(
-            [sys.executable, "-m", "osgeo_utils.gdal_edit", "-a_nodata", str(nodata_value), path],
+            [
+                sys.executable,
+                "-m",
+                "osgeo_utils.gdal_edit",
+                "-a_nodata",
+                str(nodata_value),
+                path,
+            ],
             check=True,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
         )
     except subprocess.CalledProcessError as e:
-        print(f"[WARN] Failed to set NoData={nodata_value} for {path}: {e.stderr.decode().strip()}")
+        print(
+            f"[WARN] Failed to set NoData={nodata_value} for {path}: {e.stderr.decode().strip()}"
+        )
 
 
-def compute_aspect(config: str, client_id: str, artifact_url: str,
-                   store_artifact: str, file_path: str = None) -> None:
+def compute_aspect(
+    config: str,
+    artifact_url: str,
+    store_artifact: str,
+    file_path: str = None,
+) -> None:
     """
     Function to compute aspect from a DEM (COG or regular GeoTIFF) using GDAL's gdaldem. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-aspect.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
-    client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
     """
 
     # --- Step 1: Connect to MinIO and download DEM ---
-    client = connect_minio(config, client_id)
+    client = connect_minio(config)
+    bucket_name = get_bucket_name(config)
 
     temp_input = "temp_dem.tif"
     temp_aspect_raw = "temp_aspect_raw.tif"
     temp_aspect_cog = "temp_aspect_cog.tif"
 
-    with client.get_object(client_id, artifact_url) as response:
+    with client.get_object(bucket_name, artifact_url) as response:
         dem_data = response.read()
     with open(temp_input, "wb") as f:
         f.write(dem_data)
@@ -85,14 +98,15 @@ def compute_aspect(config: str, client_id: str, artifact_url: str,
     if store_artifact:
         save_raster_artifact(
             config=config,
-            client_id=client_id,
             local_path=temp_aspect_cog,
             file_path=file_path,
-            store_artifact=store_artifact
+            store_artifact=store_artifact,
         )
         # print(f"{file_path}")
     else:
-        print("[INFO] Aspect computed but not saved. Set store_artifact to 'minio' or 'local'.")
+        print(
+            "[INFO] Aspect computed but not saved. Set store_artifact to 'minio' or 'local'."
+        )
 
     # --- Step 7: Cleanup temporary files ---
     for fpath in [temp_input, temp_aspect_raw, temp_aspect_cog]:

@@ -9,7 +9,7 @@ from osgeo import gdal, osr
 import sys
 import time
 
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.convert_to_cog import tiff_to_cogtiff
 from common.save_raster_artifact import save_raster_artifact
 
@@ -25,24 +25,27 @@ NODATA = -9999.0
 # Utility functions (corrected)
 # -------------------------------
 
+
 def _run_subprocess(cmd):
     """Run subprocess silently and raise a helpful error on failure."""
     try:
         subprocess.run(
-            cmd,
-            check=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
+            cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
     except subprocess.CalledProcessError as e:
         raise RuntimeError(
-            f"Command failed: {' '.join(map(str, cmd))}\n"
-            f"Return code: {e.returncode}\n"
+            f"Command failed: {' '.join(map(str, cmd))}\nReturn code: {e.returncode}\n"
         ) from e
 
 
-
-def _fix_nodata_and_reproject(raster_path, tmp_dir, python_exec, scripts_dir, target_epsg=TARGET_EPSG, nodata=NODATA):
+def _fix_nodata_and_reproject(
+    raster_path,
+    tmp_dir,
+    python_exec,
+    scripts_dir,
+    target_epsg=TARGET_EPSG,
+    nodata=NODATA,
+):
     """
     Ensure raster has the desired nodata, projection and filled gaps.
     Returns path to processed raster (filled).
@@ -74,10 +77,15 @@ def _fix_nodata_and_reproject(raster_path, tmp_dir, python_exec, scripts_dir, ta
     if epsg is None or str(epsg) != str(target_epsg):
         rp = os.path.join(tmp_dir, f"reproj_{base}")
         cmd = [
-            "gdalwarp", "-t_srs", f"EPSG:{target_epsg}",
-            "-r", "near",
-            "-dstnodata", str(nodata),
-            work_file, rp
+            "gdalwarp",
+            "-t_srs",
+            f"EPSG:{target_epsg}",
+            "-r",
+            "near",
+            "-dstnodata",
+            str(nodata),
+            work_file,
+            rp,
         ]
         _run_subprocess(cmd)
         work_file = rp
@@ -89,7 +97,9 @@ def _fix_nodata_and_reproject(raster_path, tmp_dir, python_exec, scripts_dir, ta
         # Try alternative common locations (safe fallback)
         possible = [
             os.path.join(os.path.dirname(sys.executable), "gdal_fillnodata.py"),
-            os.path.join(os.path.dirname(sys.executable), "..", "Scripts", "gdal_fillnodata.py"),
+            os.path.join(
+                os.path.dirname(sys.executable), "..", "Scripts", "gdal_fillnodata.py"
+            ),
         ]
         found = None
         for p in possible:
@@ -100,8 +110,10 @@ def _fix_nodata_and_reproject(raster_path, tmp_dir, python_exec, scripts_dir, ta
         if found:
             fill_script = found
         else:
-            raise FileNotFoundError(f"gdal_fillnodata.py not found in {scripts_dir} or common locations. "
-                                    f"Checked: {fill_script} and {possible}")
+            raise FileNotFoundError(
+                f"gdal_fillnodata.py not found in {scripts_dir} or common locations. "
+                f"Checked: {fill_script} and {possible}"
+            )
 
     filled = os.path.join(tmp_dir, f"filled_{base}")
     cmd = [python_exec, fill_script, "-md", "5", work_file, filled]
@@ -113,7 +125,9 @@ def _fix_nodata_and_reproject(raster_path, tmp_dir, python_exec, scripts_dir, ta
     return filled
 
 
-def _compute_pairwise_slope(r1, r2, out_file, delta_t_days, python_exec, scripts_dir, nodata=NODATA):
+def _compute_pairwise_slope(
+    r1, r2, out_file, delta_t_days, python_exec, scripts_dir, nodata=NODATA
+):
     """Compute slope = (r2 - r1) / Δt using gdal_calc.py"""
     calc_script = os.path.join(scripts_dir, "gdal_calc.py")
     if not os.path.exists(calc_script):
@@ -126,12 +140,16 @@ def _compute_pairwise_slope(r1, r2, out_file, delta_t_days, python_exec, scripts
 
     calc_expr = f"where((A!={int(nodata)}) & (B!={int(nodata)}), (A-B)/{delta_t_days}, {int(nodata)})"
     cmd = [
-        python_exec, calc_script,
-        "-A", r2, "-B", r1,
+        python_exec,
+        calc_script,
+        "-A",
+        r2,
+        "-B",
+        r1,
         "--outfile=" + out_file,
         f"--calc={calc_expr}",
         "--type=Float32",
-        f"--NoDataValue={int(nodata)}"
+        f"--NoDataValue={int(nodata)}",
     ]
     _run_subprocess(cmd)
 
@@ -195,30 +213,30 @@ def _median_stack(rasters, output, nodata=NODATA):
 # Main Processing Function (corrected)
 # -------------------------------------------------
 
+
 def compute_sen_slope(
     config: str,
-    client_id: str,
     artifact_url: str,
     store_artifact: str,
-    file_path: str = None
+    file_path: str = None,
 ):
     """
     Function to slope sensitivity for timeseries data and the stac_datetime utility is must before this to get datetime stamp of all rasters. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as senslope.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
-    client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
     """
 
-    client = connect_minio(config, client_id)
+    client = connect_minio(config)
+    bucket_name = get_bucket_name(config)
 
     # -----------------------------
     # Step 1: Read CSV from MinIO
     # -----------------------------
-    with client.get_object(client_id, artifact_url) as response:
+    with client.get_object(bucket_name, artifact_url) as response:
         csv_bytes = response.read()
 
     df = pd.read_csv(io.BytesIO(csv_bytes))
@@ -253,7 +271,7 @@ def compute_sen_slope(
             local_fp = os.path.join(tmp_dir, local_basename)
 
             # client.get_object returns a file-like object; use copyfileobj for streaming
-            obj = client.get_object(client_id, fp)
+            obj = client.get_object(bucket_name, fp)
             with open(local_fp, "wb") as out_f:
                 shutil.copyfileobj(obj, out_f)
             # close obj if it exposes close
@@ -268,7 +286,14 @@ def compute_sen_slope(
         # Step 3: Fix NoData + Reproject + Fill
         # -----------------------------
         for r in local_rasters:
-            proc = _fix_nodata_and_reproject(r, tmp_dir, python_exec, scripts_dir, target_epsg=TARGET_EPSG, nodata=NODATA)
+            proc = _fix_nodata_and_reproject(
+                r,
+                tmp_dir,
+                python_exec,
+                scripts_dir,
+                target_epsg=TARGET_EPSG,
+                nodata=NODATA,
+            )
             cleaned.append(proc)
 
         # -----------------------------
@@ -283,7 +308,15 @@ def compute_sen_slope(
             delta_days = delta_seconds / 86400.0 if delta_seconds != 0 else 1.0
 
             out_slope = os.path.join(tmp_dir, f"slope_{i}.tif")
-            _compute_pairwise_slope(cleaned[i], cleaned[i + 1], out_slope, delta_days, python_exec, scripts_dir, nodata=NODATA)
+            _compute_pairwise_slope(
+                cleaned[i],
+                cleaned[i + 1],
+                out_slope,
+                delta_days,
+                python_exec,
+                scripts_dir,
+                nodata=NODATA,
+            )
             slope_files.append(out_slope)
 
         # -----------------------------
@@ -304,15 +337,16 @@ def compute_sen_slope(
         if store_artifact and store_artifact.lower() in ("minio", "local"):
             save_raster_artifact(
                 config=config,
-                client_id=client_id,
                 local_path=final_cog,
                 file_path=file_path,
-                store_artifact=store_artifact
+                store_artifact=store_artifact,
             )
             # print(f"{file_path}")
         else:
             print("Data not saved. Set store_artifact to minio/local to save the data.")
-            print("Sen's slope computed successfully and available in temporary folder.")
+            print(
+                "Sen's slope computed successfully and available in temporary folder."
+            )
 
     except Exception as e:
         # print a helpful message and re-raise
@@ -346,4 +380,6 @@ def compute_sen_slope(
                     os.rmdir(tmp_dir)
             except Exception:
                 # last resort: ignore cleanup error but warn
-                print(f"[WARN] Failed to fully remove temp dir {tmp_dir}: {cleanup_err}")
+                print(
+                    f"[WARN] Failed to fully remove temp dir {tmp_dir}: {cleanup_err}"
+                )

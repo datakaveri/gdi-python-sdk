@@ -14,7 +14,13 @@ class ResourceFetcher:
         self.collection_id = resource_id
         self.role = role
 
-    def fetch_resource_data(self, resource_id: str, store_artifact: str = None, config_path: str = None, file_path: str = None) -> dict:
+    def fetch_resource_data(
+        self,
+        resource_id: str,
+        store_artifact: str = None,
+        config_path: str = None,
+        file_path: str = None,
+    ) -> dict:
         """
         Function to fetch the resource data from the collections API using the resource_id.In editor it will be renamed as get-vector-data.
         Parameters
@@ -30,17 +36,23 @@ class ResourceFetcher:
 
         try:
             # Generate the token
-            token_generator = TokenGenerator(self.client_id, self.client_secret, self.role, self.collection_id)
+            token_generator = TokenGenerator(
+                self.client_id, self.client_secret, self.role, self.collection_id
+            )
             auth_token = token_generator.generate_token()
 
             # Request the collections API to get asset links
-            resource_url = f"https://geoserver.dx.geospatial.org.in/collections/{resource_id}"
+            resource_url = (
+                f"https://geoserver.dx.geospatial.org.in/collections/{resource_id}"
+            )
             headers = {"Authorization": f"Bearer {auth_token}"}
             response = requests.get(resource_url, headers=headers)
             response.raise_for_status()
 
             links = response.json().get("links", [])
-            enclosure_link_arr = [link["href"] for link in links if link.get("rel") == "enclosure"]
+            enclosure_link_arr = [
+                link["href"] for link in links if link.get("rel") == "enclosure"
+            ]
             resource_url = enclosure_link_arr[0] if enclosure_link_arr else None
 
             # If no enclosure link, use paginated fetch
@@ -56,10 +68,17 @@ class ResourceFetcher:
             gdf = gpd.read_file(io.BytesIO(data))  # Read data as GeoDataFrame
 
             if store_artifact:
-                save_feature(self.client_id, store_artifact=store_artifact, gdf=gdf, file_path=file_path, config_path=config_path)
+                save_feature(
+                    store_artifact=store_artifact,
+                    gdf=gdf,
+                    file_path=file_path,
+                    config_path=config_path,
+                )
 
             else:
-                print("Data not saved. Set store_artifacts to minio/local to save the data to minio or locally.")
+                print(
+                    "Data not saved. Set store_artifacts to minio/local to save the data to minio or locally."
+                )
                 print("Data buffered successfully")
                 # print(gdata)
 
@@ -69,8 +88,9 @@ class ResourceFetcher:
             print(f"{e.response.text}")
             raise Exception(f"Error fetching resource data: {e}")
 
+
 # # client-id 7dcf1193-4237-48a7-a5f2-4b530b69b1cb --client-secret a863cafce5bd3d1bd302ab079242790d18cec974 --role consumer --resource-id 024b0c51-e44d-424c-926e-254b6c966978
-# # client_id =  '7dcf1193-4237-48a7-a5f2-4b530b69b1cb' 
+# # client_id =  '7dcf1193-4237-48a7-a5f2-4b530b69b1cb'
 # # client_secret = "a863cafce5bd3d1bd302ab079242790d18cec974"
 # # role = "consumer"
 # # resource_id = "024b0c51-e44d-424c-926e-254b6c966978"

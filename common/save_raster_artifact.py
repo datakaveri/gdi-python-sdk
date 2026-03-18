@@ -2,11 +2,14 @@ import os
 import uuid
 import shutil
 import warnings
-from common.minio_ops import connect_minio, stream_to_minio
+from common.minio_ops import connect_minio, stream_to_minio, get_bucket_name
 
 warnings.filterwarnings("ignore")
 
-def save_raster_artifact(config: str, client_id: str, local_path: str, file_path: str, store_artifact: str):
+
+def save_raster_artifact(
+    config: str, local_path: str, file_path: str, store_artifact: str
+):
     """
     Reprojects raster to EPSG:4326, converts to LZW-compressed COG, and saves to MinIO or local.
     """
@@ -16,12 +19,13 @@ def save_raster_artifact(config: str, client_id: str, local_path: str, file_path
     # Upload to minio or save locally
     if store_artifact.lower() == "minio":
         try:
-            client = connect_minio(config, client_id)
-            stream_to_minio(client, client_id, file_path, local_path)
+            client = connect_minio(config)
+            bucket_name = get_bucket_name(config)
+            stream_to_minio(client, bucket_name, file_path, local_path)
             print(f"{file_path}")
             aux_path = local_path + ".aux.xml"
             if os.path.exists(aux_path):
-                stream_to_minio(client, client_id, file_path + ".aux.xml", aux_path)
+                stream_to_minio(client, bucket_name, file_path + ".aux.xml", aux_path)
                 print(f"{file_path}.aux.xml")
         except Exception as e:
             raise Exception(f"Error while saving raster to MinIO: {e}")

@@ -50,31 +50,31 @@ gdi get_vector_data --client-id <client-id> --client-secret <client-secret> --ro
 ### Features Count
 
 ```bash
-gdi features-count --config-path <config-path> --client-id <client-id> --artifact-url <artifact-url>
+gdi features-count --config-path <config-path> --artifact-url <artifact-url>
 ```
 
 ### List Objects
 
 ```bash
-gdi ls-objects --config-path <config-path> --client-id <client-id>
+gdi ls-objects --config-path <config-path>
 ```
 
 ### Create Buffer
 
 ```bash
-gdi create-buffer --config-path <config-path> --client-id <client-id> --artifact-url <artifact-url> --buffer-d <buffer-distance> --store-artifact True --file-path <file-path>
+gdi create-buffer --config-path <config-path> --artifact-url <artifact-url> --buffer-d <buffer-distance> --store-artifact True --file-path <file-path>
 ```
 
 ### Create Intersection
 
 ```bash
-gdi create-intersection --config-path <config-path> --client-id <client-id> --left_feature <left-feature-path> --right_feature <right-feature-path> --store-artifact True --file-path <file-path>
+gdi create-intersection --config-path <config-path> --left_feature <left-feature-path> --right_feature <right-feature-path> --store-artifact True --file-path <file-path>
 ```
 
 ### Download Vector Features
 
 ```bash
-gdi download_vector_features --config-path <config-path> --client-id <client-id> --artifact-url <artifact-url> --save-as <output-file-path>
+gdi download_vector_features --config-path <config-path> --artifact-url <artifact-url> --save-as <output-file-path>
 ```
 
 ### List Vector Data
@@ -86,43 +86,43 @@ gdi list_vector_data --location <location>
 ### Compute Geometry
 
 ```bash
-gdi compute-geometry --config-path <config-path> --client-id <client-id> --artifact-url <artifact-url> --store-artifact True --file-path <file-path>
+gdi compute-geometry --config-path <config-path> --artifact-url <artifact-url> --store-artifact True --file-path <file-path>
 ```
 
 ### Reduce to Raster
 
 ```bash
-gdi reduce_to_raster --config-path <config-path> --client-id <client-id> --artifact-url <artifact-url> --attribute <attribute> --grid-size <grid-size> --reducer <reducer> --store-artifacts <True/False> --file-path <file-path>
+gdi reduce_to_raster --config-path <config-path> --artifact-url <artifact-url> --attribute <attribute> --grid-size <grid-size> --reducer <reducer> --store-artifacts <True/False> --file-path <file-path>
 ```
 
 ### Create Optimal Route
 
 ```bash
-gdi create-optimal-route --config-path <config-path> --client-id <client-id> --artifact-url <artifact-url> --points-filepath <points-filepath> --store-artifacts True --route-file-path <route-file-path>
+gdi create-optimal-route --config-path <config-path> --artifact-url <artifact-url> --points-filepath <points-filepath> --store-artifacts True --route-file-path <route-file-path>
 ```
 
 ### Create Voronoi
 
 ```bash
-gdi create-voronoi --config-path <config-path> --client-id <client-id> --input-artifact-url <artifact-url> --store-artifact True --file-path <file-path>
+gdi create-voronoi --config-path <config-path> --input-artifact-url <artifact-url> --store-artifact True --file-path <file-path>
 ```
 
 ### Delaunay Triangulation
 
 ```bash
-gdi create-delaunay-triangles --config-path <config-path> --client-id <client-id> --artifact-url <artifact-url> --store-artifact <storage-location> --file-path <file-path>
+gdi create-delaunay-triangles --config-path <config-path> --artifact-url <artifact-url> --store-artifact <storage-location> --file-path <file-path>
 ```
 
 ### Clip Vector
 
 ```bash
-gdi clip-vector --config-path <config-path> --client-id <client-id> --target-artifact-url <target-artifact-url> --clip-artifact-url <clip-artifact-url> --store-artifact <storage-location> --file-path <file-path>
+gdi clip-vector --config-path <config-path> --target-artifact-url <target-artifact-url> --clip-artifact-url <clip-artifact-url> --store-artifact <storage-location> --file-path <file-path>
 ```
 
 ### BBOX Vector Clip
 
 ```bash
-gdi bbox-feature-clip --config-path <config-path> --client-id <client-id> --target-artifact-url <target-artifact-url> --clip-vector-path <clip-vector-path> --store-artifact <storage-location> --file-path <file-path>
+gdi bbox-feature-clip --config-path <config-path> --target-artifact-url <target-artifact-url> --clip-vector-path <clip-vector-path> --store-artifact <storage-location> --file-path <file-path>
 ```
 
 ---
@@ -144,55 +144,55 @@ gdi get-raster-data --client-id <client-id> --client-secret <client-secret> --ro
 ### Flood Fill Model
 
 ```bash
-gdi flood-fill-model --config-path <config-path> --client-id <client-id> --artifact-url <artifact-url> --threshold <threshold> --store-artifact True --file-path <file-path>
+gdi flood-fill-model --config-path <config-path> --artifact-url <artifact-url> --threshold <threshold> --store-artifact True --file-path <file-path>
 ```
 
 ### Generate NDVI
 
 ```bash
-gdi generate-ndvi --config-path <config-path> --client-id <client-id> --red-artifact-url <red-artifact-url> --nir-artifact-url <nir-artifact-url> --store-artifact <storage-location> --file-path <file-path>
+gdi generate-ndvi --config-path <config-path> --red-artifact-url <red-artifact-url> --nir-artifact-url <nir-artifact-url> --store-artifact <storage-location> --file-path <file-path>
 ```
 
 ### Compute Slope
 
 ```bash
-gdi generate-slope --config-path <config-path> --client-id <client-id> --artifact-url <artifact-url> --store-artifact <storage-location> --file-path <file-path>
+gdi generate-slope --config-path <config-path> --artifact-url <artifact-url> --store-artifact <storage-location> --file-path <file-path>
 ```
 
 ### Generate Isometric Lines
 
 ```bash
-gdi generate-isometric-lines --config-path <config-path> --client-id <client-id> --artifact-url <artifact-url> --interval <interval> --store-artifact <storage-location> --file-path <file-path>
+gdi generate-isometric-lines --config-path <config-path> --artifact-url <artifact-url> --interval <interval> --store-artifact <storage-location> --file-path <file-path>
 ```
 
 ### Reduce to Feature
 
 ```bash
-gdi reduce-to-feature --config-path <config-path> --client-id <client-id> --raster-artifact-url <raster-artifact-url> --vector-artifact-url <vector-artifact-url> --reducer <reducer> --attribute <attribute> --store-artifact <storage-location> --file-path <file-path>
+gdi reduce-to-feature --config-path <config-path> --raster-artifact-url <raster-artifact-url> --vector-artifact-url <vector-artifact-url> --reducer <reducer> --attribute <attribute> --store-artifact <storage-location> --file-path <file-path>
 ```
 
 ### Merge Rasters
 
 ```bash
-gdi rasters-merge --config-path <config-path> --client-id <client-id> --prefix <prefix> --store-artifact <storage-location> --file-path <file-path>
+gdi rasters-merge --config-path <config-path> --prefix <prefix> --store-artifact <storage-location> --file-path <file-path>
 ```
 
 ### Clip Raster
 
 ```bash
-gdi raster-clip --config-path <config-path> --client-id <client-id> --raster-key <raster-key> --geojson-key <geojson-key> --store-artifact <storage-location> --file-path <file-path>
+gdi raster-clip --config-path <config-path> --raster-key <raster-key> --geojson-key <geojson-key> --store-artifact <storage-location> --file-path <file-path>
 ```
 
 ### BBOX Raster Clip
 
 ```bash
-gdi bbox-raster-clip --config-path <config-path> --client-id <client-id> --raster-key <raster-key> --vector-path <vector-path> --store-artifact <storage-location> --file-path <file-path>
+gdi bbox-raster-clip --config-path <config-path> --raster-key <raster-key> --vector-path <vector-path> --store-artifact <storage-location> --file-path <file-path>
 ```
 
 ### Generate Local Correlation
 
 ```bash
-gdi generate-local-correlation --config-path <config-path> --client-id <client-id> --x <band_path> --y <band_path> --chunk-size <chunk_size> --store-artifact <storage-location> --file-path <file-path>
+gdi generate-local-correlation --config-path <config-path> --x <band_path> --y <band_path> --chunk-size <chunk_size> --store-artifact <storage-location> --file-path <file-path>
 ```
 
 ### Extract Band Path

@@ -5,16 +5,12 @@ import io
 from typing import List, Dict
 
 from osgeo import gdal
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.save_raster_artifact import save_raster_artifact
-from common.convert_to_cog import tiff_to_cogtiff      
+from common.convert_to_cog import tiff_to_cogtiff
 
-def _download_tifs_unique(
-    client,
-    bucket: str,
-    prefix: str,
-    workdir: str
-) -> List[str]:
+
+def _download_tifs_unique(client, bucket: str, prefix: str, workdir: str) -> List[str]:
     tif_exts = (".tif", ".tiff")
     keys = sorted(
         obj.object_name
@@ -31,13 +27,13 @@ def _download_tifs_unique(
     local_paths: List[str] = []
 
     for key in keys:
-        base = os.path.basename(key)           
-        stem, ext = os.path.splitext(base)       
+        base = os.path.basename(key)
+        stem, ext = os.path.splitext(base)
 
         n = name_count.get(stem, 0)
         name_count[stem] = n + 1
         if n > 0:
-            base = f"{stem}_{n}{ext}"            
+            base = f"{stem}_{n}{ext}"
 
         dst_path = os.path.join(workdir, base)
         client.fget_object(bucket, key, dst_path)
@@ -45,29 +41,29 @@ def _download_tifs_unique(
 
     return local_paths
 
+
 def merge_rasters(
     config_path: str,
-    client_id: str,
     prefix: str,
     store_artifact: str = "minio",
     file_path: str | None = None,
 ) -> str:
     """
-    Merge every raster under <client_id>/<prefix>/ recursively into a single COG. In editor it will be renamed as rasters-merge.
+    Merge every raster under <prefix>/ recursively into a single COG. In editor it will be renamed as rasters-merge.
 
     Parameters
     ----------
     config_path   : str (Reactflow will ignore this parameter)
-    client_id     : str (Reactflow will translate it as input)
     prefix        : str (Reactflow will take it from the previous step)
     store_artifact: str (Reactflow will ignore this parameter)
     file_path     : str (Reactflow will ignore this parameter)
     """
-    client = connect_minio(config_path, client_id)
+    client = connect_minio(config_path)
+    bucket_name = get_bucket_name(config_path)
 
     with tempfile.TemporaryDirectory() as tmp:
         local_tifs = _download_tifs_unique(
-            client, client_id, prefix.rstrip("/") + "/", tmp
+            client, bucket_name, prefix.rstrip("/") + "/", tmp
         )
 
         vrt_path = os.path.join(tmp, "merged.vrt")
@@ -79,7 +75,6 @@ def merge_rasters(
         with io.StringIO() as _buf, redirect_stdout(_buf):
             save_raster_artifact(
                 config=config_path,
-                client_id=client_id,
                 local_path=cog_local,
                 file_path=file_path,
                 store_artifact=store_artifact,

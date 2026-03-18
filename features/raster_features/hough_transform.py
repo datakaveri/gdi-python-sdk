@@ -3,22 +3,26 @@ import warnings
 import numpy as np
 import cv2
 from osgeo import gdal
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.convert_to_cog import tiff_to_cogtiff_v2
 from common.save_raster_artifact import save_raster_artifact
 
 warnings.filterwarnings("ignore")
 
 
-def get_hough_transform(config: str, client_id: str, artifact_url: str,
-                             store_artifact: str, file_path: str = None,
-                             method: str = "line", **kwargs) -> None:
+def get_hough_transform(
+    config: str,
+    artifact_url: str,
+    store_artifact: str,
+    file_path: str = None,
+    method: str = "line",
+    **kwargs,
+) -> None:
     """
     Function to perform Hough Transform (lines or circles) on each raster band using GDAL and OpenCV. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-hough-transform.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
-    client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
@@ -27,13 +31,14 @@ def get_hough_transform(config: str, client_id: str, artifact_url: str,
     """
 
     # --- Step 1: Connect to MinIO and fetch raster ---
-    client = connect_minio(config, client_id)
+    client = connect_minio(config)
+    bucket_name = get_bucket_name(config)
 
     temp_input = "temp_input.tif"
     temp_hough_raw = "temp_hough_raw.tif"
     temp_hough_cog = "temp_hough_cog.tif"
 
-    with client.get_object(client_id, artifact_url) as response:
+    with client.get_object(bucket_name, artifact_url) as response:
         raster_data = response.read()
     with open(temp_input, "wb") as f:
         f.write(raster_data)
@@ -52,16 +57,33 @@ def get_hough_transform(config: str, client_id: str, artifact_url: str,
     output_images = []
 
     # --- Step 3: Validate method and arguments ---
-    valid_line_args = {'canny_thresh1', 'canny_thresh2', 'hough_thresh', 'min_line_length', 'max_line_gap'}
-    valid_circle_args = {'dp', 'min_dist', 'param1', 'param2', 'min_radius', 'max_radius'}
+    valid_line_args = {
+        "canny_thresh1",
+        "canny_thresh2",
+        "hough_thresh",
+        "min_line_length",
+        "max_line_gap",
+    }
+    valid_circle_args = {
+        "dp",
+        "min_dist",
+        "param1",
+        "param2",
+        "min_radius",
+        "max_radius",
+    }
     input_args = set(kwargs.keys())
 
-    if method == 'line':
+    if method == "line":
         if len(input_args & valid_circle_args) > 0:
-            raise ValueError("Circle parameters provided for method='line'. Only line parameters allowed.")
-    elif method == 'circle':
+            raise ValueError(
+                "Circle parameters provided for method='line'. Only line parameters allowed."
+            )
+    elif method == "circle":
         if len(input_args & valid_line_args) > 0:
-            raise ValueError("Line parameters provided for method='circle'. Only circle parameters allowed.")
+            raise ValueError(
+                "Line parameters provided for method='circle'. Only circle parameters allowed."
+            )
     else:
         raise ValueError("method must be either 'line' or 'circle'.")
 
@@ -70,16 +92,22 @@ def get_hough_transform(config: str, client_id: str, artifact_url: str,
         band = dataset.GetRasterBand(b)
         data = band.ReadAsArray().astype(np.uint8)
 
-        if method == 'line':
-            canny_thresh1 = kwargs.get('canny_thresh1', 100)
-            canny_thresh2 = kwargs.get('canny_thresh2', 200)
-            hough_thresh = kwargs.get('hough_thresh', 50)
-            min_line_length = kwargs.get('min_line_length', 10)
-            max_line_gap = kwargs.get('max_line_gap', 10)
+        if method == "line":
+            canny_thresh1 = kwargs.get("canny_thresh1", 100)
+            canny_thresh2 = kwargs.get("canny_thresh2", 200)
+            hough_thresh = kwargs.get("hough_thresh", 50)
+            min_line_length = kwargs.get("min_line_length", 10)
+            max_line_gap = kwargs.get("max_line_gap", 10)
 
             edges = cv2.Canny(data, canny_thresh1, canny_thresh2)
-            lines = cv2.HoughLinesP(edges, 1, np.pi / 180, hough_thresh,
-                                    minLineLength=min_line_length, maxLineGap=max_line_gap)
+            lines = cv2.HoughLinesP(
+                edges,
+                1,
+                np.pi / 180,
+                hough_thresh,
+                minLineLength=min_line_length,
+                maxLineGap=max_line_gap,
+            )
 
             line_img = np.zeros_like(data, dtype=np.uint8)
             if lines is not None:
@@ -88,18 +116,25 @@ def get_hough_transform(config: str, client_id: str, artifact_url: str,
                     cv2.line(line_img, (x1, y1), (x2, y2), 255, 1)
             output_images.append(line_img)
 
-        elif method == 'circle':
-            dp = kwargs.get('dp', 1)
-            min_dist = kwargs.get('min_dist', 20)
-            param1 = kwargs.get('param1', 100)
-            param2 = kwargs.get('param2', 30)
-            min_radius = kwargs.get('min_radius', 0)
-            max_radius = kwargs.get('max_radius', 0)
+        elif method == "circle":
+            dp = kwargs.get("dp", 1)
+            min_dist = kwargs.get("min_dist", 20)
+            param1 = kwargs.get("param1", 100)
+            param2 = kwargs.get("param2", 30)
+            min_radius = kwargs.get("min_radius", 0)
+            max_radius = kwargs.get("max_radius", 0)
 
             img_blur = cv2.medianBlur(data, 5)
-            circles = cv2.HoughCircles(img_blur, cv2.HOUGH_GRADIENT, dp, min_dist,
-                                       param1=param1, param2=param2,
-                                       minRadius=min_radius, maxRadius=max_radius)
+            circles = cv2.HoughCircles(
+                img_blur,
+                cv2.HOUGH_GRADIENT,
+                dp,
+                min_dist,
+                param1=param1,
+                param2=param2,
+                minRadius=min_radius,
+                maxRadius=max_radius,
+            )
             circle_img = np.zeros_like(data, dtype=np.uint8)
             if circles is not None:
                 circles = np.uint16(np.around(circles))
@@ -132,10 +167,9 @@ def get_hough_transform(config: str, client_id: str, artifact_url: str,
     if store_artifact:
         save_raster_artifact(
             config=config,
-            client_id=client_id,
             local_path=temp_hough_cog,
             file_path=file_path,
-            store_artifact=store_artifact
+            store_artifact=store_artifact,
         )
         # print(f"{file_path}")
     else:

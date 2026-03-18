@@ -8,24 +8,22 @@ from scipy.spatial import KDTree
 from networkx.algorithms.approximation import traveling_salesman_problem
 # from tqdm import tqdm
 
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.save_feature_artifact import save_feature
 
 
 def compute_optimal_route(
     config: str,
-    client_id: str,
-    artifact_url: str,          # MinIO object name of the pickled road network
-    points_file: str,           # Local file path to user's point data
+    artifact_url: str,  # MinIO object name of the pickled road network
+    points_file: str,  # Local file path to user's point data
     store_artifact: str,  # Whether to upload the output to MinIO
-    file_path: str = None       # Base name for your route .pkl in MinIO
+    file_path: str = None,  # Base name for your route .pkl in MinIO
 ) -> dict:
     """
     Function to compute the optimal route through a road network for a set of input points.In editor it will be renamed as create-optimal-route.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
-    client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     points_file : str (Reactflow will translate it as input)
     store_artifact : str (Reactflow will ignore this parameter)
@@ -33,17 +31,23 @@ def compute_optimal_route(
     """
 
     # 1. Connect to MinIO
-    minio_client = connect_minio(config, client_id)
+    minio_client = connect_minio(config)
+    bucket_name = get_bucket_name(config)
     # print("[INFO] Connected to MinIO successfully.")
 
     # 2. Download the road network (pickled GeoDataFrame) from MinIO
     import io
+
     try:
-        with minio_client.get_object(bucket_name=client_id, object_name=artifact_url) as response:
+        with minio_client.get_object(
+            bucket_name=bucket_name, object_name=artifact_url
+        ) as response:
             road_gdf = gpd.read_file(io.BytesIO(response.read()))
         # print(f"[INFO] Road network artifact '{artifact_url}' loaded from MinIO.")
     except Exception as e:
-        raise RuntimeError(f"[ERROR] Unable to download/load road artifact from MinIO: {e}")
+        raise RuntimeError(
+            f"[ERROR] Unable to download/load road artifact from MinIO: {e}"
+        )
 
     # Explode multi-line geometries and remove empties
     road_gdf = road_gdf.explode(ignore_index=True)
@@ -90,12 +94,17 @@ def compute_optimal_route(
             raise ValueError(f"[ERROR] Could not reproject points: {reproj_err}")
 
     # Filter valid Points
-    points_gdf = points_gdf[points_gdf.geometry.notna() & (points_gdf.geom_type == "Point")]
+    points_gdf = points_gdf[
+        points_gdf.geometry.notna() & (points_gdf.geom_type == "Point")
+    ]
     if points_gdf.empty:
-        raise ValueError("[ERROR] After filtering, no valid Point geometry remains in the points file.")
+        raise ValueError(
+            "[ERROR] After filtering, no valid Point geometry remains in the points file."
+        )
 
     # 5. Snap each point to the nearest node in the graph
     import numpy as np
+
     road_nodes_arr = list(G.nodes())
     if not road_nodes_arr:
         raise ValueError("[ERROR] The road graph has no nodes. Cannot proceed.")
@@ -110,7 +119,9 @@ def compute_optimal_route(
 
         # Check bounding
         if not (minx <= x <= maxx and miny <= y <= maxy):
-            raise ValueError(f"[ERROR] Point ({x},{y}) is outside the road bounding box.")
+            raise ValueError(
+                f"[ERROR] Point ({x},{y}) is outside the road bounding box."
+            )
 
         _, nearest_idx = kd_tree.query([x, y])
         snapped_node = tuple(road_nodes_arr[nearest_idx])
@@ -122,17 +133,21 @@ def compute_optimal_route(
     # 6. Compute paths using A* instead of Dijkstra
     node_count = len(snapped_nodes)
     shortest_paths = {}
-    
+
     # Define a heuristic function for A* using Euclidean distance
     heuristic = lambda u, v: Point(u).distance(Point(v))
-    
+
     for i in range(node_count):
         for j in range(i + 1, node_count):
             src = snapped_nodes[i]
             dst = snapped_nodes[j]
             try:
-                path = nx.astar_path(G, source=src, target=dst, heuristic=heuristic, weight="weight")
-                distance = nx.astar_path_length(G, source=src, target=dst, heuristic=heuristic, weight="weight")
+                path = nx.astar_path(
+                    G, source=src, target=dst, heuristic=heuristic, weight="weight"
+                )
+                distance = nx.astar_path_length(
+                    G, source=src, target=dst, heuristic=heuristic, weight="weight"
+                )
                 shortest_paths[(i, j)] = {"path": path, "distance": distance}
             except nx.NetworkXNoPath:
                 shortest_paths[(i, j)] = {"path": None, "distance": float("inf")}
@@ -152,19 +167,19 @@ def compute_optimal_route(
     for i in range(len(tsp_order) - 1):
         start_idx = tsp_order[i]
         end_idx = tsp_order[i + 1]
-        
+
         # Handle path retrieval based on the index order (maintain consistent key format)
         if start_idx < end_idx:
             pair_key = (start_idx, end_idx)
         else:
             pair_key = (end_idx, start_idx)
-            
+
         if pair_key in shortest_paths and shortest_paths[pair_key]["path"] is not None:
             segment_path = shortest_paths[pair_key]["path"]
             # If we need to reverse the path
             if start_idx > end_idx:
                 segment_path = segment_path[::-1]
-            
+
             # Avoid duplicating nodes between segments
             if tsp_full_path and tsp_full_path[-1] == segment_path[0]:
                 tsp_full_path.extend(segment_path[1:])
@@ -172,7 +187,9 @@ def compute_optimal_route(
                 tsp_full_path.extend(segment_path)
 
     if not tsp_full_path:
-        raise ValueError("[ERROR] Could not construct a valid route through all points.")
+        raise ValueError(
+            "[ERROR] Could not construct a valid route through all points."
+        )
 
     route_line = LineString(tsp_full_path)
     route_gdf = gpd.GeoDataFrame(geometry=[route_line], crs=road_gdf.crs)
@@ -180,23 +197,32 @@ def compute_optimal_route(
     # 8. Create ordered points (skip last duplicate)
     visited_points = []
     for rank, idx_val in enumerate(tsp_order[:-1], start=1):
-        visited_points.append({
-            "geometry": original_points[idx_val],
-            "order": rank
-        })
+        visited_points.append({"geometry": original_points[idx_val], "order": rank})
     points_ordered_gdf = gpd.GeoDataFrame(visited_points, crs=road_gdf.crs)
 
     # --------------------------------------------------------
     # 9. If store_artifact=local/minio, upload to MinIO or save locally as per user input
     # --------------------------------------------------------
     if store_artifact:
-        save_feature(client_id=client_id, store_artifact=store_artifact, gdf=route_gdf, file_path=file_path, config_path=config)
+        save_feature(
+            store_artifact=store_artifact,
+            gdf=route_gdf,
+            file_path=file_path,
+            config_path=config,
+        )
         points_file_path = file_path.replace(".geojson", "_points.geojson")
-        save_feature(client_id=client_id, store_artifact=store_artifact, gdf=points_ordered_gdf, file_path=points_file_path, config_path=config)
+        save_feature(
+            store_artifact=store_artifact,
+            gdf=points_ordered_gdf,
+            file_path=points_file_path,
+            config_path=config,
+        )
 
     else:
         pass
-        print("Data not saved. Set store_artifact to minio/local to save the data to minio or locally.")
+        print(
+            "Data not saved. Set store_artifact to minio/local to save the data to minio or locally."
+        )
         print("Computed optimal route successfully")
 
-    return 
+    return

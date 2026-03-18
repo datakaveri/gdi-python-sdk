@@ -8,8 +8,9 @@ import pandas as pd
 from shapely.geometry import box
 from osgeo import gdal, gdalconst
 
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.save_raster_artifact import save_raster_artifact
+
 
 def create_grid(gdf, grid_size) -> gpd.GeoDataFrame:
     if gdf.crs.to_epsg() == 4326:
@@ -20,8 +21,11 @@ def create_grid(gdf, grid_size) -> gpd.GeoDataFrame:
     x_coords = np.arange(minx, maxx, grid_size)
     y_coords = np.arange(miny, maxy, grid_size)
 
-    grid_cells = [box(x, y, x + grid_size, y + grid_size) for x in x_coords for y in y_coords]
-    return gpd.GeoDataFrame({'geometry': grid_cells}, crs=gdf.crs)
+    grid_cells = [
+        box(x, y, x + grid_size, y + grid_size) for x in x_coords for y in y_coords
+    ]
+    return gpd.GeoDataFrame({"geometry": grid_cells}, crs=gdf.crs)
+
 
 def apply_reducer(grid, vector_data, attribute, reducer) -> gpd.GeoDataFrame:
     if attribute not in vector_data.columns:
@@ -31,7 +35,9 @@ def apply_reducer(grid, vector_data, attribute, reducer) -> gpd.GeoDataFrame:
     is_numeric = np.issubdtype(attribute_dtype, np.number)
 
     if reducer in ["min", "max", "sum", "mean"] and not is_numeric:
-        raise ValueError(f"Reducer '{reducer}' can only be applied to numeric attributes.")
+        raise ValueError(
+            f"Reducer '{reducer}' can only be applied to numeric attributes."
+        )
 
     grid["raster_val"] = None
     if reducer in ["first", "last", "mode", "concat"]:
@@ -61,7 +67,9 @@ def apply_reducer(grid, vector_data, attribute, reducer) -> gpd.GeoDataFrame:
             elif reducer in ["mode", "first", "last", "concat"]:
                 if reducer == "mode":
                     mode_vals = values.mode()
-                    val_str = ", ".join(map(str, mode_vals)) if not mode_vals.empty else None
+                    val_str = (
+                        ", ".join(map(str, mode_vals)) if not mode_vals.empty else None
+                    )
                 elif reducer == "first":
                     val_str = values.iloc[0]
                 elif reducer == "last":
@@ -78,6 +86,7 @@ def apply_reducer(grid, vector_data, attribute, reducer) -> gpd.GeoDataFrame:
             grid.at[idx, "raster_val"] = val
 
     return grid
+
 
 def convert_to_raster(grid, grid_size, output_raster) -> str:
     bounds = grid.total_bounds
@@ -102,44 +111,53 @@ def convert_to_raster(grid, grid_size, output_raster) -> str:
                 category_descriptions[int(value)] = row["description"]
 
     metadata = {
-        'driver': 'GTiff',
-        'height': rows,
-        'width': cols,
-        'count': 1,
-        'dtype': rasterio.uint8,
-        'crs': grid.crs,
-        'transform': transform
+        "driver": "GTiff",
+        "height": rows,
+        "width": cols,
+        "count": 1,
+        "dtype": rasterio.uint8,
+        "crs": grid.crs,
+        "transform": transform,
     }
 
-    with rasterio.open(output_raster, 'w', **metadata) as dst:
+    with rasterio.open(output_raster, "w", **metadata) as dst:
         dst.write(raster_data, 1)
         dst.update_tags(**{"Category_Descriptions": str(category_descriptions)})
 
     _add_rat(output_raster, category_descriptions)
     return output_raster
 
+
 def _add_rat(file_path, category_descriptions):
     ds = gdal.Open(file_path, gdalconst.GA_Update)
     band = ds.GetRasterBand(1)
     rat = gdal.RasterAttributeTable()
-    rat.CreateColumn('Value', gdalconst.GFT_Integer, gdalconst.GFU_Generic)
-    rat.CreateColumn('Class', gdalconst.GFT_String, gdalconst.GFU_Name)
+    rat.CreateColumn("Value", gdalconst.GFT_Integer, gdalconst.GFU_Generic)
+    rat.CreateColumn("Class", gdalconst.GFT_String, gdalconst.GFU_Name)
 
     for idx, (value, label) in enumerate(category_descriptions.items()):
         rat.SetValueAsInt(idx, 0, value)
         rat.SetValueAsString(idx, 1, label)
 
     band.SetDefaultRAT(rat)
-    band.SetMetadata({'LAYER_TYPE': 'thematic'})
+    band.SetMetadata({"LAYER_TYPE": "thematic"})
     ds = None
 
-def reduce_to_image(config: str, client_id: str, artifact_url: str, attribute: str, grid_size: float, reducer: str, store_artifact: str, file_path: str = None) -> None:
+
+def reduce_to_image(
+    config: str,
+    artifact_url: str,
+    attribute: str,
+    grid_size: float,
+    reducer: str,
+    store_artifact: str,
+    file_path: str = None,
+) -> None:
     """
     Reads vector data from MinIO, applies reduction operation, and stores the output raster in MinIO.In editor it will be renamed as reduce-to-raster.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
-    client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     attribute : str (Reactflow will translate it as input)
     grid_size : int (Reactflow will translate it as input)
@@ -148,10 +166,11 @@ def reduce_to_image(config: str, client_id: str, artifact_url: str, attribute: s
     file_path : str (Reactflow will ignore this parameter)
     """
 
-    client = connect_minio(config, client_id)
+    client = connect_minio(config)
+    bucket_name = get_bucket_name(config)
 
     try:
-        with client.get_object(client_id, artifact_url) as response:
+        with client.get_object(bucket_name, artifact_url) as response:
             gdf = gpd.read_file(io.BytesIO(response.read()))
 
         if gdf.crs is None:
@@ -167,10 +186,17 @@ def reduce_to_image(config: str, client_id: str, artifact_url: str, attribute: s
 
         # Save COG using external utility
         if store_artifact:
-            save_raster_artifact(config=config, client_id=client_id, local_path=cog_path, file_path=file_path, store_artifact=store_artifact)
+            save_raster_artifact(
+                config=config,
+                local_path=cog_path,
+                file_path=file_path,
+                store_artifact=store_artifact,
+            )
 
         else:
-            print("Data not saved. Set store_artifact to minio/local to save the data to minio or locally.")
+            print(
+                "Data not saved. Set store_artifact to minio/local to save the data to minio or locally."
+            )
             print("Feature reduced to raster successfully")
 
         # Clean up

@@ -2,18 +2,14 @@ import os
 import uuid
 import shutil
 import warnings
-from common.minio_ops import connect_minio, stream_to_minio
+from common.minio_ops import connect_minio, stream_to_minio, get_bucket_name
 
 warnings.filterwarnings("ignore")
 
 
 def save_csv_artifact(
-        config: str,
-        client_id: str,
-        local_path: str,
-        file_path: str,
-        store_artifact: str
-    ):
+    config: str, local_path: str, file_path: str, store_artifact: str
+):
     """
     Save CSV file to MinIO or local.
     """
@@ -26,8 +22,9 @@ def save_csv_artifact(
     # ---------------------------------------
     if store_artifact.lower() == "minio":
         try:
-            client = connect_minio(config, client_id)
-            stream_to_minio(client, client_id, file_path, local_path)
+            client = connect_minio(config)
+            bucket_name = get_bucket_name(config)
+            stream_to_minio(client, bucket_name, file_path, local_path)
             print(f"{file_path}")
         except Exception as e:
             raise Exception(f"Error while saving CSV to MinIO: {e}")

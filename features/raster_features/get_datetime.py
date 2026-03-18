@@ -3,7 +3,7 @@ import csv
 import warnings
 from pystac_client import Client
 from auth.stac_token_gen import StacTokenGenerator
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.save_csv_artifact import save_csv_artifact
 
 
@@ -11,15 +11,15 @@ warnings.filterwarnings("ignore")
 
 
 def get_datetime(
-        client_id: str,
-        client_secret: str,
-        role: str,
-        collection_id: str,
-        folder_name: str,
-        config: str,
-        output_csv: str,
-        store_artifact: str = "minio"
-    ) -> None:
+    client_id: str,
+    client_secret: str,
+    role: str,
+    collection_id: str,
+    folder_name: str,
+    config: str,
+    output_csv: str,
+    store_artifact: str = "minio",
+) -> None:
     """
     Function to fetch datetime for all raster assets inside a folder and write to CSV. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as stac-datetime.
     Parameters
@@ -44,7 +44,9 @@ def get_datetime(
     # ------------------------------
     #  Query STAC for datetime values
     # ------------------------------
-    client = Client.open("https://geoserver.dx.geospatial.org.in/stac/", headers=headers)
+    client = Client.open(
+        "https://geoserver.dx.geospatial.org.in/stac/", headers=headers
+    )
     search = client.search(collections=[collection_id])
 
     datetime_map = {}
@@ -59,8 +61,10 @@ def get_datetime(
     if store_artifact.lower() == "minio":
         try:
             minio_client = connect_minio(config, client_id)
-            bucket_name = client_id  # GDI uses client_id as bucket
-            objects = minio_client.list_objects(bucket_name, prefix=folder_name, recursive=True)
+            bucket_name = get_bucket_name(config)
+            objects = minio_client.list_objects(
+                bucket_name, prefix=folder_name, recursive=True
+            )
 
             for obj in objects:
                 if obj.object_name.endswith((".tif", ".tiff")):
@@ -85,7 +89,7 @@ def get_datetime(
 
     for fp in file_list:
         base = os.path.basename(fp)
-        item_id = base.split("_")[0]     # infer item id
+        item_id = base.split("_")[0]  # infer item id
         dt = datetime_map.get(item_id, "NA")
         csv_rows.append([fp, dt])
 
@@ -109,7 +113,7 @@ def get_datetime(
                 client_id=client_id,
                 local_path=temp_csv,
                 file_path=final_path,
-                store_artifact="minio"
+                store_artifact="minio",
             )
             # print(f"{final_path}")
         except Exception as e:
@@ -122,7 +126,7 @@ def get_datetime(
                 client_id=client_id,
                 local_path=temp_csv,
                 file_path=final_path,
-                store_artifact="local"
+                store_artifact="local",
             )
             # print(f"{final_path}")
         except Exception as e:

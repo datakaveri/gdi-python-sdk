@@ -3,22 +3,26 @@ import warnings
 import numpy as np
 import cv2
 from osgeo import gdal
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.convert_to_cog import tiff_to_cogtiff_v2
 from common.save_raster_artifact import save_raster_artifact
 
 warnings.filterwarnings("ignore")
 
 
-def compute_canny_edge(config: str, client_id: str, artifact_url: str,
-                       store_artifact: str, file_path: str = None,
-                       threshold1: int = 100, threshold2: int = 200) -> None:
+def compute_canny_edge(
+    config: str,
+    artifact_url: str,
+    store_artifact: str,
+    file_path: str = None,
+    threshold1: int = 100,
+    threshold2: int = 200,
+) -> None:
     """
     Function to perform Canny edge detection on each raster band using GDAL and OpenCV. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-canny-edge.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
-    client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
@@ -26,14 +30,15 @@ def compute_canny_edge(config: str, client_id: str, artifact_url: str,
     threshold2 : float (Reactflow will translate it as input, This parameter will be optional)
     """
 
-    client = connect_minio(config, client_id)
+    client = connect_minio(config)
+    bucket_name = get_bucket_name(config)
 
     temp_input = "temp_input.tif"
     temp_edge_raw = "temp_edge_raw.tif"
     temp_edge_cog = "temp_edge_cog.tif"
 
     # --- Step 1: Download raster from MinIO ---
-    with client.get_object(client_id, artifact_url) as response:
+    with client.get_object(bucket_name, artifact_url) as response:
         raster_data = response.read()
     with open(temp_input, "wb") as f:
         f.write(raster_data)
@@ -89,10 +94,9 @@ def compute_canny_edge(config: str, client_id: str, artifact_url: str,
     if store_artifact:
         save_raster_artifact(
             config=config,
-            client_id=client_id,
             local_path=temp_edge_cog,
             file_path=file_path,
-            store_artifact=store_artifact
+            store_artifact=store_artifact,
         )
         # print(f"{file_path}")
     else:

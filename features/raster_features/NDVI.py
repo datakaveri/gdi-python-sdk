@@ -2,26 +2,33 @@ import os
 import numpy as np
 import warnings
 from osgeo import gdal
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.convert_to_cog import tiff_to_cogtiff
 from common.save_raster_artifact import save_raster_artifact
 
 warnings.filterwarnings("ignore")
 
-def compute_ndvi(config: str, client_id: str, red_artifact_url: str, nir_artifact_url: str, store_artifact: str, file_path: str = None) -> None:
+
+def compute_ndvi(
+    config: str,
+    red_artifact_url: str,
+    nir_artifact_url: str,
+    store_artifact: str,
+    file_path: str = None,
+) -> None:
     """
     Function to compute NDVI from Red and NIR bands. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-ndvi.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
-    client_id : str (Reactflow will translate it as input)
     red_artifact_url : str (Reactflow will take it from the previous step)
     nir_artifact_url : str (Reactflow will take it from the previous step)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
     """
 
-    client = connect_minio(config, client_id)
+    client = connect_minio(config)
+    bucket_name = get_bucket_name(config)
 
     temp_red = "temp_red.tif"
     temp_nir = "temp_nir.tif"
@@ -29,12 +36,12 @@ def compute_ndvi(config: str, client_id: str, red_artifact_url: str, nir_artifac
     temp_ndvi_cog = "temp_ndvi_cog.tif"
 
     try:
-        with client.get_object(client_id, red_artifact_url) as response:
+        with client.get_object(bucket_name, red_artifact_url) as response:
             red_data = response.read()
         with open(temp_red, "wb") as f:
             f.write(red_data)
 
-        with client.get_object(client_id, nir_artifact_url) as response:
+        with client.get_object(bucket_name, nir_artifact_url) as response:
             nir_data = response.read()
         with open(temp_nir, "wb") as f:
             f.write(nir_data)
@@ -52,12 +59,14 @@ def compute_ndvi(config: str, client_id: str, red_artifact_url: str, nir_artifac
         red_band = red_ds.GetRasterBand(1).ReadAsArray().astype(np.float32)
         nir_band = nir_ds.GetRasterBand(1).ReadAsArray().astype(np.float32)
 
-        np.seterr(divide='ignore', invalid='ignore')
+        np.seterr(divide="ignore", invalid="ignore")
         ndvi = (nir_band - red_band) / (nir_band + red_band)
         ndvi = np.nan_to_num(ndvi, nan=-9999.0)
 
         driver = gdal.GetDriverByName("GTiff")
-        ndvi_ds = driver.Create(temp_ndvi, red_ds.RasterXSize, red_ds.RasterYSize, 1, gdal.GDT_Float32)
+        ndvi_ds = driver.Create(
+            temp_ndvi, red_ds.RasterXSize, red_ds.RasterYSize, 1, gdal.GDT_Float32
+        )
         ndvi_ds.SetGeoTransform(red_ds.GetGeoTransform())
         ndvi_ds.SetProjection(red_ds.GetProjection())
 
@@ -84,7 +93,12 @@ def compute_ndvi(config: str, client_id: str, red_artifact_url: str, nir_artifac
         os.remove(temp_ndvi)
 
     if store_artifact:
-        save_raster_artifact(config=config, client_id=client_id, local_path=temp_ndvi_cog, file_path=file_path, store_artifact=store_artifact)
+        save_raster_artifact(
+            config=config,
+            local_path=temp_ndvi_cog,
+            file_path=file_path,
+            store_artifact=store_artifact,
+        )
         # print(f"{file_path}")
     else:
         print("Data not saved. Set store_artifact to minio/local to save the data.")

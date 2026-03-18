@@ -1,18 +1,24 @@
 import geopandas as gpd
 from shapely.geometry import Point, LineString, Polygon
 from shapely import simplify
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.save_feature_artifact import save_feature
 import io
 
 
-def simplify_geometry_DP(config: str, client_id: str, artifact_url: str, store_artifact: str, file_path: str = None, tolerance: float = 1.0, preserve_topology: bool = True) -> None:
+def simplify_geometry_DP(
+    config: str,
+    artifact_url: str,
+    store_artifact: str,
+    file_path: str = None,
+    tolerance: float = 1.0,
+    preserve_topology: bool = True,
+) -> None:
     """
     Simplifies geometries (LineString or Polygon only) using using the Douglas-Peucker algorithm. Optionally saves the result to MinIO or locally.In editor it will be renamed as simplify-geometry.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
-    client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
@@ -20,11 +26,12 @@ def simplify_geometry_DP(config: str, client_id: str, artifact_url: str, store_a
     preserve_topology: enum [True, False] (Reactflow will translate it as input, This parameter will be optional)
     """
 
-    client = connect_minio(config, client_id)
+    client = connect_minio(config)
+    bucket_name = get_bucket_name(config)
 
     try:
         # --- Step 1: Read GeoDataFrame from MinIO ---
-        with client.get_object(client_id, artifact_url) as response:
+        with client.get_object(bucket_name, artifact_url) as response:
             gdf = gpd.read_file(io.BytesIO(response.read()))
 
         # --- Step 2: Ensure CRS and reproject to EPSG:7755 ---
@@ -42,7 +49,9 @@ def simplify_geometry_DP(config: str, client_id: str, artifact_url: str, store_a
         elif geometry_type in ["LineString", "MultiLineString"]:
             # For lines, only tolerance should be used — ignore preserve_topology
             # print("Simplifying line geometry (only 'tolerance' is used).")
-            simplified_geoms = [simplify(geom, tolerance=tolerance) for geom in gdf.geometry]
+            simplified_geoms = [
+                simplify(geom, tolerance=tolerance) for geom in gdf.geometry
+            ]
         elif geometry_type in ["Polygon", "MultiPolygon"]:
             # For polygons, use both tolerance and preserve_topology
             # print(f"Simplifying polygon geometry (tolerance={tolerance}, preserve_topology={preserve_topology}).")
@@ -60,15 +69,16 @@ def simplify_geometry_DP(config: str, client_id: str, artifact_url: str, store_a
         # --- Step 6: Save simplified GeoDataFrame ---
         if store_artifact:
             save_feature(
-                client_id=client_id,
                 store_artifact=store_artifact,
                 gdf=gdf,
                 file_path=file_path,
-                config_path=config
+                config_path=config,
             )
             # print("Simplified geometries saved successfully.")
         else:
-            print("Data not saved. Set 'store_artifact' to 'minio' or 'local' to save results.")
+            print(
+                "Data not saved. Set 'store_artifact' to 'minio' or 'local' to save results."
+            )
 
     except Exception as e:
         raise RuntimeError(f"Error during geometry simplification: {e}")

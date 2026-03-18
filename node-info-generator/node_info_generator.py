@@ -11,6 +11,17 @@ PROJECT_ROOT = os.path.dirname(BASE_DIR)
 OUTPUT_JSON_PATH = os.path.join(BASE_DIR, "generated-info.json")
 DIRECTORY_TO_SCAN = PROJECT_ROOT
 
+# Directories to skip during scanning
+SKIP_DIRS = {
+    ".venv",
+    "venv",
+    ".git",
+    "__pycache__",
+    "node_modules",
+    ".uv",
+    "node-info-generator",
+}
+
 REACTFLOW_PATTERN = re.compile(
     r"""
     ^(?P<base_type>.+?)\s+
@@ -49,7 +60,10 @@ def is_supported_reactflow_type(type_name):
 def collect_node_info(directory_to_scan):
     result = []
 
-    for root, _, files in os.walk(directory_to_scan):
+    for root, dirs, files in os.walk(directory_to_scan):
+        # Skip excluded directories
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
+
         for filename in files:
             if not filename.endswith(".py"):
                 continue

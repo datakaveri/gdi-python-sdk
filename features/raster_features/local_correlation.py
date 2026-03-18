@@ -3,9 +3,10 @@ import uuid
 import numpy as np
 import numba
 from osgeo import gdal
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.convert_to_cog import tiff_to_cogtiff
 from common.save_raster_artifact import save_raster_artifact
+
 
 @numba.njit
 def local_corr_numba(dem_win, lst_win):
@@ -34,21 +35,24 @@ def local_corr_numba(dem_win, lst_win):
         return np.nan
     return numerator / denominator
 
+
 @numba.njit
 def compute_corr_chunk(dem_chunk, lst_chunk, pad):
     height, width = dem_chunk.shape
     corr_chunk = np.full((height - 2 * pad, width - 2 * pad), np.nan, dtype=np.float64)
     for i in range(pad, height - pad):
         for j in range(pad, width - pad):
-            dem_win = dem_chunk[i - pad:i + pad + 1, j - pad:j + pad + 1].ravel()
-            lst_win = lst_chunk[i - pad:i + pad + 1, j - pad:j + pad + 1].ravel()
+            dem_win = dem_chunk[i - pad : i + pad + 1, j - pad : j + pad + 1].ravel()
+            lst_win = lst_chunk[i - pad : i + pad + 1, j - pad : j + pad + 1].ravel()
             corr_chunk[i - pad, j - pad] = local_corr_numba(dem_win, lst_win)
     return corr_chunk
+
 
 def read_array(dataset, xoff, yoff, xsize, ysize, nodata):
     arr = dataset.ReadAsArray(xoff, yoff, xsize, ysize).astype(np.float64)
     arr[arr == nodata] = np.nan
     return arr
+
 
 def write_array(dataset, arr, xoff, yoff):
     band = dataset.GetRasterBand(1)
@@ -56,13 +60,19 @@ def write_array(dataset, arr, xoff, yoff):
     band.FlushCache()
 
 
-def compute_local_correlation_5x5(config, client_id, dem_artifact_url, lst_artifact_url, chunk_size=500, store_artifact=False, file_path=None):
+def compute_local_correlation_5x5(
+    config,
+    dem_artifact_url,
+    lst_artifact_url,
+    chunk_size=500,
+    store_artifact=False,
+    file_path=None,
+):
     """
     Compute local (5x5) correlation between two rasters. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-local-correlation.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
-    client_id : str (Reactflow will translate it as input)
     x : str (Reactflow will take it from the previous step)
     y : str (Reactflow will take it from the previous step)
     chunk_size : int (Reactflow will translate it as input)
@@ -72,7 +82,8 @@ def compute_local_correlation_5x5(config, client_id, dem_artifact_url, lst_artif
     window_size = 5
     pad = window_size // 2
 
-    client = connect_minio(config, client_id)
+    client = connect_minio(config)
+    bucket_name = get_bucket_name(config)
 
     temp_dem = "temp_dem.tif"
     temp_lst = "temp_lst.tif"
@@ -82,9 +93,9 @@ def compute_local_correlation_5x5(config, client_id, dem_artifact_url, lst_artif
 
     # Download files from MinIO
     with open(temp_dem, "wb") as f:
-        f.write(client.get_object(client_id, dem_artifact_url).read())
+        f.write(client.get_object(bucket_name, dem_artifact_url).read())
     with open(temp_lst, "wb") as f:
-        f.write(client.get_object(client_id, lst_artifact_url).read())
+        f.write(client.get_object(bucket_name, lst_artifact_url).read())
 
     dem_ds = gdal.Open(temp_dem, gdal.GA_ReadOnly)
     lst_ds = gdal.Open(temp_lst, gdal.GA_ReadOnly)
@@ -100,7 +111,9 @@ def compute_local_correlation_5x5(config, client_id, dem_artifact_url, lst_artif
     aligned.SetGeoTransform(dem_gt)
     aligned.SetProjection(dem_proj)
     aligned.GetRasterBand(1).SetNoDataValue(-9999.0)
-    gdal.ReprojectImage(lst_ds, aligned, lst_ds.GetProjection(), dem_proj, gdal.GRA_Bilinear)
+    gdal.ReprojectImage(
+        lst_ds, aligned, lst_ds.GetProjection(), dem_proj, gdal.GRA_Bilinear
+    )
     aligned = None
 
     # Step 2: Initialize output
@@ -136,10 +149,9 @@ def compute_local_correlation_5x5(config, client_id, dem_artifact_url, lst_artif
     # Step 4: Convert to COG
     tiff_to_cogtiff(raw_out, cog_out)
 
-
     # Step 5: Save to local or MinIO
     if store_artifact:
-        save_raster_artifact(config, client_id, cog_out, file_path, store_artifact)
+        save_raster_artifact(config, cog_out, file_path, store_artifact)
         # print(f"{file_path}")
     else:
         print("Data not saved. Set store_artifact to minio/local to save the data.")

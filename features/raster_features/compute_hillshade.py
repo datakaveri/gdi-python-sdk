@@ -2,25 +2,31 @@ import os
 import subprocess
 import warnings
 from osgeo import gdal, osr
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.convert_to_cog import tiff_to_cogtiff
 from common.save_raster_artifact import save_raster_artifact
 
 warnings.filterwarnings("ignore")
 
-def compute_hillshade(config: str, client_id: str, artifact_url: str, store_artifact: str, file_path: str = None) -> None:
+
+def compute_hillshade(
+    config: str,
+    artifact_url: str,
+    store_artifact: str,
+    file_path: str = None,
+) -> None:
     """
     Function to compute hillshade from a DEM (COG or regular GeoTIFF) using GDAL's gdaldem. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-hillshade.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
-    client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
     """
 
-    client = connect_minio(config, client_id)
+    client = connect_minio(config)
+    bucket_name = get_bucket_name(config)
 
     temp_dem = "temp_dem.tif"
     temp_dem_7755 = "temp_dem_7755.tif"
@@ -28,7 +34,7 @@ def compute_hillshade(config: str, client_id: str, artifact_url: str, store_arti
     temp_hillshade_cog = "temp_hillshade_cog.tif"
 
     # Download DEM
-    with client.get_object(client_id, artifact_url) as response:
+    with client.get_object(bucket_name, artifact_url) as response:
         dem_data = response.read()
     with open(temp_dem, "wb") as f:
         f.write(dem_data)
@@ -53,16 +59,22 @@ def compute_hillshade(config: str, client_id: str, artifact_url: str, store_arti
     band = ds.GetRasterBand(1)
     nodata = band.GetNoDataValue()
     if nodata is None or nodata != 0:
-        subprocess.run(["gdal_edit.py", "-a_nodata", "0", dem_for_hillshade], check=True)
+        subprocess.run(
+            ["gdal_edit.py", "-a_nodata", "0", dem_for_hillshade], check=True
+        )
     ds = None
 
     # Compute hillshade
     gdal_hillshade_cmd = [
-        "gdaldem", "hillshade",
-        dem_for_hillshade, temp_hillshade_raw,
-        "-s", "1",
+        "gdaldem",
+        "hillshade",
+        dem_for_hillshade,
+        temp_hillshade_raw,
+        "-s",
+        "1",
         "-compute_edges",
-        "-of", "GTiff"
+        "-of",
+        "GTiff",
     ]
 
     try:
@@ -70,7 +82,7 @@ def compute_hillshade(config: str, client_id: str, artifact_url: str, store_arti
             gdal_hillshade_cmd,
             check=True,
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
+            stderr=subprocess.DEVNULL,
         )
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"[ERROR] gdaldem hillshade failed: {e}")
@@ -85,10 +97,9 @@ def compute_hillshade(config: str, client_id: str, artifact_url: str, store_arti
     if store_artifact:
         save_raster_artifact(
             config=config,
-            client_id=client_id,
             local_path=temp_hillshade_cog,
             file_path=file_path,
-            store_artifact=store_artifact
+            store_artifact=store_artifact,
         )
         # print(f"{file_path}")
     else:

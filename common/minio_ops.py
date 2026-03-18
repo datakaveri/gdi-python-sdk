@@ -1,73 +1,94 @@
 import json
 import geopandas as gpd
 from minio import Minio
-import os 
+import os
 
-# Load the minio credentials from the config file and connect to the minio server 
-def connect_minio(config:str, client_id:str)  -> Minio: 
-    '''
+
+# Load the minio credentials from the config file and connect to the minio server
+def connect_minio(config: str) -> Minio:
+    """
     Connect to minio server
-    '''
+    """
 
     try:
-        with open(config, 'r') as file:
+        with open(config, "r") as file:
             creds = json.load(file)
-        
-        access_key = creds['minio_access_key']
-        secret_key = creds['minio_secret_key']
-        minio_url = creds['minio_url']
-        secure_flag = creds['secure']
 
-        #check of there is session token
-        if 'session_token' in creds:
-            session_token = creds['session_token']
-            client = Minio(minio_url, access_key=access_key, secret_key=secret_key,secure=secure_flag, session_token=session_token)
+        access_key = creds["minio_access_key"]
+        secret_key = creds["minio_secret_key"]
+        minio_url = creds["minio_url"]
+        secure_flag = creds["secure"]
+        bucket_name = creds["bucket_name"]
+
+        # check of there is session token
+        if "session_token" in creds:
+            session_token = creds["session_token"]
+            client = Minio(
+                minio_url,
+                access_key=access_key,
+                secret_key=secret_key,
+                secure=secure_flag,
+                session_token=session_token,
+            )
         else:
-            client = Minio(minio_url, access_key=access_key, secret_key=secret_key,secure=secure_flag)
-        if client.bucket_exists(client_id):
-           pass
+            client = Minio(
+                minio_url,
+                access_key=access_key,
+                secret_key=secret_key,
+                secure=secure_flag,
+            )
+        if client.bucket_exists(bucket_name):
+            pass
         else:
-            client.make_bucket(client_id)
-           
+            client.make_bucket(bucket_name)
+
         return client
     except Exception as e:
         raise e
 
 
+# Load the minio credentials from the config file and connect to the minio server and save the file
 
 
-
-
-# Load the minio credentials from the config file and connect to the minio server and save the file 
-
-def connect_store_minio(config:str, client_id:str, local_file_path: str, object_name: str):
-    '''
+def connect_store_minio(config: str, local_file_path: str, object_name: str):
+    """
     config : str : path to the config file
-    client_id : str : client id for the minio bucket
     data : dict : data to be stored in the minio bucket
-    file_name : str : name of the file to be stored in the minio bucket 
+    file_name : str : name of the file to be stored in the minio bucket
 
-    '''
+    """
     try:
-        with open(config, 'r') as file:
+        with open(config, "r") as file:
             creds = json.load(file)
 
-        access_key = creds['minio_access_key']
-        secret_key = creds['minio_secret_key']
-        minio_url = creds['minio_url']
-        secure_flag = creds['secure']
+        access_key = creds["minio_access_key"]
+        secret_key = creds["minio_secret_key"]
+        minio_url = creds["minio_url"]
+        secure_flag = creds["secure"]
+        bucket_name = creds["bucket_name"]
 
         # check if session token is present
-        if 'session_token' in creds:
-            session_token = creds['session_token']
-            client = Minio(minio_url, access_key=access_key, secret_key=secret_key, secure=secure_flag, session_token=session_token)
+        if "session_token" in creds:
+            session_token = creds["session_token"]
+            client = Minio(
+                minio_url,
+                access_key=access_key,
+                secret_key=secret_key,
+                secure=secure_flag,
+                session_token=session_token,
+            )
         else:
-            client = Minio(minio_url, access_key=access_key, secret_key=secret_key, secure=secure_flag)
+            client = Minio(
+                minio_url,
+                access_key=access_key,
+                secret_key=secret_key,
+                secure=secure_flag,
+            )
 
-        if not client.bucket_exists(client_id):
-            client.make_bucket(client_id)
+        if not client.bucket_exists(bucket_name):
+            client.make_bucket(bucket_name)
 
-        client.fput_object(client_id, object_name, local_file_path)
+        client.fput_object(bucket_name, object_name, local_file_path)
         # print(f"Uploaded to MinIO: {object_name}")
         print(f"{object_name}")
 
@@ -76,22 +97,37 @@ def connect_store_minio(config:str, client_id:str, local_file_path: str, object_
 
 
 # get list of all the objects / data present in the minio bucket
-def get_ls(config:str, client_id:str):
-    client = connect_minio(config, client_id)
+def get_ls(config: str):
+    client = connect_minio(config)
+    bucket_name = get_bucket_name(config)
     try:
-        
-        objects = client.list_objects(bucket_name=client_id, recursive=True)
+        objects = client.list_objects(bucket_name=bucket_name, recursive=True)
         for obj in objects:
-                print(obj.object_name)
-        
+            print(obj.object_name)
+
     except Exception as e:
         raise e
-    
+
+
+def get_bucket_name(config: str) -> str:
+    """
+    Get bucket name from config file
+    """
+    with open(config, "r") as file:
+        creds = json.load(file)
+    if "bucket_name" not in creds:
+        raise KeyError(
+            f"'bucket_name' is missing from config file '{config}'. Please add a 'bucket_name' field to your config."
+        )
+    return creds["bucket_name"]
+
+
 def stream_to_minio(minio_client, bucket_name, file_name, file_path):
     try:
-        minio_client.fput_object(bucket_name, file_name, file_path)  # use fput and instead of params data,sizeof, give the temp file created path
+        minio_client.fput_object(
+            bucket_name, file_name, file_path
+        )  # use fput and instead of params data,sizeof, give the temp file created path
         # print(f"Uploaded to MinIO: {file_name}")
         # print(f"{file_name}")
     except Exception as e:
         print(f"Failed to upload {file_name} to MinIO: {e}")
-

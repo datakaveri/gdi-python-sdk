@@ -6,35 +6,35 @@ from skimage.measure import find_contours
 from shapely.geometry import LineString
 from tqdm import tqdm
 import warnings
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.save_feature_artifact import save_feature
 
 warnings.filterwarnings("ignore")
 
+
 def isometric_lines(
     config: str,
-    client_id: str,
     artifact_url: str,
     interval: float,
     store_artifact: str,
-    file_path: str = None
+    file_path: str = None,
 ) -> str:
     """
     Generate isometric (contour) lines from DEM read from MinIO and given interval. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-isometric-lines.
     Parameters
     ----------
     config : str (Reactflow will ignore this parameter)
-    client_id : str (Reactflow will translate it as input)
     artifact_url : str (Reactflow will take it from the previous step)
     interval : float (Reactflow will translate it as input)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path : str (Reactflow will ignore this parameter)
     """
- 
-    minio_client = connect_minio(config, client_id)
+
+    minio_client = connect_minio(config)
+    bucket_name = get_bucket_name(config)
 
     try:
-        with minio_client.get_object(client_id, artifact_url) as response:
+        with minio_client.get_object(bucket_name, artifact_url) as response:
             dem_bytes = response.read()
         # print(f"[INFO] Downloaded DEM from MinIO: {artifact_url}")
     except Exception as e:
@@ -55,9 +55,13 @@ def isometric_lines(
         levels = np.arange(min_val, max_val, interval)
 
         if len(levels) < 1:
-            raise ValueError("Contour interval is too large. Decrease the interval to generate contours.")
+            raise ValueError(
+                "Contour interval is too large. Decrease the interval to generate contours."
+            )
         elif len(levels) > 1000:
-            raise ValueError("Contour interval is too small. Increase the interval to limit contour generation.")
+            raise ValueError(
+                "Contour interval is too small. Increase the interval to limit contour generation."
+            )
 
         # Step 3: Extract contour lines
         geometries = []
@@ -73,12 +77,21 @@ def isometric_lines(
                     contour_values.append(level)
 
         # Step 4: Create GeoDataFrame
-        geo_df = gpd.GeoDataFrame({'level': contour_values, 'geometry': geometries}, crs=raster_crs)
+        geo_df = gpd.GeoDataFrame(
+            {"level": contour_values, "geometry": geometries}, crs=raster_crs
+        )
 
         if store_artifact:
-            save_feature(client_id=client_id, store_artifact=store_artifact, gdf=geo_df, file_path=file_path, config_path=config)
+            save_feature(
+                store_artifact=store_artifact,
+                gdf=geo_df,
+                file_path=file_path,
+                config_path=config,
+            )
         else:
-            print("Data not saved. Set store_artifact to 'minio' or 'local' to save the data.")
+            print(
+                "Data not saved. Set store_artifact to 'minio' or 'local' to save the data."
+            )
             print("Clipping completed successfully.")
 
     except Exception as e:

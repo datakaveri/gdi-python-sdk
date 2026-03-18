@@ -29,7 +29,7 @@ def reproject_with_ogr(input_path, output_path, target_epsg="4326"):
         raise RuntimeError(f"[ERROR] Reprojection failed: {e}")
 
 
-def save_feature(client_id, gdf, file_path, config_path, store_artifact):
+def save_feature(gdf, file_path, config_path, store_artifact):
     """
     Save a GeoDataFrame after ensuring it is projected to EPSG:4326.
     """
@@ -53,11 +53,8 @@ def save_feature(client_id, gdf, file_path, config_path, store_artifact):
 
         # Step 5: Save artifact
         if store_artifact.lower() == "minio":
-
-            connect_store_minio(config_path, client_id, temp_output, file_path)
-
+            connect_store_minio(config_path, temp_output, file_path)
         elif store_artifact.lower() == "local":
-
             folder = os.path.dirname(file_path)
 
             if folder:
@@ -71,7 +68,9 @@ def save_feature(client_id, gdf, file_path, config_path, store_artifact):
             print(f"[INFO] Data saved locally to {save_path}")
 
         else:
-            raise ValueError("[ERROR] Invalid value for store_artifact. Use either 'local' or 'minio'.")
+            raise ValueError(
+                "[ERROR] Invalid value for store_artifact. Use either 'local' or 'minio'."
+            )
 
     except Exception as e:
         raise Exception(f"[ERROR] save_feature failed: {e}")
@@ -83,7 +82,8 @@ def save_feature(client_id, gdf, file_path, config_path, store_artifact):
 
         if os.path.exists(temp_output):
             os.remove(temp_output)
-            
+
+
 # import os
 # import uuid
 # import warnings

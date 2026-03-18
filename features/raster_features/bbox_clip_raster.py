@@ -4,7 +4,7 @@ import tempfile
 from contextlib import redirect_stdout
 from osgeo import gdal, ogr, osr
 
-from common.minio_ops import connect_minio
+from common.minio_ops import connect_minio, get_bucket_name
 from common.save_raster_artifact import save_raster_artifact
 from common.convert_to_cog import tiff_to_cogtiff
 
@@ -12,7 +12,7 @@ from common.convert_to_cog import tiff_to_cogtiff
 def get_crs(filepath: str) -> str:
     """Get CRS WKT string from a raster or vector file."""
     ext = os.path.splitext(filepath)[1].lower()
-    if ext in ['.tif', '.tiff']:
+    if ext in [".tif", ".tiff"]:
         ds = gdal.Open(filepath)
         proj = ds.GetProjection()
         ds = None
@@ -29,20 +29,19 @@ def reproject_raster(input_raster: str, output_raster: str, target_srs_wkt: str)
     warp_options = gdal.WarpOptions(
         dstSRS=target_srs_wkt,
         format="GTiff",
-        resampleAlg='near',
+        resampleAlg="near",
         multithread=True,
         warpMemoryLimit=512,
     )
     gdal.Warp(
         destNameOrDestDS=output_raster,
         srcDSOrSrcDSTab=input_raster,
-        options=warp_options
+        options=warp_options,
     )
 
 
 def bbox_clip_raster(
     config_path: str,
-    client_id: str,
     raster_key: str,
     vector_path: str,
     store_artifact: str = "minio",
@@ -54,23 +53,23 @@ def bbox_clip_raster(
     Parameters
     ----------
     config_path : str (Reactflow will ignore this parameter)
-    client_id   : str (Reactflow will translate it as input)
     raster_key  : str (Reactflow will take it from the previous step)
     vector_path : str (Reactflow will translate it as input)
     store_artifact : str (Reactflow will ignore this parameter)
     file_path   : str (Reactflow will ignore this parameter)
     """
 
-    client = connect_minio(config_path, client_id)
+    client = connect_minio(config_path)
+    bucket_name = get_bucket_name(config_path)
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        loc_rst   = os.path.join(tmpdir, "input_raster.tif")
+        loc_rst = os.path.join(tmpdir, "input_raster.tif")
         aligned_rst = os.path.join(tmpdir, "aligned_raster.tif")
-        raw_clip  = os.path.join(tmpdir, "raw_clip.tif")
+        raw_clip = os.path.join(tmpdir, "raw_clip.tif")
         final_cog = os.path.join(tmpdir, "clip_cog.tif")
 
         # Download raster from MinIO
-        client.fget_object(client_id, raster_key, loc_rst)
+        client.fget_object(bucket_name, raster_key, loc_rst)
 
         # Step 1: Check CRS
         raster_crs = get_crs(loc_rst)
@@ -88,7 +87,7 @@ def bbox_clip_raster(
             cutlineDSName=vector_path,
             cropToCutline=True,
             dstNodata=0,
-            resampleAlg='near',
+            resampleAlg="near",
             outputType=gdal.GDT_Float32,
             multithread=True,
             warpMemoryLimit=512,
@@ -98,7 +97,7 @@ def bbox_clip_raster(
         result = gdal.Warp(
             destNameOrDestDS=raw_clip,
             srcDSOrSrcDSTab=raster_to_use,
-            options=warp_options
+            options=warp_options,
         )
 
         if result is None:
@@ -114,7 +113,6 @@ def bbox_clip_raster(
         with io.StringIO() as _buf, redirect_stdout(_buf):
             save_raster_artifact(
                 config=config_path,
-                client_id=client_id,
                 local_path=final_cog,
                 file_path=file_path,
                 store_artifact=store_artifact,

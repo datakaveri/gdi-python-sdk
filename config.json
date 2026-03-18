@@ -3,6 +3,7 @@
     "minio_access_key": "minioadmin",
     "minio_secret_key": "minioadmin",
     "secure": false,
-    "session_token": "wefhkufrsdjknr"
+    "session_token": "wefhkufrsdjknr",
+    "bucket_name": "client_bucket"
     
 }
