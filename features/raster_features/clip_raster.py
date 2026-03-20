@@ -111,16 +111,19 @@ def clip_raster(
         result.FlushCache()
         result = None  # Close GDAL dataset
 
+        #-------------------------------------------------------------------------------
+
         # Step 3: Convert clipped raster to Cloud Optimized GeoTIFF
         tiff_to_cogtiff(raw_clip, final_cog)
 
         # Step 4: Save clipped COG to MinIO or locally
         with io.StringIO() as _buf, redirect_stdout(_buf):
-            save_raster_artifact(
+            saved_path = save_raster_artifact(
                 config=config_path,
                 local_path=final_cog,
                 file_path=file_path,
                 store_artifact=store_artifact,
             )
-        print(f"{file_path}")
-        return file_path if store_artifact.lower() == "minio" else final_cog
+
+        print(saved_path)
+        return saved_path
