@@ -98,7 +98,7 @@ def compute_canny_edge(
             file_path=file_path,
             store_artifact=store_artifact,
         )
-        # print(f"{file_path}")
+        print(f"{file_path}")
     else:
         print("Data not saved. Set store_artifact to minio/local to save the data.")
         print("Canny edge detection completed successfully.")
