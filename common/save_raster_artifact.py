@@ -22,11 +22,11 @@ def save_raster_artifact(
             client = connect_minio(config)
             bucket_name = get_bucket_name(config)
             stream_to_minio(client, bucket_name, file_path, local_path)
-            print(f"{file_path}")
+            # print(f"{file_path}")
             aux_path = local_path + ".aux.xml"
             if os.path.exists(aux_path):
                 stream_to_minio(client, bucket_name, file_path + ".aux.xml", aux_path)
-                print(f"{file_path}.aux.xml")
+                # print(f"{file_path}.aux.xml")
         except Exception as e:
             raise Exception(f"Error while saving raster to MinIO: {e}")
 
