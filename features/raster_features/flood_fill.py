@@ -95,12 +95,14 @@ def flood_fill(
             tiff_to_cogtiff(flood_raw, flood_cog)
 
             # Save via save_raster_artifact
-            save_raster_artifact(
+            saved_path = save_raster_artifact(
                 config=config,
                 local_path=flood_cog,
                 file_path=file_path,
                 store_artifact=store_artifact,
             )
-            print(f"{file_path}")
+
+            print(saved_path)
+            return saved_path
         except Exception as e:
             raise RuntimeError(f"[ERROR] Flood fill failed: {e}")

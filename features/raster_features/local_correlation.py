@@ -67,7 +67,7 @@ def compute_local_correlation_5x5(
     chunk_size=500,
     store_artifact=False,
     file_path=None,
-):
+)-> str:
     """
     Compute local (5x5) correlation between two rasters. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-local-correlation.
     Parameters
@@ -149,15 +149,37 @@ def compute_local_correlation_5x5(
     # Step 4: Convert to COG
     tiff_to_cogtiff(raw_out, cog_out)
 
-    # Step 5: Save to local or MinIO
-    if store_artifact:
-        save_raster_artifact(config, cog_out, file_path, store_artifact)
-        print(f"{file_path}")
-    else:
-        print("Data not saved. Set store_artifact to minio/local to save the data.")
-        print("NDVI computed successfully.")
+    saved_path = None
+    try:
+        # Step 5: Save to local or MinIO
+        if store_artifact:
+            saved_path = save_raster_artifact(
+                config=config,
+                local_path=cog_out,
+                file_path=file_path,
+                store_artifact=store_artifact,
+            )
+            print(saved_path)
+            return saved_path
+        else:
+            print("Data not saved. Set store_artifact to minio/local to save the data.")
+            print("Local correlation computed successfully.")
+            return None
+    finally:
+        # Step 6: Cleanup
+        for f in [temp_dem, temp_lst, aligned_lst, raw_out, cog_out]:
+            if os.path.exists(f):
+                os.remove(f)
 
-    # Step 6: Cleanup
-    for f in [temp_dem, temp_lst, aligned_lst, raw_out, cog_out]:
-        if os.path.exists(f):
-            os.remove(f)
+    # # Step 5: Save to local or MinIO
+    # if store_artifact:
+    #     save_raster_artifact(config, cog_out, file_path, store_artifact)
+    #     print(f"{file_path}")
+    # else:
+    #     print("Data not saved. Set store_artifact to minio/local to save the data.")
+    #     print("NDVI computed successfully.")
+
+    # # Step 6: Cleanup
+    # for f in [temp_dem, temp_lst, aligned_lst, raw_out, cog_out]:
+    #     if os.path.exists(f):
+    #         os.remove(f)

@@ -17,7 +17,7 @@ def get_hough_transform(
     file_path: str = None,
     method: str = "line",
     **kwargs,
-) -> None:
+) -> str:
     """
     Function to perform Hough Transform (lines or circles) on each raster band using GDAL and OpenCV. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-hough-transform.
     Parameters
@@ -165,16 +165,30 @@ def get_hough_transform(
 
     # --- Step 7: Save artifact ---
     if store_artifact:
-        save_raster_artifact(
+        saved_path = save_raster_artifact(
             config=config,
             local_path=temp_hough_cog,
             file_path=file_path,
             store_artifact=store_artifact,
         )
-        print(f"{file_path}")
+        print(saved_path)
+        return saved_path
     else:
         print("Data not saved. Set store_artifact to minio/local to save the data.")
         print(f"Hough Transform ({method}) completed successfully.")
+        return None
+    # # --- Step 7: Save artifact ---
+    # if store_artifact:
+    #     save_raster_artifact(
+    #         config=config,
+    #         local_path=temp_hough_cog,
+    #         file_path=file_path,
+    #         store_artifact=store_artifact,
+    #     )
+    #     print(f"{file_path}")
+    # else:
+    #     print("Data not saved. Set store_artifact to minio/local to save the data.")
+    #     print(f"Hough Transform ({method}) completed successfully.")
 
     # --- Step 8: Cleanup temporary files ---
     try:

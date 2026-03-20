@@ -91,17 +91,31 @@ def compute_canny_edge(
         raise RuntimeError(f"[ERROR] Could not convert edge TIF to COG: {e}")
 
     # --- Step 6: Save to MinIO or local ---
+    # if store_artifact:
+    #     save_raster_artifact(
+    #         config=config,
+    #         local_path=temp_edge_cog,
+    #         file_path=file_path,
+    #         store_artifact=store_artifact,
+    #     )
+    #     print(f"{file_path}")
+    # else:
+    #     print("Data not saved. Set store_artifact to minio/local to save the data.")
+    #     print("Canny edge detection completed successfully.")
+    # --- Step 6: Save to MinIO or local ---
     if store_artifact:
-        save_raster_artifact(
+        saved_path = save_raster_artifact(
             config=config,
             local_path=temp_edge_cog,
             file_path=file_path,
             store_artifact=store_artifact,
         )
-        print(f"{file_path}")
+        print(saved_path)
+        return saved_path
     else:
         print("Data not saved. Set store_artifact to minio/local to save the data.")
         print("Canny edge detection completed successfully.")
+        return None
 
     # --- Step 7: Cleanup temporary files ---
     try:

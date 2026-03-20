@@ -72,12 +72,22 @@ def merge_rasters(
         cog_local = os.path.join(tmp, "merged_cog.tif")
         tiff_to_cogtiff(vrt_path, cog_local)
 
-        with io.StringIO() as _buf, redirect_stdout(_buf):
-            save_raster_artifact(
-                config=config_path,
-                local_path=cog_local,
-                file_path=file_path,
-                store_artifact=store_artifact,
-            )
-        print(f"{file_path}")
-        return file_path if store_artifact.lower() == "minio" else cog_local
+        saved_path = save_raster_artifact(
+            config=config_path,
+            local_path=cog_local,
+            file_path=file_path,
+            store_artifact=store_artifact,
+        )
+
+        print(saved_path)
+        return saved_path
+
+        # with io.StringIO() as _buf, redirect_stdout(_buf):
+        #     save_raster_artifact(
+        #         config=config_path,
+        #         local_path=cog_local,
+        #         file_path=file_path,
+        #         store_artifact=store_artifact,
+        #     )
+        # print(f"{file_path}")
+        # return file_path if store_artifact.lower() == "minio" else cog_local

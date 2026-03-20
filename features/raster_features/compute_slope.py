@@ -14,7 +14,7 @@ def compute_slope(
     artifact_url: str,
     store_artifact: str,
     file_path: str = None,
-) -> None:
+) -> str:
     """
     Function to compute slope from a DEM (COG or regular GeoTIFF) using GDAL's gdaldem. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-slope.
     Parameters
@@ -93,16 +93,30 @@ def compute_slope(
 
     # Save to MinIO or local
     if store_artifact:
-        save_raster_artifact(
+        saved_path = save_raster_artifact(
             config=config,
             local_path=temp_slope_cog,
             file_path=file_path,
             store_artifact=store_artifact,
         )
-        print(f"{file_path}")
+        print(saved_path)
+        return saved_path
     else:
         print("Data not saved. Set store_artifact to minio/local to save the data.")
         print("Slope computed successfully.")
+        return None
+    # # Save to MinIO or local
+    # if store_artifact:
+    #     save_raster_artifact(
+    #         config=config,
+    #         local_path=temp_slope_cog,
+    #         file_path=file_path,
+    #         store_artifact=store_artifact,
+    #     )
+    #     print(f"{file_path}")
+    # else:
+    #     print("Data not saved. Set store_artifact to minio/local to save the data.")
+    #     print("Slope computed successfully.")
 
     # Cleanup
     try:

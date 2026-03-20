@@ -15,7 +15,7 @@ def compute_ndvi(
     nir_artifact_url: str,
     store_artifact: str,
     file_path: str = None,
-) -> None:
+) -> str:
     """
     Function to compute NDVI from Red and NIR bands. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-ndvi.
     Parameters
@@ -88,28 +88,52 @@ def compute_ndvi(
         tiff_to_cogtiff(temp_ndvi, temp_ndvi_cog)
     except Exception as e:
         raise RuntimeError(f"[ERROR] Could not convert raw NDVI TIF to COG: {e}")
-
-    if os.path.exists(temp_ndvi):
-        os.remove(temp_ndvi)
-
-    if store_artifact:
-        save_raster_artifact(
-            config=config,
-            local_path=temp_ndvi_cog,
-            file_path=file_path,
-            store_artifact=store_artifact,
-        )
-        print(f"{file_path}")
-    else:
-        print("Data not saved. Set store_artifact to minio/local to save the data.")
-        print("NDVI computed successfully.")
-
+    
     try:
-        if os.path.exists(temp_red):
-            os.remove(temp_red)
-        if os.path.exists(temp_nir):
-            os.remove(temp_nir)
-        if os.path.exists(temp_ndvi_cog):
-            os.remove(temp_ndvi_cog)
+        if store_artifact:
+            saved_path = save_raster_artifact(
+                config=config,
+                local_path=temp_ndvi_cog,
+                file_path=file_path,
+                store_artifact=store_artifact,
+            )
+            print(saved_path)
+            return saved_path
+        else:
+            print("Data not saved. Set store_artifact to minio/local to save the data.")
+            print("NDVI computed successfully.")
+            return None
+
     except Exception as e:
-        print(f"[WARN] Failed to clean up intermediate files: {e}")
+        raise RuntimeError(f"[ERROR] Failed to compute NDVI: {e}")
+
+    finally:
+        for fpath in [temp_red, temp_nir, temp_ndvi, temp_ndvi_cog]:
+            try:
+                if os.path.exists(fpath):
+                    os.remove(fpath)
+            except Exception as e:
+                print(f"[WARN] Failed to clean up intermediate file {fpath}: {e}")
+    # if store_artifact:
+    #     save_raster_artifact(
+    #         config=config,
+    #         local_path=temp_ndvi_cog,
+    #         file_path=file_path,
+    #         store_artifact=store_artifact,
+    #     )
+    #     print(f"{file_path}")
+    # else:
+    #     print("Data not saved. Set store_artifact to minio/local to save the data.")
+    #     print("NDVI computed successfully.")
+
+    # try:
+    #     if os.path.exists(temp_red):
+    #         os.remove(temp_red)
+    #     if os.path.exists(temp_nir):
+    #         os.remove(temp_nir)
+    #     if os.path.exists(temp_ndvi):
+    #         os.remove(temp_ndvi)
+    #     if os.path.exists(temp_ndvi_cog):
+    #         os.remove(temp_ndvi_cog)
+    # except Exception as e:
+    #     print(f"[WARN] Failed to clean up intermediate files: {e}")

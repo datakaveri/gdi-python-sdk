@@ -14,7 +14,7 @@ def compute_hillshade(
     artifact_url: str,
     store_artifact: str,
     file_path: str = None,
-) -> None:
+) -> str:
     """
     Function to compute hillshade from a DEM (COG or regular GeoTIFF) using GDAL's gdaldem. Optionally upload the result back to MinIO or save locally.In editor it will be renamed as generate-hillshade.
     Parameters
@@ -95,16 +95,29 @@ def compute_hillshade(
 
     # Save to MinIO or local
     if store_artifact:
-        save_raster_artifact(
+        saved_path = save_raster_artifact(
             config=config,
             local_path=temp_hillshade_cog,
             file_path=file_path,
             store_artifact=store_artifact,
         )
-        print(f"{file_path}")
+        print(saved_path)
+        return saved_path
     else:
         print("Data not saved. Set store_artifact to minio/local to save the data.")
         print("Hillshade computed successfully.")
+        return None
+    # if store_artifact:
+    #     save_raster_artifact(
+    #         config=config,
+    #         local_path=temp_hillshade_cog,
+    #         file_path=file_path,
+    #         store_artifact=store_artifact,
+    #     )
+    #     print(f"{file_path}")
+    # else:
+    #     print("Data not saved. Set store_artifact to minio/local to save the data.")
+    #     print("Hillshade computed successfully.")
 
     # Cleanup
     try:
