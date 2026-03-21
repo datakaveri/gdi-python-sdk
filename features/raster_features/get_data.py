@@ -8,7 +8,7 @@ from tqdm import tqdm
 from common.minio_ops import connect_minio, stream_to_minio, get_bucket_name
 from common.convert_to_cog import tiff_to_cogtiff
 import warnings
-
+import uuid
 warnings.filterwarnings("ignore")
 
 import os
@@ -105,7 +105,7 @@ def get_assets(
                 # Extract only the band part from the title
                 band_name = title.split(" - ")[-1]  # Adjust this split logic if needed
                 if dir_path is None:
-                    dir_path = "downloaded_from_stac"
+                    dir_path = f"downloaded_from_stac/{uuid.uuid4()}"
                 # Construct filename inside MinIO bucket as key/{band_name}.tif
                 filename = f"{dir_path}/{folder_name}/{folder_name}_{band_name}_cog.tif"
                 links_list.append(
@@ -138,9 +138,11 @@ def get_assets(
 
     except Exception as e:
         print(f"Failed to download assets:\n {e}")
-
-    output_paths = "$".join(links_list)
-    print(output_paths)
+    if item_id is not None:
+        output_paths = "$".join(links_list)
+        print(output_paths)
+    else:
+        print(dir_path)
 
 
 # Example Usage
