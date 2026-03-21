@@ -110,7 +110,6 @@ def get_datetime(
         try:
             save_csv_artifact(
                 config=config,
-                client_id=client_id,
                 local_path=temp_csv,
                 file_path=final_path,
                 store_artifact="minio",
@@ -123,7 +122,6 @@ def get_datetime(
         try:
             save_csv_artifact(
                 config=config,
-                client_id=client_id,
                 local_path=temp_csv,
                 file_path=final_path,
                 store_artifact="local",
