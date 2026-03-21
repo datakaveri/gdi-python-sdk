@@ -21,8 +21,14 @@ def count_features(config: str, artifact_url: str):
     try:
         with client.get_object(bucket_name, artifact_url) as response:
             data = gpd.read_file(io.BytesIO(response.read()))
+             if data.empty:
+                return "0"
+
+            if "geometry" not in data.columns:
+                raise ValueError("Invalid GeoDataFrame: no geometry column")
+
 
     except Exception as e:
         print(e)
 
-    return str(data.count().iloc[3])
+    return str(len(data))
