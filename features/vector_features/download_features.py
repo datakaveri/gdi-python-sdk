@@ -35,7 +35,7 @@ def download_features(config: str, artifact_url: str, save_as: str) -> str:
 
         client.fput_object(bucket_name, save_as, "temp.geojson")
         pre_signed_url = client.get_presigned_url(
-            "GET", bucket_name, save_as, expires=timedelta(days=1)
+            "GET", bucket_name, save_as, expires=timedelta(days=7)
         )
         os.remove("temp.geojson")
         print(pre_signed_url)

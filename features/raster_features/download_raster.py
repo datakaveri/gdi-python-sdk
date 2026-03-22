@@ -25,7 +25,7 @@ def download_rasters_artifact(config: str, artifact_url: str) -> str:
         file_paths = [fp.strip() for fp in artifact_url.split("$") if fp.strip()]
         for file_path in file_paths:
             pre_signed_url = client.get_presigned_url(
-                "GET", bucket_name, file_path, expires=timedelta(days=1)
+                "GET", bucket_name, file_path, expires=timedelta(days=7)
             )
             print(pre_signed_url)
     except Exception as e:
